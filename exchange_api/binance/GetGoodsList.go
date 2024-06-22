@@ -27,8 +27,9 @@ var CacheFilePath_GoodsList = m_str.Join(
 
 func GetGoodsList() {
 	resData, err := m_fetch.NewHttp(m_fetch.HttpOpt{
-		Origin: BaseUrlArr[2],
-		Path:   "/api/v3/exchangeInfo",
+		Origin:    BaseUrlArr[2],
+		Path:      "/api/v3/exchangeInfo",
+		ProxyURLs: []string{"http://127.0.0.1:10809"},
 	}).Get()
 
 	if err != nil {

@@ -8,16 +8,17 @@ import (
 )
 
 type Opt struct {
-	LogPath  string // 日志文件存放目录，缺省值：./logs
-	DataPath string // 数据文件存放目录，缺省值：./data
+	LogPath   string   // 日志文件存放目录，缺省值：./logs
+	DataPath  string   // 数据文件存放目录，缺省值：./data
+	ProxyURLs []string // []string{"http://127.0.0.1:10809"} 在拉取数据时使用的代理，默认不使用代理
 }
 
 func Start(opt Opt) {
 	// 初始化项 运行所需要的各种 目录
-	DirInit(opt)
+	init_Path(opt)
 
 	// 初始化日志系统
-	LogInit()
+	init_Log()
 	// 设定日志文件的定时清理
 	m_cycle.New(m_cycle.Opt{
 		Func:      ClearLog,
@@ -26,6 +27,6 @@ func Start(opt Opt) {
 
 	Log.Println(
 		`系统初始化完成`,
-		m_json.Format(Dir),
+		m_json.Format(Path),
 	)
 }

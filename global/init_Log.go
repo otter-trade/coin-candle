@@ -9,36 +9,30 @@ import (
 )
 
 var (
-	Log        *log.Logger // 系统日志 & 重大错误或者事件
-	Run        *log.Logger // 运行日志
-	OkxLog     *log.Logger // 欧意交易所 日志
-	BinanceLog *log.Logger // 币安交易所 日志
+	Log      *log.Logger // 系统日志 & 重大错误或者事件
+	Run      *log.Logger // 运行日志
+	Exchange *log.Logger // 交易所 日志
 )
 
-func LogInit() {
+func init_Log() {
 	Log = m_log.NewLog(m_log.NewLogParam{
-		Path: Dir.LogPath,
+		Path: Path.LogPath,
 		Name: "Sys",
 	})
 	Run = m_log.NewLog(m_log.NewLogParam{
-		Path: Dir.LogPath,
+		Path: Path.LogPath,
 		Name: "Run",
 	})
-	OkxLog = m_log.NewLog(m_log.NewLogParam{
-		Path: Dir.LogPath,
-		Name: "okx",
+	Exchange = m_log.NewLog(m_log.NewLogParam{
+		Path: Path.LogPath,
+		Name: "Exchange",
 	})
-	BinanceLog = m_log.NewLog(m_log.NewLogParam{
-		Path: Dir.LogPath,
-		Name: "Binance",
-	})
-
 }
 
 // 删除10天之前的日志文件
 func ClearLog() {
 	m_log.Clear(m_log.ClearParam{
-		Path:      Dir.LogPath,
+		Path:      Path.LogPath,
 		ClearTime: m_time.UnixTimeInt64.Day * 7,
 	})
 }

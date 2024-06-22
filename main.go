@@ -7,7 +7,9 @@ import (
 
 func main() {
 	// 初始化系统
-	global.Start(global.Opt{})
+	global.Start(global.Opt{
+		ProxyURLs: []string{"http://127.0.0.1:10809"},
+	})
 
 	// 获交易所交易对信息
 

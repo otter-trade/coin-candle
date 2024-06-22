@@ -2,12 +2,10 @@ package binance
 
 import (
 	"coin-candle/global"
-	"os"
 
 	"github.com/handy-golang/go-tools/m_fetch"
 	"github.com/handy-golang/go-tools/m_file"
 	"github.com/handy-golang/go-tools/m_json"
-	"github.com/handy-golang/go-tools/m_str"
 )
 
 var BaseUrlArr = []string{
@@ -19,21 +17,17 @@ var BaseUrlArr = []string{
 	"https://api-gcp.binance.com",
 }
 
-var CacheFilePath_GoodsList = m_str.Join(
-	global.Dir.DataPath,
-	m_str.ToStr(os.PathSeparator),
-	"binance-exchangeInfo",
-)
-
 func GetGoodsList() {
 	resData, err := m_fetch.NewHttp(m_fetch.HttpOpt{
 		Origin:    BaseUrlArr[2],
 		Path:      "/api/v3/exchangeInfo",
-		ProxyURLs: []string{"http://127.0.0.1:10809"},
+		ProxyURLs: global.Path.ProxyURLs,
 	}).Get()
 
 	if err != nil {
 		global.LogErr("binance.GetGoodsList Err", err)
 	}
-	m_file.Write(global.Dir.DataPath+"/exchangeInfo.json", m_json.JsonFormat(resData))
+
+	//将请求结果写入目录
+	m_file.Write(global.Path.Binance.GoodsList, m_json.JsonFormat(resData))
 }

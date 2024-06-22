@@ -7,11 +7,15 @@ import (
 	"github.com/handy-golang/go-tools/m_str"
 )
 
+type ExchangeDir struct {
+}
+
 var Dir struct {
-	Home     string // Home 根目录
-	App      string // APP 根目录
-	LogPath  string // 日志文件存放目录
-	DataPath string // 数据文件存放目录
+	Home             string // Home 根目录
+	App              string // APP 根目录
+	LogPath          string // 日志文件存放目录
+	DataPath         string // 数据文件存放目录
+	BinanceGoodsList string // 币安产品列表存放目录
 }
 
 // 初始化日志目录 ，且必须为有效目录

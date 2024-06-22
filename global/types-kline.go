@@ -1,5 +1,6 @@
 package global
 
+// 系统支持的 Bar
 var KlineBarOpt = []string{
 	"1m",
 	"5m",
@@ -8,6 +9,7 @@ var KlineBarOpt = []string{
 	"1h",
 }
 
+// 系统支持的 交易所
 var ExchangeOpt = []string{
 	"binance", // 币安
 	"okx",     // 欧意

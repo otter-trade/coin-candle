@@ -11,7 +11,7 @@ import (
 func GetTicker() {
 
 	resData, err := m_fetch.NewHttp(m_fetch.HttpOpt{
-		Origin: BaseUrlArr[0],
+		Origin: BaseUrl,
 		Path:   "/api/v5/market/tickers",
 		DataMap: map[string]any{
 			"instType": "SPOT",

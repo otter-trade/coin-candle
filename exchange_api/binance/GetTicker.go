@@ -11,7 +11,7 @@ import (
 func GetTicker() {
 
 	resData, err := m_fetch.NewHttp(m_fetch.HttpOpt{
-		Origin:    BaseUrlArr[2],
+		Origin:    BaseUrl,
 		Path:      "/api/v3/ticker/24hr",
 		ProxyURLs: global.Path.ProxyURLs,
 	}).Get()

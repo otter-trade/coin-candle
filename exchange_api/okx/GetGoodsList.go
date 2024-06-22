@@ -8,11 +8,6 @@ import (
 	"github.com/handy-golang/go-tools/m_json"
 )
 
-var BaseUrlArr = []string{
-	"https://www.okx.com",
-	"https://aws.okx.com",
-}
-
 func GetGoodsList() {
 	GetGoodsList_SPOT()
 	GetGoodsList_SWAP()
@@ -20,7 +15,7 @@ func GetGoodsList() {
 
 func GetGoodsList_SPOT() {
 	resData, err := m_fetch.NewHttp(m_fetch.HttpOpt{
-		Origin: BaseUrlArr[0],
+		Origin: BaseUrl,
 		Path:   "/api/v5/public/instruments",
 		DataMap: map[string]any{
 			"instType": "SPOT",
@@ -37,7 +32,7 @@ func GetGoodsList_SPOT() {
 }
 func GetGoodsList_SWAP() {
 	resData, err := m_fetch.NewHttp(m_fetch.HttpOpt{
-		Origin: BaseUrlArr[0],
+		Origin: BaseUrl,
 		Path:   "/api/v5/public/instruments",
 		DataMap: map[string]any{
 			"instType": "SWAP",

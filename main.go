@@ -8,7 +8,7 @@ import (
 
 func main() {
 	// 初始化系统
-	global.Start(global.Opt{
+	global.SysInit(global.SysInitOpt{
 		ProxyURLs: []string{"http://127.0.0.1:10809"},
 	})
 

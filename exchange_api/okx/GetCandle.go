@@ -1,5 +1,0 @@
-package okx
-
-func GetCandle() {
-
-}

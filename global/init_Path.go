@@ -23,7 +23,7 @@ var Path struct {
 }
 
 // 初始化日志目录 ，且必须为有效目录
-func init_Path(opt Opt) {
+func init_Path(opt SysInitOpt) {
 	Path.Home = m_path.GetHomePath()
 	Path.App = m_path.GetPwd()
 

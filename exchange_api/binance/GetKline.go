@@ -1,5 +1,5 @@
 package binance
 
-func GetCandle() {
+func GetKline() {
 
 }

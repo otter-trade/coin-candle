@@ -1,5 +1,12 @@
 package global
 
+import (
+	"time"
+
+	"github.com/handy-golang/go-tools/m_cycle"
+	"github.com/handy-golang/go-tools/m_json"
+)
+
 type Opt struct {
 	LogPath  string // 日志文件存放目录，缺省值：./logs
 	DataPath string // 数据文件存放目录，缺省值：./data
@@ -10,18 +17,15 @@ func Start(opt Opt) {
 	DirInit(opt)
 
 	// 初始化日志系统
-	// mCycle.New(mCycle.Opt{
-	// 	Func:      LogInit,
-	// 	SleepTime: time.Hour * 24,
-	// }).Start()
+	LogInit()
+	// 设定日志文件的定时清理
+	m_cycle.New(m_cycle.Opt{
+		Func:      ClearLog,
+		SleepTime: time.Hour * 24,
+	}).Start()
 
-	// // 加载 SysEnv
-	// config.ServerEnvInit()
-
-	// Log.Println(
-	// 	`系统初始化完成`,
-	// 	mJson.Format(config.Dir),
-	// 	mJson.Format(config.SysEnv),
-	// 	mJson.Format(config.AppInfo),
-	// )
+	Log.Println(
+		`系统初始化完成`,
+		m_json.Format(Dir),
+	)
 }

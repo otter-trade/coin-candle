@@ -1,0 +1,5 @@
+package binance
+
+func GetCandle() {
+
+}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"coin-candle/exchange_api/binance"
+	"coin-candle/exchange_api/okx"
 	"coin-candle/global"
 )
 
@@ -14,5 +15,7 @@ func main() {
 	// 获交易所交易对信息
 
 	binance.GetGoodsList()
+
+	okx.GetGoodsList()
 
 }

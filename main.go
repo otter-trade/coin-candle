@@ -1,10 +1,16 @@
 package main
 
-import "github.com/handy-golang/go-tools/m_str"
+import (
+	"coin-candle/global"
+	"fmt"
+
+	"github.com/handy-golang/go-tools/m_json"
+)
 
 func main() {
 
-	a := []rune("Hello, World!")
-	str := m_str.ToStr(a)
-	println(str)
+	global.Start(global.Opt{})
+
+	fmt.Println("global.Dir", m_json.Format(global.Dir))
+
 }

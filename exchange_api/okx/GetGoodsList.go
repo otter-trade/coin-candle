@@ -19,13 +19,12 @@ func GetGoodsList() {
 }
 
 func GetGoodsList_SPOT() {
-	var DataMap = map[string]any{
-		"instType": "SPOT",
-	}
 	resData, err := m_fetch.NewHttp(m_fetch.HttpOpt{
-		Origin:    BaseUrlArr[0],
-		Path:      "/api/v5/public/instruments",
-		Data:      m_json.ToJson(DataMap),
+		Origin: BaseUrlArr[0],
+		Path:   "/api/v5/public/instruments",
+		DataMap: map[string]any{
+			"instType": "SPOT",
+		},
 		ProxyURLs: global.Path.ProxyURLs,
 	}).Get()
 
@@ -37,13 +36,12 @@ func GetGoodsList_SPOT() {
 	m_file.Write(global.Path.Okx.Dir+"/goods_list-spot.json", m_json.JsonFormat(resData))
 }
 func GetGoodsList_SWAP() {
-	var DataMap = map[string]any{
-		"instType": "SWAP",
-	}
 	resData, err := m_fetch.NewHttp(m_fetch.HttpOpt{
-		Origin:    BaseUrlArr[0],
-		Path:      "/api/v5/public/instruments",
-		Data:      m_json.ToJson(DataMap),
+		Origin: BaseUrlArr[0],
+		Path:   "/api/v5/public/instruments",
+		DataMap: map[string]any{
+			"instType": "SWAP",
+		},
 		ProxyURLs: global.Path.ProxyURLs,
 	}).Get()
 

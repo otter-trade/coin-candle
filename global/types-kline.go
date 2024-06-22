@@ -56,9 +56,9 @@ func GetBarOpt(b string) (resData KlineBarType) {
 
 type GetKlineOpt struct {
 	GoodsId  string   `json:"GoodsId"`  // 商品ID
+	Bar      string   `json:"Bar"`      // K 线之间的间隔; 允许值: type KlineBarOpt
 	Before   int64    `json:"Before"`   // 此时间之前的内容; 允许值: 13 位毫秒时间戳
 	Limit    int      `json:"Limit"`    // 获取数据的总条目; 允许值: 1-500
-	Bar      string   `json:"Bar"`      // K 线之间的间隔; 允许值: type KlineBarOpt
 	Exchange []string `json:"Exchange"` // 交易所名称列表; 允许值: type ExchangeOpt
 }
 
@@ -76,4 +76,10 @@ func CheckGetKlineOpt(opt GetKlineOpt) (resErr error) {
 	}
 
 	return
+}
+
+type GetBinanceKlineOpt struct {
+	Binance_symbol string `json:"Binance_symbol"`
+	Bar            string `json:"Bar"`
+	Before         int64  `json:"Before"`
 }

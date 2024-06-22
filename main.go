@@ -1,9 +1,11 @@
 package main
 
 import (
-	"coin-candle/exchange_api/binance"
 	"coin-candle/exchange_api/okx"
 	"coin-candle/global"
+	"fmt"
+
+	"github.com/handy-golang/go-tools/m_time"
 )
 
 func main() {
@@ -14,12 +16,20 @@ func main() {
 
 	// 获交易所交易对信息
 
-	binance.GetGoodsList()
+	// binance.GetGoodsList()
 
-	binance.GetTicker()
+	// binance.GetTicker()
 
-	okx.GetGoodsList()
+	// okx.GetGoodsList()
 
-	okx.GetTicker()
+	// okx.GetTicker()
+
+	resData, err := okx.GetKline(okx.GetKlineOpt{
+		Okx_instId: "BTC-USDT",
+		Bar:        "1m",
+		Before:     m_time.GetUnixInt64() - m_time.UnixTimeInt64.Day*1, // 一天前
+	})
+
+	fmt.Println(resData, err)
 
 }

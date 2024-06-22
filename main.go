@@ -16,6 +16,10 @@ func main() {
 
 	binance.GetGoodsList()
 
+	binance.GetTicker()
+
 	okx.GetGoodsList()
+
+	okx.GetTicker()
 
 }

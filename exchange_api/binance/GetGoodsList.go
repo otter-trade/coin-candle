@@ -29,5 +29,5 @@ func GetGoodsList() {
 	}
 
 	//将请求结果写入目录
-	m_file.Write(global.Path.Binance.GoodsList, m_json.JsonFormat(resData))
+	m_file.Write(global.Path.Binance.Dir+"/goods_list-original.json", m_json.JsonFormat(resData))
 }

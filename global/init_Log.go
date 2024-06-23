@@ -9,9 +9,9 @@ import (
 )
 
 var (
-	Log      *log.Logger // 系统日志 & 重大错误或者事件
-	Run      *log.Logger // 运行日志
-	Exchange *log.Logger // 交易所 日志
+	Log         *log.Logger // 系统日志 & 重大错误或者事件
+	RunLog      *log.Logger // 运行日志
+	ExchangeLog *log.Logger // 交易所 日志
 )
 
 func init_Log() {
@@ -19,11 +19,11 @@ func init_Log() {
 		Path: Path.LogPath,
 		Name: "Sys",
 	})
-	Run = m_log.NewLog(m_log.NewLogParam{
+	RunLog = m_log.NewLog(m_log.NewLogParam{
 		Path: Path.LogPath,
 		Name: "Run",
 	})
-	Exchange = m_log.NewLog(m_log.NewLogParam{
+	ExchangeLog = m_log.NewLog(m_log.NewLogParam{
 		Path: Path.LogPath,
 		Name: "Exchange",
 	})

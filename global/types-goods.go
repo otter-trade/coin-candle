@@ -38,7 +38,7 @@ type OkxInstType struct {
 	MinSz        string `json:"minSz"`        // 最小下单数量 合约的数量单位是张，现货的数量单位是交易货币
 	QuoteCcy     string `json:"quoteCcy"`     // 计价货币币种，如 BTC-USDT 中的USDT ，仅适用于币币交易
 	SettleCcy    string `json:"settleCcy"`    // 结算币种 ，如 USDT
-	State        string `json:"state"`        // 产品状态 live：交易中 ，其余状态将被过滤
+	State        string `json:"state"`        // 产品状态 live ：交易中 ，其余状态将被过滤
 	TickSz       string `json:"tickSz"`       // 下单价格精度 如 0.0001
 	Uly          string `json:"uly"`          // 标的指数，如 BTC-USD
 }
@@ -97,5 +97,16 @@ type BinanceSymbolType struct {
 
 // 交易品的类型定义，融合 okx 和 币安
 type GoodsType struct {
-	GoodsId string `json:"GoodsId"` // 交易品 ID 以 OKX 为准 如 BTC-USDT
+	GoodsId       string            `json:"GoodsId"`       // OtterTrade 的交易品ID 以 OKX 为准 如 BTC-USDT
+	State         string            `json:"State"`         // 交易品现货状态，默认；live OKX 现货，币安 现货 ，OKX 合约 有一家状态不对 则为 warning
+	UpdateUnix    int64             `json:"UpdateUnix"`    // 更新时间戳
+	UpdateStr     string            `json:"UpdateStr"`     // 更新时间
+	QuoteCcy      string            `json:"QuoteCcy"`      // 计价货币 如 USDT
+	BaseCcy       string            `json:"BaseCcy"`       // 基础货币 如 BTC
+	Okx_SPOT_Info OkxInstType       `json:"Okx_SPOT_Info"` // 欧意交易所 现货 的完整产品信息
+	Okx_SWAP_Info OkxInstType       `json:"Okx_SWAP_Info"` // 欧意交易所 合约 的完整产品信息
+	BinanceInfo   BinanceSymbolType `json:"BinanceInfo"`   // 币安交易所的完整产品信息
 }
+
+// 设定系统的结算货币
+const SystemSettleCcy = "USDT"

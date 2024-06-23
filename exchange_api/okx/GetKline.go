@@ -79,7 +79,7 @@ func GetKline(opt GetKlineOpt) (resData []byte, resErr error) {
 		return
 	}
 
-	// resData[0] 最旧 resData[last]  最新
+	// 从 大 -> 小
 	m_file.Write(global.Path.Okx.Dir+"/kline.json", m_json.JsonFormat(resData))
 
 	return

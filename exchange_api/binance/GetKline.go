@@ -61,7 +61,7 @@ func GetKline(opt GetKlineOpt) (resData []byte, resErr error) {
 		return
 	}
 
-	// resData[0] 最新  resData[last] 最旧
+	// 时间 小 -> 大
 	m_file.Write(global.Path.Binance.Dir+"/kline.json", m_json.JsonFormat(resData))
 
 	return

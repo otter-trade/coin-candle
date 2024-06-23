@@ -2,4 +2,4 @@ package binance
 
 import "coin-candle/global"
 
-var BaseUrl = global.BinanceBaseUrls[2]
+var BaseUrl = global.BinanceBaseUrls[6]

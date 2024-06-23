@@ -5,12 +5,11 @@ import (
 	"fmt"
 
 	"github.com/handy-golang/go-tools/m_fetch"
-	"github.com/handy-golang/go-tools/m_file"
 	"github.com/handy-golang/go-tools/m_json"
 	jsoniter "github.com/json-iterator/go"
 )
 
-type BinanceTickerType []struct {
+type BinanceTickerType struct {
 	Symbol             string `json:"symbol"`
 	PriceChange        string `json:"priceChange"`
 	PriceChangePercent string `json:"priceChangePercent"`
@@ -57,9 +56,5 @@ func GetTicker() (resData []BinanceTickerType, resErr error) {
 		return
 	}
 	resData = result
-
-	//将请求结果写入目录
-	m_file.WriteByte(global.Path.Binance.Dir+"/ticker-original-11.json", m_json.ToJson(resData))
 	return
-
 }

@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/handy-golang/go-tools/m_fetch"
-	"github.com/handy-golang/go-tools/m_file"
 	"github.com/handy-golang/go-tools/m_json"
 	jsoniter "github.com/json-iterator/go"
 )
@@ -113,6 +112,5 @@ func GetGoodsList_SWAP() (resData []OkxInstType, resErr error) {
 
 	resData = result.Data
 	//将请求结果写入目录
-	m_file.Write(global.Path.Okx.Dir+"/goods_list-swap.json", m_json.ToStr(resData))
 	return
 }

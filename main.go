@@ -1,7 +1,6 @@
 package main
 
 import (
-	"coin-candle/exchange_api/okx"
 	"coin-candle/global"
 )
 
@@ -21,7 +20,7 @@ func main() {
 
 	// okx.GetGoodsList()
 
-	okx.GetTicker()
+	// okx.GetTicker()
 
 	// okxKline, errOkx := okx.GetKline(okx.GetKlineOpt{
 	// 	Okx_instId: "BTC-USDT",

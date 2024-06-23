@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/handy-golang/go-tools/m_fetch"
-	"github.com/handy-golang/go-tools/m_file"
 	"github.com/handy-golang/go-tools/m_json"
 	"github.com/handy-golang/go-tools/m_str"
 	"github.com/handy-golang/go-tools/m_time"
@@ -34,7 +33,7 @@ type TypeReq struct {
 	Msg  string         `bson:"Msg"`
 }
 
-func GetKline(opt GetKlineOpt) (resData []byte, resErr error) {
+func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 
 	resData = nil
 	resErr = nil
@@ -144,8 +143,8 @@ func GetKline(opt GetKlineOpt) (resData []byte, resErr error) {
 			item[7],
 		})
 	}
+	resData = KlineSimp
 	// m_file.Write(global.Path.Okx.Dir+"/kline-Format.json", m_json.Format(Kline))
-	m_file.Write(global.Path.Okx.Dir+"/kline-Simp-str.json", m_json.ToStr(KlineSimp))
-	m_file.WriteByte(global.Path.Okx.Dir+"/kline-Simp-byte.json", m_json.ToJson(KlineSimp))
+	// m_file.WriteByte(global.Path.Okx.Dir+"/kline-Simp-byte.json", m_json.ToJson(KlineSimp))
 	return
 }

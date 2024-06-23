@@ -4,7 +4,7 @@ import (
 	"coin-candle/exchange_api/binance"
 	"coin-candle/exchange_api/okx"
 	"coin-candle/global"
-	"os"
+	"fmt"
 
 	"github.com/handy-golang/go-tools/m_file"
 	"github.com/handy-golang/go-tools/m_json"
@@ -15,10 +15,6 @@ import (
 
 var CoinStatusErrTemp = `
 ${InstID} OkxState:${OkxState} BinanceStatus:${BinanceStatus}`
-
-func GoodsListPath() string {
-	return m_str.Join(global.Path.DataPath, m_str.ToStr(os.PathSeparator), "GoodsList.json")
-}
 
 // 更新 GoodsList 至本地
 func UpdateLocalGoodsList() {
@@ -136,8 +132,8 @@ func UpdateLocalGoodsList() {
 
 	// 如果数量不对则发出警告
 	if len(NewGoodsList2) > 10 {
-		m_file.Write(GoodsListPath(), m_json.ToStr(NewGoodsList2))
-		global.RunLog.Println("商品列表更新完成", GoodsListPath())
+		m_file.Write(global.Path.GoodsListFile, m_json.ToStr(NewGoodsList2))
+		global.RunLog.Println("商品列表更新完成", global.Path.GoodsListFile)
 	} else {
 		global.LogErr("exchange_api.GetGoodsList 数量不足", len(NewGoodsList2))
 	}
@@ -145,15 +141,19 @@ func UpdateLocalGoodsList() {
 }
 
 // 读取 GoodsList
-func GetGoodsList() (resData []global.GoodsType) {
+func GetGoodsList() (resData []global.GoodsType, resErr error) {
 	resData = nil
-	var fileData = m_file.ReadFile(GoodsListPath())
+	resErr = nil
+
+	var fileData = m_file.ReadFile(global.Path.GoodsListFile)
 	if len(fileData) < 2 {
+		resErr = fmt.Errorf("文件读取失败: %s", global.Path.GoodsListFile)
 		return
 	}
 	var GoodsListData []global.GoodsType
 	jsoniter.Unmarshal(fileData, &GoodsListData)
 	if len(GoodsListData) < 10 {
+		resErr = fmt.Errorf("错误:结果返回不正确 %+v", m_json.ToStr(GoodsListData))
 		return
 	}
 	resData = GoodsListData
@@ -161,17 +161,55 @@ func GetGoodsList() (resData []global.GoodsType) {
 }
 
 // 读取商品详情
-func GetGoodsDetail(GoodsId string) (resData global.GoodsType) {
+type GetGoodsDetailOpt struct {
+	GoodsId        string // 三个值任选其一
+	Okx_InstID     string
+	Binance_Symbol string
+}
+
+func GetGoodsDetail(opt GetGoodsDetailOpt) (resData global.GoodsType, resErr error) {
 	resData = global.GoodsType{}
-	var GoodsList = GetGoodsList()
-	if len(GoodsList) < 10 {
+	resErr = nil
+
+	var GoodsList, err = GetGoodsList()
+	if err != nil {
+		resErr = err
 		return
 	}
-	for _, item := range GoodsList {
-		if item.GoodsId == GoodsId {
-			resData = item
-			break
+	// 如果  opt.GoodsId
+	if len(opt.GoodsId) > 1 {
+		for _, item := range GoodsList {
+			if item.GoodsId == opt.GoodsId {
+				resData = item
+				break
+			}
 		}
 	}
+
+	// 如果  opt.Okx_InstID
+	if len(opt.Okx_InstID) > 1 {
+		for _, item := range GoodsList {
+			if item.Okx_SPOT_Info.InstID == opt.Okx_InstID {
+				resData = item
+				break
+			}
+		}
+	}
+
+	// 如果  opt.Binance_Symbol
+	if len(opt.Binance_Symbol) > 1 {
+		for _, item := range GoodsList {
+			if item.BinanceInfo.Symbol == opt.Binance_Symbol {
+				resData = item
+				break
+			}
+		}
+	}
+
+	if len(resData.GoodsId) < 2 {
+		resErr = fmt.Errorf("没有找到商品")
+		return
+	}
+
 	return
 }

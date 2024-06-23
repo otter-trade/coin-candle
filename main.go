@@ -12,11 +12,22 @@ func main() {
 	})
 
 	// 获交易所交易对信息
-
 	exchange_api.UpdateLocalGoodsList()
 
+	// 获取榜单数据
 	exchange_api.UpdateLocalTicker()
-	// exchange_api.GetGoodsDetail("BTC-USDT")
+
+	// resData, err := exchange_api.GetGoodsDetail(exchange_api.GetGoodsDetailOpt{
+	// 	// GoodsId: "BTC-USDT",
+	// 	// Binance_Symbol: "BTCUSDT",
+	// 	Okx_InstID: "BTC-USDT",
+	// })
+
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
+	// m_json.Println(resData)
 
 	// resData, resErr := binance.GetTicker()
 

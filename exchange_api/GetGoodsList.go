@@ -132,16 +132,24 @@ func UpdateLocalGoodsList() {
 
 	// 如果数量不对则发出警告
 	if len(NewGoodsList2) > 10 {
+		UpdateGoodsMap(NewGoodsList2) // 更新 global.GoodsMap
 		m_file.Write(global.Path.GoodsListFile, m_json.ToStr(NewGoodsList2))
 		global.RunLog.Println("商品列表更新完成", global.Path.GoodsListFile)
 	} else {
 		global.LogErr("exchange_api.GetGoodsList 数量不足", len(NewGoodsList2))
 	}
+}
 
+func UpdateGoodsMap(GoodsList []global.GoodsType) {
+	global.GoodsMap = make(map[string]global.GoodsType)
+	for _, item := range GoodsList {
+		global.GoodsMap[item.GoodsId] = item
+	}
 }
 
 // 读取 GoodsList
 func GetGoodsList() (resData []global.GoodsType, resErr error) {
+
 	resData = nil
 	resErr = nil
 
@@ -157,6 +165,7 @@ func GetGoodsList() (resData []global.GoodsType, resErr error) {
 		return
 	}
 	resData = GoodsListData
+
 	return
 }
 
@@ -168,27 +177,23 @@ type GetGoodsDetailOpt struct {
 }
 
 func GetGoodsDetail(opt GetGoodsDetailOpt) (resData global.GoodsType, resErr error) {
+
 	resData = global.GoodsType{}
 	resErr = nil
 
-	var GoodsList, err = GetGoodsList()
-	if err != nil {
-		resErr = err
+	if len(global.GoodsMap) < 10 {
+		resErr = fmt.Errorf("没有初始化 global.GoodsMap")
 		return
 	}
+
 	// 如果  opt.GoodsId
 	if len(opt.GoodsId) > 1 {
-		for _, item := range GoodsList {
-			if item.GoodsId == opt.GoodsId {
-				resData = item
-				break
-			}
-		}
+		resData = global.GoodsMap[opt.GoodsId]
 	}
 
 	// 如果  opt.Okx_InstID
 	if len(opt.Okx_InstID) > 1 {
-		for _, item := range GoodsList {
+		for _, item := range global.GoodsMap {
 			if item.Okx_SPOT_Info.InstID == opt.Okx_InstID {
 				resData = item
 				break
@@ -198,7 +203,7 @@ func GetGoodsDetail(opt GetGoodsDetailOpt) (resData global.GoodsType, resErr err
 
 	// 如果  opt.Binance_Symbol
 	if len(opt.Binance_Symbol) > 1 {
-		for _, item := range GoodsList {
+		for _, item := range global.GoodsMap {
 			if item.BinanceInfo.Symbol == opt.Binance_Symbol {
 				resData = item
 				break

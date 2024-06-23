@@ -110,3 +110,6 @@ type GoodsType struct {
 
 // 设定系统的结算货币
 const SystemSettleCcy = "USDT"
+
+// 所有的产品信息，使用 Map来存储
+var GoodsMap map[string]GoodsType

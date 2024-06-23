@@ -27,7 +27,7 @@ type GetKlineOpt struct {
 */
 
 type OkxKlineType [9]string
-type TypeReq struct {
+type KlineReqType struct {
 	Code string         `bson:"Code"`
 	Data []OkxKlineType `bson:"Data"`
 	Msg  string         `bson:"Msg"`
@@ -86,7 +86,7 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 		return
 	}
 
-	var result TypeReq
+	var result KlineReqType
 	jsoniter.Unmarshal(fetchData, &result)
 	if result.Code != "0" {
 		resErr = fmt.Errorf("错误:结果返回不正确 %+v", m_json.ToStr(fetchData))

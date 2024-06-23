@@ -1,10 +1,8 @@
 package main
 
 import (
-	"coin-candle/exchange_api/binance"
 	"coin-candle/exchange_api/okx"
 	"coin-candle/global"
-	"fmt"
 )
 
 func main() {
@@ -19,24 +17,24 @@ func main() {
 
 	// binance.GetTicker()
 
-	// okx.GetGoodsList()
+	okx.GetGoodsList()
 
 	// okx.GetTicker()
 
-	_, errOkx := okx.GetKline(okx.GetKlineOpt{
-		Okx_instId: "BTC-USDT",
-		Bar:        "1m",
-		// Before:     m_time.GetUnixInt64() - m_time.UnixTimeInt64.Day*365, // 一年前
-	})
+	// okxKline, errOkx := okx.GetKline(okx.GetKlineOpt{
+	// 	Okx_instId: "BTC-USDT",
+	// 	Bar:        "1m",
+	// 	// Before:     m_time.GetUnixInt64() - m_time.UnixTimeInt64.Day*365, // 一年前
+	// })
 
-	fmt.Println("errOkx", errOkx)
+	// fmt.Println("Okx", okxKline, errOkx)
 
-	_, errBinance := binance.GetKline(binance.GetKlineOpt{
-		Binance_symbol: "BTCUSDT",
-		Bar:            "1m",
-		// Before:         m_time.GetUnixInt64() - m_time.UnixTimeInt64.Day*365, // 一年前
-	})
+	// binanceKline, errBinance := binance.GetKline(binance.GetKlineOpt{
+	// 	Binance_symbol: "BTCUSDT",
+	// 	Bar:            "1m",
+	// 	// Before:         m_time.GetUnixInt64() - m_time.UnixTimeInt64.Day*365, // 一年前
+	// })
 
-	fmt.Println("errBinance", errBinance)
+	// fmt.Println("binance", binanceKline, errBinance)
 
 }

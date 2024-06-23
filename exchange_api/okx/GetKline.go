@@ -12,14 +12,12 @@ import (
 )
 
 /*
-
 	resData, err := okx.GetKline(global.GetOkxKlineOpt{
 		Okx_instId: "BTC-USDT",
 		Bar:        "1m",
-		Before:     m_time.GetUnixInt64() - m_time.UnixTimeInt64.Day*1, // 一天前
+		Before:     m_time.GetUnixInt64() - m_time.UnixTimeInt64.Day*1, // 一天前的时间戳
 	})
 	fmt.Println(resData, err)
-
 */
 
 type GetKlineOpt struct {
@@ -33,8 +31,8 @@ func GetKline(opt GetKlineOpt) (resData []byte, resErr error) {
 	resData = nil
 	resErr = nil
 
-	if len(opt.Okx_instId) < 2 {
-		resErr = fmt.Errorf("参数 Okx_instId 不能为空")
+	if len(opt.Okx_instId) < 3 {
+		resErr = fmt.Errorf("参数 Okx_instId 不正确")
 		return
 	}
 
@@ -77,11 +75,12 @@ func GetKline(opt GetKlineOpt) (resData []byte, resErr error) {
 	}).Get()
 
 	if err != nil {
-		global.LogErr("okx.GetKline Err", err, m_json.Format(DataMap))
+		resErr = err
+		return
 	}
 
-	// resData[0] 最新  resData[last] 最旧
-	m_file.Write(global.Path.Okx.Dir+"/kline-spot.json", m_json.JsonFormat(resData))
+	// resData[0] 最旧 resData[last]  最新
+	m_file.Write(global.Path.Okx.Dir+"/kline.json", m_json.JsonFormat(resData))
 
 	return
 }

@@ -77,9 +77,3 @@ func CheckGetKlineOpt(opt GetKlineOpt) (resErr error) {
 
 	return
 }
-
-type GetBinanceKlineOpt struct {
-	Binance_symbol string `json:"Binance_symbol"`
-	Bar            string `json:"Bar"`
-	Before         int64  `json:"Before"`
-}

@@ -97,24 +97,37 @@ func GetKline(opt GetKlineOpt) (resData []byte, resErr error) {
 		return
 	}
 
-	var Kline = []global.KlineType{}
+	// var Kline = []global.KlineType{}
+	var KlineSimp = []global.KlineSimpType{}
 	for _, item := range listStr {
-		time_str := m_json.ToStr(item[0])
-		var time = m_time.TimeGet(time_str)
+		time_unix_str := m_json.ToStr(item[0])
+		// var time = m_time.TimeGet(time_unix_str)
 
-		kItem := global.KlineType{
-			GoodsId:  opt.Binance_symbol,
-			TimeUnix: time.TimeUnix,
-			TimeStr:  time.TimeStr,
-			O:        m_str.ToStr(item[1]),
-			H:        m_str.ToStr(item[2]),
-			L:        m_str.ToStr(item[3]),
-			C:        m_str.ToStr(item[4]),
-			V:        m_str.ToStr(item[5]),
-			Q:        m_str.ToStr(item[7]),
-		}
-		Kline = append(Kline, kItem)
+		// kItem := global.KlineType{
+		// 	GoodsId:  opt.Binance_symbol,
+		// 	TimeUnix: time.TimeUnix,
+		// 	TimeStr:  time.TimeStr,
+		// 	O:        m_str.ToStr(item[1]),
+		// 	H:        m_str.ToStr(item[2]),
+		// 	L:        m_str.ToStr(item[3]),
+		// 	C:        m_str.ToStr(item[4]),
+		// 	V:        m_str.ToStr(item[5]),
+		// 	Q:        m_str.ToStr(item[7]),
+		// }
+		// Kline = append(Kline, kItem)
+
+		KlineSimp = append(KlineSimp, global.KlineSimpType{
+			time_unix_str,
+			m_str.ToStr(item[1]),
+			m_str.ToStr(item[2]),
+			m_str.ToStr(item[3]),
+			m_str.ToStr(item[4]),
+			m_str.ToStr(item[5]),
+			m_str.ToStr(item[7]),
+		})
 	}
-	m_file.Write(global.Path.Binance.Dir+"/kline-Format.json", m_json.Format(Kline))
+	// m_file.Write(global.Path.Binance.Dir+"/kline-Format.json", m_json.ToStr(Kline))
+	m_file.Write(global.Path.Binance.Dir+"/kline-Simp-str.json", m_json.ToStr(KlineSimp))
+	m_file.WriteByte(global.Path.Binance.Dir+"/kline-Simp-byte.json", m_json.ToJson(KlineSimp))
 	return
 }

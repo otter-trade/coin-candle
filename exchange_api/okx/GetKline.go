@@ -115,24 +115,37 @@ func GetKline(opt GetKlineOpt) (resData []byte, resErr error) {
 		return
 	}
 
-	var Kline = []global.KlineType{}
+	// var Kline = []global.KlineType{}
+	var KlineSimp = []global.KlineSimpType{}
 	for i := len(result.Data) - 1; i >= 0; i-- {
 		item := result.Data[i]
-		var time = m_time.TimeGet(item[0])
+		// var time = m_time.TimeGet(item[0])
 
-		kItem := global.KlineType{
-			GoodsId:  opt.Okx_instId,
-			TimeUnix: time.TimeUnix,
-			TimeStr:  time.TimeStr,
-			O:        item[1],
-			H:        item[2],
-			L:        item[3],
-			C:        item[4],
-			V:        item[5],
-			Q:        item[7],
-		}
-		Kline = append(Kline, kItem)
+		// kItem := global.KlineType{
+		// 	GoodsId:  opt.Okx_instId,
+		// 	TimeUnix: time.TimeUnix,
+		// 	TimeStr:  time.TimeStr,
+		// 	O:        item[1],
+		// 	H:        item[2],
+		// 	L:        item[3],
+		// 	C:        item[4],
+		// 	V:        item[5],
+		// 	Q:        item[7],
+		// }
+		// Kline = append(Kline, kItem)
+
+		KlineSimp = append(KlineSimp, global.KlineSimpType{
+			item[0],
+			item[1],
+			item[2],
+			item[3],
+			item[4],
+			item[5],
+			item[7],
+		})
 	}
-	m_file.Write(global.Path.Okx.Dir+"/kline-Format.json", m_json.Format(Kline))
+	// m_file.Write(global.Path.Okx.Dir+"/kline-Format.json", m_json.Format(Kline))
+	m_file.Write(global.Path.Okx.Dir+"/kline-Simp-str.json", m_json.ToStr(KlineSimp))
+	m_file.WriteByte(global.Path.Okx.Dir+"/kline-Simp-byte.json", m_json.ToJson(KlineSimp))
 	return
 }

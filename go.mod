@@ -3,7 +3,7 @@ module coin-candle
 go 1.22.4
 
 require (
-	github.com/handy-golang/go-tools v1.0.1
+	github.com/handy-golang/go-tools v1.0.2
 	github.com/json-iterator/go v1.1.12
 )
 

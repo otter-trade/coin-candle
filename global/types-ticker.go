@@ -44,8 +44,11 @@ type OkxTickerType struct {
 }
 
 type TickerType struct {
-	GoodsId        string `json:"GoodsId"`        // OtterTrade
-	CcyName        string `json:"CcyName"`        // 币种名称
+	GoodsId        string `json:"GoodsId"`
+	Okx_InstID     string `json:"Okx_InstID"`
+	Binance_Symbol string `json:"Binance_Symbol"`
+	BaseCcy        string `json:"BaseCcy"`        // 币种名称
+	State          string `json:"State"`          // 交易品现货状态，默认；live OKX 现货，币安 现货 ，OKX 合约 有一家状态不对 则为 warning
 	Last           string `json:"Last"`           // 最新成交价
 	Open24H        string `json:"Open24H"`        // 24小时开盘价
 	High24H        string `json:"High24H"`        // 最高价

@@ -15,7 +15,7 @@ func main() {
 	exchange_api.UpdateLocalGoodsList()
 
 	// 获取榜单数据
-	// exchange_api.UpdateLocalTicker()
+	exchange_api.UpdateLocalTicker()
 
 	// _, err := exchange_api.GetGoodsDetail(exchange_api.GetGoodsDetailOpt{
 	// 	// GoodsId: "BTC-USDT",

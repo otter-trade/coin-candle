@@ -5,8 +5,6 @@ import (
 	"fmt"
 
 	"github.com/handy-golang/go-tools/m_fetch"
-	"github.com/handy-golang/go-tools/m_file"
-	"github.com/handy-golang/go-tools/m_json"
 	"github.com/handy-golang/go-tools/m_str"
 	"github.com/handy-golang/go-tools/m_time"
 )
@@ -24,6 +22,7 @@ type GetKlineOpt struct {
 		Before:         m_time.GetUnixInt64() - m_time.UnixTimeInt64.Day*365, // 一年前
 	})
 */
+type BinanceKlineType [12]string
 
 func GetKline(opt GetKlineOpt) (resData []byte, resErr error) {
 	resData = nil
@@ -70,7 +69,6 @@ func GetKline(opt GetKlineOpt) (resData []byte, resErr error) {
 	}
 
 	// 时间 小 -> 大
-	m_file.Write(global.Path.Binance.Dir+"/kline.json", m_json.JsonFormat(resData))
 
 	/*
 		[

@@ -1,7 +1,6 @@
 package global
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/handy-golang/go-tools/m_time"
@@ -62,18 +61,16 @@ type GetKlineOpt struct {
 	Exchange []string `json:"Exchange"` // 交易所名称列表; 允许值: type ExchangeOpt
 }
 
-func CheckGetKlineOpt(opt GetKlineOpt) (resErr error) {
-	resErr = nil
-
-	if len(opt.GoodsId) == 0 {
-		resErr = fmt.Errorf("参数 GoodsId 不能为空")
-		return
-	}
-
-	if opt.Before > m_time.GetUnixInt64() {
-		resErr = fmt.Errorf("参数 Before 不能大于当前时间")
-		return
-	}
-
-	return
+type KlineType struct {
+	GoodsId  string `json:"GoodsId"`  // 商品ID
+	TimeUnix int64  `json:"TimeUnix"` // 开始时间
+	TimeStr  string `json:"TimeStr"`  // 开始时间 字符串形式
+	O        string `json:"O"`        // 开盘价
+	H        string `json:"H"`        // 最高价
+	L        string `json:"L"`        // 最低价
+	C        string `json:"C"`        // 收盘价格
+	V        string `json:"V"`        // 成交量(BTC数量)  V * C = Q
+	Q        string `json:"Q"`        // 成交额(USDT数量)  Q / C = V
 }
+
+type KlineSimpType [7]string // TimeUnix,O,H,L,C,V,Q

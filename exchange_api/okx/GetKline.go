@@ -9,6 +9,7 @@ import (
 	"github.com/handy-golang/go-tools/m_json"
 	"github.com/handy-golang/go-tools/m_str"
 	"github.com/handy-golang/go-tools/m_time"
+	jsoniter "github.com/json-iterator/go"
 )
 
 type GetKlineOpt struct {
@@ -25,6 +26,13 @@ type GetKlineOpt struct {
 	})
 	fmt.Println(resData, err)
 */
+
+type OkxKlineType [9]string
+type TypeReq struct {
+	Code string         `bson:"Code"`
+	Data []OkxKlineType `bson:"Data"`
+	Msg  string         `bson:"Msg"`
+}
 
 func GetKline(opt GetKlineOpt) (resData []byte, resErr error) {
 
@@ -67,7 +75,7 @@ func GetKline(opt GetKlineOpt) (resData []byte, resErr error) {
 		"limit":  limit,
 	}
 
-	resData, err := m_fetch.NewHttp(m_fetch.HttpOpt{
+	fetchData, err := m_fetch.NewHttp(m_fetch.HttpOpt{
 		Origin:    BaseUrl,
 		Path:      path,
 		DataMap:   DataMap,
@@ -79,24 +87,52 @@ func GetKline(opt GetKlineOpt) (resData []byte, resErr error) {
 		return
 	}
 
-	// 从 大 -> 小
-	m_file.Write(global.Path.Okx.Dir+"/kline.json", m_json.JsonFormat(resData))
+	var result TypeReq
+	jsoniter.Unmarshal(fetchData, &result)
+	if result.Code != "0" {
+		resErr = fmt.Errorf("错误:结果返回不正确 %+v", m_json.ToStr(fetchData))
+		return
+	}
 
 	/*
-
-		[
-			"1687565880000",  开始时间
-			"30633.5",  开盘价格
-			"30637.6",  最高价格
-			"30620",  最低价格
-			"30626",  收盘价格
-			"3.97909485",  交易量 以张为单位
-			"121880.586345833",  交易量，以币为单位
-			"121880.586345833",  交易量，以计价货币为单位  单位均是USDT
-			"1"
-		],
+		  开始时间 从 大 -> 小
+			[
+				"1687565880000",  开始时间 0
+				"30633.5",  开盘价格  1
+				"30637.6",  最高价格  2
+				"30620",  最低价格 3
+				"30626",  收盘价格 4
+				"3.97909485",  交易量 以张为单位 5
+				"121880.586345833",  交易量，以币为单位 6
+				"121880.586345833",  交易量，以计价货币为单位  单位均是USDT  7
+				"1"
+			],
 
 	*/
 
+	if len(result.Data) < 1 {
+		resErr = fmt.Errorf("错误:K线长度不正确: %+v", len(result.Data))
+		return
+	}
+
+	var Kline = []global.KlineType{}
+	for i := len(result.Data) - 1; i >= 0; i-- {
+		item := result.Data[i]
+		var time = m_time.TimeGet(item[0])
+
+		kItem := global.KlineType{
+			GoodsId:  opt.Okx_instId,
+			TimeUnix: time.TimeUnix,
+			TimeStr:  time.TimeStr,
+			O:        item[1],
+			H:        item[2],
+			L:        item[3],
+			C:        item[4],
+			V:        item[5],
+			Q:        item[7],
+		}
+		Kline = append(Kline, kItem)
+	}
+	m_file.Write(global.Path.Okx.Dir+"/kline-Format.json", m_json.Format(Kline))
 	return
 }

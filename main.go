@@ -1,7 +1,7 @@
 package main
 
 import (
-	"coin-candle/exchange_api/okx"
+	"coin-candle/exchange_api/binance"
 	"coin-candle/global"
 )
 
@@ -15,9 +15,9 @@ func main() {
 
 	// binance.GetGoodsList()
 
-	// binance.GetTicker()
+	binance.GetTicker()
 
-	okx.GetGoodsList()
+	// okx.GetGoodsList()
 
 	// okx.GetTicker()
 

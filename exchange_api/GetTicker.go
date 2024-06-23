@@ -4,10 +4,13 @@ import (
 	"coin-candle/exchange_api/binance"
 	"coin-candle/exchange_api/okx"
 	"coin-candle/global"
+	"os"
+	"time"
 
 	"github.com/handy-golang/go-tools/m_count"
 	"github.com/handy-golang/go-tools/m_file"
 	"github.com/handy-golang/go-tools/m_json"
+	"github.com/handy-golang/go-tools/m_str"
 	"github.com/handy-golang/go-tools/m_time"
 )
 
@@ -41,7 +44,18 @@ func UpdateLocalTicker() {
 	}
 
 	VolumeSortList := SortVolume(tickerList) // 按照成交量排序
-	m_file.WriteByte(global.Path.DataPath+"/ticker.json", m_json.ToJson(VolumeSortList))
+
+	var timeDay = time.Now().Format("2006-01-02")
+	var fileName = m_str.Join(
+		global.Path.DataPath,
+		os.PathSeparator,
+		"ticker-",
+		timeDay,
+		".json",
+	)
+
+	m_file.WriteByte(fileName, m_json.ToJson(VolumeSortList))
+	global.RunLog.Println("交易所榜单更新完成", fileName)
 }
 
 type TickerMixOpt struct {

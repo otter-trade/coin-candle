@@ -11,10 +11,9 @@ func main() {
 		ProxyURLs: []string{"http://127.0.0.1:10809"},
 	})
 
-	// 获交易所交易对信息
+	// 更新本地的商品列表
 	exchange_api.UpdateLocalGoodsList()
-
-	// 获取榜单数据
+	// 更新本地的榜单
 	exchange_api.UpdateLocalTicker()
 
 	// _, err := exchange_api.GetGoodsDetail(exchange_api.GetGoodsDetailOpt{

@@ -166,6 +166,11 @@ func GetGoodsList() (resData []global.GoodsType, resErr error) {
 	}
 	resData = GoodsListData
 
+	// 如果没有初始化 global.GoodsMap
+	if len(global.GoodsMap) < 10 {
+		UpdateGoodsMap(resData)
+	}
+
 	return
 }
 

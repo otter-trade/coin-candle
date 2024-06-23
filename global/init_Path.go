@@ -37,7 +37,7 @@ func init_Path(opt SysInitOpt) {
 	} else {
 		Path.LogPath = m_str.Join(
 			Path.App,
-			m_str.ToStr(os.PathSeparator),
+			os.PathSeparator,
 			"logs",
 		)
 	}
@@ -53,7 +53,7 @@ func init_Path(opt SysInitOpt) {
 	} else {
 		Path.DataPath = m_str.Join(
 			Path.App,
-			m_str.ToStr(os.PathSeparator),
+			os.PathSeparator,
 			"data",
 		)
 	}
@@ -66,7 +66,7 @@ func init_Path(opt SysInitOpt) {
 	// 初始化 币安数据 目录
 	Path.Binance.Dir = m_str.Join(
 		Path.DataPath,
-		m_str.ToStr(os.PathSeparator),
+		os.PathSeparator,
 		"binance",
 	)
 	if !m_path.Exists(Path.Binance.Dir) {
@@ -76,7 +76,7 @@ func init_Path(opt SysInitOpt) {
 	// 初始化 欧意数据目录
 	Path.Okx.Dir = m_str.Join(
 		Path.DataPath,
-		m_str.ToStr(os.PathSeparator),
+		os.PathSeparator,
 		"okx",
 	)
 	if !m_path.Exists(Path.Okx.Dir) {
@@ -86,7 +86,8 @@ func init_Path(opt SysInitOpt) {
 	// 商品列表文件
 	Path.GoodsListFile = m_str.Join(
 		Path.DataPath,
-		m_str.ToStr(os.PathSeparator),
+		os.PathSeparator,
 		"goods-list.json",
 	)
+
 }

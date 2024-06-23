@@ -1,6 +1,7 @@
 package main
 
 import (
+	"coin-candle/exchange_api"
 	"coin-candle/global"
 )
 
@@ -11,6 +12,8 @@ func main() {
 	})
 
 	// 获交易所交易对信息
+
+	exchange_api.GetGoodsList()
 
 	// binance.GetGoodsList()
 

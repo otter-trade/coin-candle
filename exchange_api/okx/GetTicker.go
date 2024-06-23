@@ -9,32 +9,13 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
-type OkxTickerType struct {
-	InstType  string `json:"instType"`
-	InstID    string `json:"instId"`
-	Last      string `json:"last"`
-	LastSz    string `json:"lastSz"`
-	AskPx     string `json:"askPx"`
-	AskSz     string `json:"askSz"`
-	BidPx     string `json:"bidPx"`
-	BidSz     string `json:"bidSz"`
-	Open24H   string `json:"open24h"`
-	High24H   string `json:"high24h"`
-	Low24H    string `json:"low24h"`
-	VolCcy24H string `json:"volCcy24h"`
-	Vol24H    string `json:"vol24h"`
-	Ts        string `json:"ts"`
-	SodUtc0   string `json:"sodUtc0"`
-	SodUtc8   string `json:"sodUtc8"`
-}
-
 type OkxTickerReqType struct {
-	Code string          `json:"code"`
-	Msg  string          `json:"msg"`
-	Data []OkxTickerType `json:"data"`
+	Code string                 `json:"code"`
+	Msg  string                 `json:"msg"`
+	Data []global.OkxTickerType `json:"data"`
 }
 
-func GetTicker() (resData []OkxTickerType, resErr error) {
+func GetTicker() (resData []global.OkxTickerType, resErr error) {
 	resData = nil
 	resErr = nil
 

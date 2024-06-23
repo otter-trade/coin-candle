@@ -4,18 +4,25 @@ import (
 	"coin-candle/exchange_api/binance"
 	"coin-candle/exchange_api/okx"
 	"coin-candle/global"
-	"fmt"
+	"os"
 
 	"github.com/handy-golang/go-tools/m_file"
 	"github.com/handy-golang/go-tools/m_json"
 	"github.com/handy-golang/go-tools/m_str"
 	"github.com/handy-golang/go-tools/m_time"
+	jsoniter "github.com/json-iterator/go"
 )
 
 var CoinStatusErrTemp = `
 ${InstID} OkxState:${OkxState} BinanceStatus:${BinanceStatus}`
 
-func GetGoodsList() {
+func GoodsListPath() string {
+	return m_str.Join(global.Path.DataPath, m_str.ToStr(os.PathSeparator), "GoodsList.json")
+}
+
+// 更新 GoodsList 至本地
+func UpdateLocalGoodsList() {
+
 	binanceGoodsList, err := binance.GetGoodsList()
 	if err != nil {
 		global.LogErr("错误:exchange_api.GetGoodsList -> binance.GetGoodsList", err)
@@ -122,20 +129,49 @@ func GetGoodsList() {
 		NewGoodsList2 = append(NewGoodsList2, NewItem2)
 	}
 
+	// 打印警告
 	if len(WarningList) > 0 {
 		global.ExchangeLog.Println(m_str.Join("警告:以下商品状态存在问题\n", WarningList))
 	}
-	for _, item := range NewGoodsList2 {
-		if item.State != "live" {
-			fmt.Println(item.GoodsId, item.State)
-		}
-	}
 
+	// 如果数量不对则发出警告
 	if len(NewGoodsList2) > 10 {
-		m_file.Write(global.Path.DataPath+"/GoodsList.json", m_json.ToStr(NewGoodsList2))
-		global.RunLog.Println("商品列表更新完成")
+		m_file.Write(GoodsListPath(), m_json.ToStr(NewGoodsList2))
+		global.RunLog.Println("商品列表更新完成", GoodsListPath())
 	} else {
 		global.LogErr("exchange_api.GetGoodsList 数量不足", len(NewGoodsList2))
 	}
 
+}
+
+// 读取 GoodsList
+func GetGoodsList() (resData []global.GoodsType) {
+	resData = nil
+	var fileData = m_file.ReadFile(GoodsListPath())
+	if len(fileData) < 2 {
+		return
+	}
+	var GoodsListData []global.GoodsType
+	jsoniter.Unmarshal(fileData, &GoodsListData)
+	if len(GoodsListData) < 10 {
+		return
+	}
+	resData = GoodsListData
+	return
+}
+
+// 读取商品详情
+func GetGoodsDetail(GoodsId string) (resData global.GoodsType) {
+	resData = global.GoodsType{}
+	var GoodsList = GetGoodsList()
+	if len(GoodsList) < 10 {
+		return
+	}
+	for _, item := range GoodsList {
+		if item.GoodsId == GoodsId {
+			resData = item
+			break
+		}
+	}
+	return
 }

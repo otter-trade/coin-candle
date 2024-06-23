@@ -3,37 +3,14 @@ package binance
 import (
 	"coin-candle/global"
 	"fmt"
+	"strings"
 
 	"github.com/handy-golang/go-tools/m_fetch"
 	"github.com/handy-golang/go-tools/m_json"
 	jsoniter "github.com/json-iterator/go"
 )
 
-type BinanceTickerType struct {
-	Symbol             string `json:"symbol"`
-	PriceChange        string `json:"priceChange"`
-	PriceChangePercent string `json:"priceChangePercent"`
-	WeightedAvgPrice   string `json:"weightedAvgPrice"`
-	PrevClosePrice     string `json:"prevClosePrice"`
-	LastPrice          string `json:"lastPrice"`
-	LastQty            string `json:"lastQty"`
-	BidPrice           string `json:"bidPrice"`
-	BidQty             string `json:"bidQty"`
-	AskPrice           string `json:"askPrice"`
-	AskQty             string `json:"askQty"`
-	OpenPrice          string `json:"openPrice"`
-	HighPrice          string `json:"highPrice"`
-	LowPrice           string `json:"lowPrice"`
-	Volume             string `json:"volume"`
-	QuoteVolume        string `json:"quoteVolume"`
-	OpenTime           int64  `json:"openTime"`
-	CloseTime          int64  `json:"closeTime"`
-	FirstID            int    `json:"firstId"`
-	LastID             int    `json:"lastId"`
-	Count              int    `json:"count"`
-}
-
-func GetTicker() (resData []BinanceTickerType, resErr error) {
+func GetTicker() (resData []global.BinanceTickerType, resErr error) {
 
 	resData = nil
 	resErr = nil
@@ -48,7 +25,7 @@ func GetTicker() (resData []BinanceTickerType, resErr error) {
 		return
 	}
 
-	var result []BinanceTickerType
+	var result []global.BinanceTickerType
 	jsoniter.Unmarshal(fetchData, &result)
 
 	if len(result) < 2 {
@@ -56,5 +33,27 @@ func GetTicker() (resData []BinanceTickerType, resErr error) {
 		return
 	}
 	resData = result
+	SetInstID(resData)
+
+	return
+}
+
+func SetInstID(data []global.BinanceTickerType) (TickerList []global.BinanceTickerType) {
+
+	// var list []global.BinanceTickerType
+	for _, val := range data {
+		find := strings.Contains(val.Symbol, global.SystemSettleCcy)
+		if find {
+			InstID := strings.Replace(val.Symbol, global.SystemSettleCcy, "-"+global.SystemSettleCcy, 1)
+
+			fmt.Println(111, InstID)
+			// SPOT := okxInfo.Inst[InstID]
+			// val.InstID = SPOT.InstID
+			// if len(SPOT.Symbol) > 3 {
+			// 	list = append(list, val)
+			// }
+		}
+	}
+
 	return
 }

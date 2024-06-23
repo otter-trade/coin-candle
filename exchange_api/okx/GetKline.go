@@ -28,9 +28,9 @@ type GetKlineOpt struct {
 
 type OkxKlineType [9]string
 type KlineReqType struct {
-	Code string         `bson:"Code"`
-	Data []OkxKlineType `bson:"Data"`
-	Msg  string         `bson:"Msg"`
+	Code string         `json:"Code"`
+	Data []OkxKlineType `json:"Data"`
+	Msg  string         `json:"Msg"`
 }
 
 func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {

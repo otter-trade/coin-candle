@@ -13,9 +13,10 @@ func main() {
 
 	// 获交易所交易对信息
 
-	exchange_api.GetGoodsList()
+	exchange_api.UpdateLocalGoodsList()
 
-	// binance.GetGoodsList()
+	exchange_api.UpdateLocalTicker()
+	// exchange_api.GetGoodsDetail("BTC-USDT")
 
 	// resData, resErr := binance.GetTicker()
 

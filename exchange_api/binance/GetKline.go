@@ -17,6 +17,14 @@ type GetKlineOpt struct {
 	Before         int64  `json:"Before"`
 }
 
+/*
+	resData, err  := binance.GetKline(binance.GetKlineOpt{
+		Binance_symbol: "BTCUSDT",
+		Bar:            "1m",
+		Before:         m_time.GetUnixInt64() - m_time.UnixTimeInt64.Day*365, // 一年前
+	})
+*/
+
 func GetKline(opt GetKlineOpt) (resData []byte, resErr error) {
 	resData = nil
 	resErr = nil
@@ -63,6 +71,23 @@ func GetKline(opt GetKlineOpt) (resData []byte, resErr error) {
 
 	// 时间 小 -> 大
 	m_file.Write(global.Path.Binance.Dir+"/kline.json", m_json.JsonFormat(resData))
+
+	/*
+		[
+			1687559940000,
+			"30608.01000000",
+			"30628.51000000",
+			"30606.36000000",
+			"30622.30000000",
+			"30.34908000",
+			1687559999999,
+			"929230.51663220",
+			870,
+			"15.72761000",
+			"481499.12090220",
+			"0"
+		],
+	*/
 
 	return
 }

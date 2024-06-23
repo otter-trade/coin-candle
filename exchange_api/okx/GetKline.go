@@ -11,6 +11,12 @@ import (
 	"github.com/handy-golang/go-tools/m_time"
 )
 
+type GetKlineOpt struct {
+	Okx_instId string `json:"Okx_instId"`
+	Bar        string `json:"Bar"`
+	Before     int64  `json:"Before"`
+}
+
 /*
 	resData, err := okx.GetKline(global.GetOkxKlineOpt{
 		Okx_instId: "BTC-USDT",
@@ -19,12 +25,6 @@ import (
 	})
 	fmt.Println(resData, err)
 */
-
-type GetKlineOpt struct {
-	Okx_instId string `json:"Okx_instId"`
-	Bar        string `json:"Bar"`
-	Before     int64  `json:"Before"`
-}
 
 func GetKline(opt GetKlineOpt) (resData []byte, resErr error) {
 
@@ -57,7 +57,7 @@ func GetKline(opt GetKlineOpt) (resData []byte, resErr error) {
 	// 当前时间 - 之前的时间 / 时间间隔 = 距离当前的历史条目
 	fromNowItem := (now - before) / BarObj.Interval
 	if fromNowItem > 800 { // 大于 800 条就从历史接口提取数据
-		path = "/api/v5/market/history-index-candles"
+		path = "/api/v5/market/history-candles"
 	}
 
 	var DataMap = map[string]any{
@@ -81,6 +81,22 @@ func GetKline(opt GetKlineOpt) (resData []byte, resErr error) {
 
 	// 从 大 -> 小
 	m_file.Write(global.Path.Okx.Dir+"/kline.json", m_json.JsonFormat(resData))
+
+	/*
+
+		[
+			"1687565880000",
+			"30633.5",
+			"30637.6",
+			"30620",
+			"30626",
+			"3.97909485",
+			"121880.586345833",
+			"121880.586345833",
+			"1"
+		],
+
+	*/
 
 	return
 }

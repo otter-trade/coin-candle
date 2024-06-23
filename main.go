@@ -28,7 +28,7 @@ func main() {
 	_, errOkx := okx.GetKline(okx.GetKlineOpt{
 		Okx_instId: "BTC-USDT",
 		Bar:        "1m",
-		Before:     m_time.GetUnixInt64() - m_time.UnixTimeInt64.Day*1, // 一天前
+		Before:     m_time.GetUnixInt64() - m_time.UnixTimeInt64.Day*365, // 一年前
 	})
 
 	fmt.Println("errOkx", errOkx)
@@ -36,7 +36,7 @@ func main() {
 	_, errBinance := binance.GetKline(binance.GetKlineOpt{
 		Binance_symbol: "BTCUSDT",
 		Bar:            "1m",
-		Before:         m_time.GetUnixInt64() - m_time.UnixTimeInt64.Day*1, // 一天前
+		Before:         m_time.GetUnixInt64() - m_time.UnixTimeInt64.Day*365, // 一年前
 	})
 
 	fmt.Println("errBinance", errBinance)

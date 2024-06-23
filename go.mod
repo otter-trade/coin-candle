@@ -2,7 +2,10 @@ module coin-candle
 
 go 1.22.4
 
-require github.com/handy-golang/go-tools v1.0.1
+require (
+	github.com/handy-golang/go-tools v1.0.1
+	github.com/json-iterator/go v1.1.12
+)
 
 require (
 	github.com/PuerkitoBio/goquery v1.9.2 // indirect
@@ -17,7 +20,6 @@ require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/klauspost/compress v1.17.8 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect

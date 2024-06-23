@@ -3,8 +3,8 @@ package binance
 import (
 	"coin-candle/global"
 	"fmt"
-	"strings"
 
+	"github.com/handy-golang/go-tools/m_count"
 	"github.com/handy-golang/go-tools/m_fetch"
 	"github.com/handy-golang/go-tools/m_json"
 	jsoniter "github.com/json-iterator/go"
@@ -33,27 +33,46 @@ func GetTicker() (resData []global.BinanceTickerType, resErr error) {
 		return
 	}
 	resData = result
-	SetInstID(resData)
-
 	return
 }
 
-func SetInstID(data []global.BinanceTickerType) (TickerList []global.BinanceTickerType) {
+// 成交量排序
+func VolumeSort(arr []global.BinanceTickerType) []global.BinanceTickerType {
+	size := len(arr)
+	list := make([]global.BinanceTickerType, size)
+	copy(list, arr)
 
-	// var list []global.BinanceTickerType
-	for _, val := range data {
-		find := strings.Contains(val.Symbol, global.SystemSettleCcy)
-		if find {
-			InstID := strings.Replace(val.Symbol, global.SystemSettleCcy, "-"+global.SystemSettleCcy, 1)
-
-			fmt.Println(111, InstID)
-			// SPOT := okxInfo.Inst[InstID]
-			// val.InstID = SPOT.InstID
-			// if len(SPOT.Symbol) > 3 {
-			// 	list = append(list, val)
-			// }
+	var swapped bool
+	for i := size - 1; i > 0; i-- {
+		swapped = false
+		for j := 0; j < i; j++ {
+			a := list[j+1].QuoteVolume
+			b := list[j].QuoteVolume
+			if m_count.Le(a, b) < 0 {
+				list[j], list[j+1] = list[j+1], list[j]
+				swapped = true
+			}
+		}
+		if !swapped {
+			break
 		}
 	}
+	return list
+}
 
-	return
+// 翻转数组
+func Reverse(arr []global.BinanceTickerType) []global.BinanceTickerType {
+	list := make(
+		[]global.BinanceTickerType,
+		len(arr),
+		len(arr)*2,
+	)
+
+	j := 0
+	for i := len(arr) - 1; i > -1; i-- {
+		list[j] = arr[i]
+		j++
+	}
+
+	return list
 }

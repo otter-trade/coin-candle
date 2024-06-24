@@ -133,18 +133,14 @@ func GetKlineFilePath(opt GetKlineFilePathOpt) (resData []SendKlineRequestOpt) {
 		}
 
 		// 计算最多遍历多少次 MaxLoop = Limit / 100  + 2 （前后时间拢余都算上）
-		var MaxLoop = 10 //  Limit 最大 500  , 所以遍历次数最大 10
+		var MaxLoop = global.KlineMaxLimit/global.ExchangeKlineLimit + 2
 
-		// 计算请求列表
+		// 计算要发送的请求列表
 		SendKlineRequestOptList := []SendKlineRequestOpt{}
-
 		for i := 0; i < MaxLoop; i++ {
-			var timeUnix = Before_Time - opt.BarObj.Interval*int64(i*global.ExchangeKlineLimit) // 最初的时间 挨个递减 条
-			year_month := m_time.MsToTime(opt.EndTime, "0").Format(m_str.Join(
-				"2006", os.PathSeparator,
-				"01", os.PathSeparator,
-				"02", os.PathSeparator,
-			))
+			var fileInterval = opt.BarObj.Interval * global.ExchangeKlineLimit
+			var timeUnix = Before_Time - fileInterval*int64(i) // 最初的时间 挨个递减 条
+			year_month := m_time.MsToTime(opt.EndTime, "0").Format("2006-01")
 
 			var SendKlineRequestOpt = SendKlineRequestOpt{
 				GoodsId: opt.Goods.GoodsId,
@@ -154,19 +150,24 @@ func GetKlineFilePath(opt GetKlineFilePathOpt) (resData []SendKlineRequestOpt) {
 					Dir,
 					os.PathSeparator,
 					year_month, // 年月
+					os.PathSeparator,
 					timeUnix, ".json",
 				),
 			}
+
 			// 币安
 			if exchange == global.ExchangeOpt[0] {
 				SendKlineRequestOpt.Binance_symbol = opt.Goods.BinanceInfo.Symbol
+
+				fmt.Println("timeUnix", m_time.UnixFormat(timeUnix), "opt.StartTime", m_time.UnixFormat(opt.StartTime))
+
 			}
 			// 欧意
 			if exchange == global.ExchangeOpt[1] {
 				SendKlineRequestOpt.Okx_instId = opt.Goods.Okx_SPOT_Info.InstID
 			}
 			SendKlineRequestOptList = append(SendKlineRequestOptList, SendKlineRequestOpt)
-			if timeUnix < opt.StartTime {
+			if timeUnix-fileInterval < opt.StartTime {
 				break
 			}
 		}
@@ -257,15 +258,18 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 // 获取目录时间戳列表 并排序
 func FindFileTime(opt GetKlineFilePathOpt) (resData int64) {
 
-	// 用户时间和基准时间差值
-	var diffTime int64
+	// 文件之间的时间间隔
+	var fileInterval = opt.BarObj.Interval * global.ExchangeKlineLimit
+
+	// 计算用户和基准时间之间的差值
+	var maxFileTime int64
 	if opt.EndTime > global.FileNameBaseTime {
-		diffTime = opt.EndTime - global.FileNameBaseTime
+		var diffLimit = (opt.EndTime-global.FileNameBaseTime)/fileInterval + 1
+		maxFileTime = global.FileNameBaseTime + (diffLimit * fileInterval) //加文件间隔
 	} else {
-		diffTime = global.FileNameBaseTime - opt.EndTime
+		var diffLimit = (global.FileNameBaseTime-opt.EndTime)/fileInterval + 1
+		maxFileTime = global.FileNameBaseTime - (diffLimit * fileInterval) //减文件间隔
 	}
 
-	fmt.Println("基准时间差", diffTime)
-
-	return
+	return maxFileTime
 }

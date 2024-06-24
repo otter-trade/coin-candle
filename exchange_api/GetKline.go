@@ -9,7 +9,6 @@ import (
 	"os"
 
 	"github.com/handy-golang/go-tools/m_file"
-	"github.com/handy-golang/go-tools/m_json"
 	"github.com/handy-golang/go-tools/m_path"
 	"github.com/handy-golang/go-tools/m_str"
 	"github.com/handy-golang/go-tools/m_time"
@@ -88,12 +87,13 @@ func GetKline(opt global.GetKlineOpt) (resData []global.KlineType, resErr error)
 
 	for _, item := range SendParamList {
 
-		m_json.Println(item)
-		// kline, err := SendKlineRequest(item)
-		// if err != nil {
-		// 	resErr = err
-		// 	return
-		// }
+		kline, err := SendKlineRequest(item)
+		if err != nil {
+			resErr = err
+			return
+		}
+
+		fmt.Println("kline", item.Okx_instId, item.Binance_symbol, len(kline))
 	}
 
 	return
@@ -143,7 +143,7 @@ func GetKlineFilePath(opt GetKlineFilePathOpt) (resData []SendKlineRequestOpt) {
 		} else {
 			// 有文件则找到那个 最接近  opt.EndTime 的文件
 			for _, file := range files {
-				m_json.Println(file)
+				fmt.Println("fileList", file.Name())
 			}
 		}
 
@@ -152,10 +152,13 @@ func GetKlineFilePath(opt GetKlineFilePathOpt) (resData []SendKlineRequestOpt) {
 
 		// 计算请求列表
 		SendKlineRequestOptList := []SendKlineRequestOpt{}
+
 		for i := 0; i < MaxLoop; i++ {
 			var timeUnix = Before_original - opt.BarObj.Interval*int64(i*100) // 最初的时间 挨个递减100 条
 			year_month := m_time.MsToTime(timeUnix, "0").Format("2006-01")
+
 			var SendKlineRequestOpt = SendKlineRequestOpt{
+				GoodsId: opt.Goods.GoodsId,
 				EndTime: timeUnix,           // 发出请求的时间
 				Bar:     opt.BarObj.DirName, // 发出请求的时间间隔
 				StoreFilePath: m_str.Join( // 请求来的数据应当存放的目录
@@ -186,6 +189,7 @@ func GetKlineFilePath(opt GetKlineFilePathOpt) (resData []SendKlineRequestOpt) {
 }
 
 type SendKlineRequestOpt struct {
+	GoodsId        string `json:"GoodsId"`
 	Okx_instId     string `json:"Okx_instId"` // 和 Binance_symbol 二选一
 	Binance_symbol string `json:"Binance_symbol"`
 	Bar            string `json:"Bar"`
@@ -230,7 +234,6 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 			return
 		}
 		resData = fetchData
-
 	}
 
 	if len(opt.Binance_symbol) > 2 {

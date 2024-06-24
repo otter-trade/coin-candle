@@ -58,18 +58,18 @@ func Start() {
 	// fmt.Println("Ticker", Ticker)
 
 	// ####### K线数据 #######
-	// time := m_time.TimeParse(m_time.LaySP_ss, "2023-05-06 18:56:43")
-	// kline, err := exchange_api.GetKline(global.GetKlineOpt{
-	// 	GoodsId:  "BTC-USDT",
-	// 	Bar:      "1m",
-	// 	EndTime:  time, // 一年前
-	// 	Limit:    382,
-	// 	Exchange: []string{"okx", "binance"},
-	// })
+	time := m_time.TimeParse(m_time.LaySP_ss, "2023-05-06 18:56:43")
+	kline, err := exchange_api.GetKline(global.GetKlineOpt{
+		GoodsId:  "BTC-USDT",
+		Bar:      "1m",
+		EndTime:  time, // 一年前
+		Limit:    382,
+		Exchange: []string{"okx", "binance"},
+	})
 
-	// fmt.Println("kline", kline, err)
+	fmt.Println("kline", kline, err)
 
-	KlineActionTest()
+	// KlineActionTest()
 }
 
 func KlineActionTest() {

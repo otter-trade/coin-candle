@@ -39,23 +39,23 @@ func GetKline(opt global.GetKlineOpt) (resData []global.KlineType, resErr error)
 		return
 	}
 
-	// Limit 缺省值
+	// Limit 缺省值 10 条不能再多了
 	Limit := 10
-	if opt.Limit > 1 && opt.Limit < 500 {
+	if opt.Limit > 0 && opt.Limit < global.KlineMaxLimit {
 		Limit = opt.Limit
 	} else {
-		resErr = fmt.Errorf("Limit必须为1-500的正整数")
+		resErr = fmt.Errorf("参数 Limit 必须为 1-%+v 的正整数", global.KlineMaxLimit)
 		return
 	}
 
 	// EndTime 缺省值
 	now := m_time.GetUnixInt64()
 	EndTime := now
-	// 时间 传入的时间戳 必须大于6年前 才有效，否则等价与当前时间戳
-	if opt.EndTime > now-m_time.UnixTimeInt64.Day*2190 {
+	// 时间 传入的时间戳 必须大于最早时间才有效否则重置为当 now
+	if opt.EndTime > global.TimeOldest {
 		EndTime = opt.EndTime
 	}
-	// 计算出起止时间  // 结束时间 - 时间间隔 * 条数
+	// 计算起始时间  //  结束时间 - 时间间隔 * 条数
 	StartTime := EndTime - BarObj.Interval*int64(Limit)
 
 	// Exchange 缺省值, 过滤有效值
@@ -115,14 +115,16 @@ func GetKlineFilePath(opt GetKlineFilePathOpt) (resData []SendKlineRequestOpt) {
 		var Dir = m_str.Join(
 			global.Path.DataPath,
 			os.PathSeparator,
-			exchange, // 统一采用 按照交易所分开填写
+			exchange, // 按照交易所名称分开存储
 			os.PathSeparator,
 			opt.Goods.GoodsId, // 统一采用 GoodsId 作为目录
 			os.PathSeparator,
-			opt.BarObj.Binance, // 统一采用小写作为目录
+			opt.BarObj.DirName, // 时间间隔
 		)
 		/*
-			以月份为目录，最多遍历 400 次
+			以年份为目录，最多遍历 366*24*60/100= 5270 遍; 以年-月为目录，最多遍历
+			366*24*60/100= 432 遍
+			10 倍搜索效率的优化
 		*/
 		year_month := m_time.MsToTime(opt.EndTime, "0").Format("2006-01")
 		findDir := m_str.Join(
@@ -135,18 +137,14 @@ func GetKlineFilePath(opt GetKlineFilePathOpt) (resData []SendKlineRequestOpt) {
 		var Before_original int64
 		// 读取目录下的文件列表
 		files, _ := os.ReadDir(findDir)
-
-		fmt.Println(111, files)
 		if len(files) < 1 {
 			// 目录下没有文件,则以 EndTime 作为Before_original
 			Before_original = opt.EndTime
 		} else {
 			// 有文件则找到那个 最接近  opt.EndTime 的文件
-
 			for _, file := range files {
 				m_json.Println(file)
 			}
-
 		}
 
 		// 计算最多遍历多少次 MaxLoop = Limit / 100（请求时的固定条目） + 2 （前后时间拢余都算上）
@@ -155,15 +153,15 @@ func GetKlineFilePath(opt GetKlineFilePathOpt) (resData []SendKlineRequestOpt) {
 		// 计算请求列表
 		SendKlineRequestOptList := []SendKlineRequestOpt{}
 		for i := 0; i < MaxLoop; i++ {
-			var timeUnix = Before_original - opt.BarObj.Interval*int64(i)*100
-			year := m_time.MsToTime(timeUnix, "0").Format("2006")
+			var timeUnix = Before_original - opt.BarObj.Interval*int64(i*100) // 最初的时间 挨个递减100 条
+			year_month := m_time.MsToTime(timeUnix, "0").Format("2006-01")
 			var SendKlineRequestOpt = SendKlineRequestOpt{
-				EndTime: timeUnix,
-				Bar:     opt.BarObj.Binance, //内部会进行处理
-				StoreFilePath: m_str.Join(
+				EndTime: timeUnix,           // 发出请求的时间
+				Bar:     opt.BarObj.DirName, // 发出请求的时间间隔
+				StoreFilePath: m_str.Join( // 请求来的数据应当存放的目录
 					Dir,
 					os.PathSeparator,
-					year, // 年份
+					year_month, // 年月
 					os.PathSeparator,
 					timeUnix, ".json",
 				),
@@ -211,7 +209,7 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 		if err != nil {
 			global.LogErr("exchange_api.SendKlineRequest 文件解析失败,将重新获取并覆盖", opt.StoreFilePath)
 		} else {
-			if len(kline) == 100 { // 数据解析成功并返回
+			if len(kline) == 100 { //数据解析成功并返回
 				resData = kline
 				global.RunLog.Println("已从本地文件中返回数据", opt.StoreFilePath)
 				return
@@ -232,6 +230,7 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 			return
 		}
 		resData = fetchData
+
 	}
 
 	if len(opt.Binance_symbol) > 2 {

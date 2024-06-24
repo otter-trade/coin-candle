@@ -7,8 +7,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/handy-golang/go-tools/m_file"
+	"github.com/handy-golang/go-tools/m_json"
 	"github.com/handy-golang/go-tools/m_path"
 	"github.com/handy-golang/go-tools/m_str"
 	"github.com/handy-golang/go-tools/m_time"
@@ -223,6 +225,7 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 		}
 	}
 
+	writeDir, _ := filepath.Split(opt.StoreFilePath) //  解析写入的目录
 	if len(opt.Okx_instId) > 2 {
 		fetchData, err := okx.GetKline(okx.GetKlineOpt{
 			Okx_instId: opt.Okx_instId,
@@ -234,6 +237,13 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 			return
 		}
 		resData = fetchData
+		writeFilePath := m_str.Join(
+			writeDir,
+			os.PathSeparator,
+			resData[len(resData)-1][0], // 按照最后一条数据的时间戳进行文件命名
+			".json",
+		)
+		m_file.WriteByte(writeFilePath, m_json.ToJson(fetchData))
 	}
 
 	if len(opt.Binance_symbol) > 2 {
@@ -247,6 +257,13 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 			return
 		}
 		resData = fetchData
+		writeFilePath := m_str.Join(
+			writeDir,
+			os.PathSeparator,
+			resData[len(resData)-1][0], // 按照最后一条数据的时间戳进行文件命名
+			".json",
+		)
+		m_file.WriteByte(writeFilePath, m_json.ToJson(fetchData))
 	}
 
 	return

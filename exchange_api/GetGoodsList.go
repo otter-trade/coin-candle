@@ -13,11 +13,38 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
-var CoinStatusErrTemp = `
-${InstID} OkxState:${OkxState} BinanceStatus:${BinanceStatus}`
+// 读取 GoodsList
+func GetGoodsList() (resData []global.GoodsType, resErr error) {
+
+	resData = nil
+	resErr = nil
+
+	var fileData = m_file.ReadFile(global.Path.GoodsListFile)
+	if len(fileData) < 2 {
+		resErr = fmt.Errorf("文件读取失败: %s", global.Path.GoodsListFile)
+		return
+	}
+	var GoodsListData []global.GoodsType
+	jsoniter.Unmarshal(fileData, &GoodsListData)
+	if len(GoodsListData) < 10 {
+		resErr = fmt.Errorf("错误:结果返回不正确 %+v", m_json.ToStr(GoodsListData))
+		return
+	}
+	resData = GoodsListData
+
+	// 如果没有初始化 global.GoodsMap
+	if len(global.GoodsMap) < 10 {
+		UpdateGoodsMap(resData)
+	}
+
+	return
+}
 
 // 更新 GoodsList 至本地
 func UpdateLocalGoodsList() {
+
+	var CoinStatusErrTemp = `
+${InstID} OkxState:${OkxState} BinanceStatus:${BinanceStatus}`
 
 	binanceGoodsList, err := binance.GetGoodsList()
 	if err != nil {
@@ -140,38 +167,12 @@ func UpdateLocalGoodsList() {
 	}
 }
 
+// 将数据更新至内存中
 func UpdateGoodsMap(GoodsList []global.GoodsType) {
 	global.GoodsMap = make(map[string]global.GoodsType)
 	for _, item := range GoodsList {
 		global.GoodsMap[item.GoodsId] = item
 	}
-}
-
-// 读取 GoodsList
-func GetGoodsList() (resData []global.GoodsType, resErr error) {
-
-	resData = nil
-	resErr = nil
-
-	var fileData = m_file.ReadFile(global.Path.GoodsListFile)
-	if len(fileData) < 2 {
-		resErr = fmt.Errorf("文件读取失败: %s", global.Path.GoodsListFile)
-		return
-	}
-	var GoodsListData []global.GoodsType
-	jsoniter.Unmarshal(fileData, &GoodsListData)
-	if len(GoodsListData) < 10 {
-		resErr = fmt.Errorf("错误:结果返回不正确 %+v", m_json.ToStr(GoodsListData))
-		return
-	}
-	resData = GoodsListData
-
-	// 如果没有初始化 global.GoodsMap
-	if len(global.GoodsMap) < 10 {
-		UpdateGoodsMap(resData)
-	}
-
-	return
 }
 
 // 读取商品详情

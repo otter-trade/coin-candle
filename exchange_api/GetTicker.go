@@ -4,15 +4,60 @@ import (
 	"coin-candle/exchange_api/binance"
 	"coin-candle/exchange_api/okx"
 	"coin-candle/global"
+	"fmt"
 	"os"
 	"time"
 
 	"github.com/handy-golang/go-tools/m_count"
 	"github.com/handy-golang/go-tools/m_file"
 	"github.com/handy-golang/go-tools/m_json"
+	"github.com/handy-golang/go-tools/m_path"
 	"github.com/handy-golang/go-tools/m_str"
 	"github.com/handy-golang/go-tools/m_time"
+	jsoniter "github.com/json-iterator/go"
 )
+
+func GetTickerPath() string {
+	// 相当于保留每天的榜单数据
+	var timeDay = time.Now().Format("2006-01-02")
+	var filePath = m_str.Join(
+		global.Path.DataPath,
+		os.PathSeparator,
+		"ticker-",
+		timeDay,
+		".json",
+	)
+	return filePath
+}
+
+func GetTickerList() (resData []global.TickerType, resErr error) {
+	resData = nil
+	resErr = nil
+
+	var filePath = GetTickerPath()
+
+	// 如果该文件不存在
+	if !m_path.Exists(filePath) {
+		UpdateLocalGoodsList()
+	}
+
+	var fileData = m_file.ReadFile(filePath)
+	if len(fileData) < 2 {
+		resErr = fmt.Errorf("文件读取失败: %s", filePath)
+		return
+	}
+
+	var TickerList []global.TickerType
+	jsoniter.Unmarshal(fileData, &TickerList)
+	if len(TickerList) < 10 {
+		resErr = fmt.Errorf("错误:结果返回不正确 %+v", m_json.ToStr(TickerList))
+		return
+	}
+
+	resData = TickerList
+
+	return
+}
 
 // 更新本地榜单数据
 func UpdateLocalTicker() {
@@ -45,17 +90,10 @@ func UpdateLocalTicker() {
 
 	VolumeSortList := SortVolume(tickerList) // 按照成交量排序
 
-	var timeDay = time.Now().Format("2006-01-02")
-	var fileName = m_str.Join(
-		global.Path.DataPath,
-		os.PathSeparator,
-		"ticker-",
-		timeDay,
-		".json",
-	)
+	var filePath = GetTickerPath()
 
-	m_file.WriteByte(fileName, m_json.ToJson(VolumeSortList))
-	global.RunLog.Println("交易所榜单更新完成", fileName)
+	m_file.WriteByte(filePath, m_json.ToJson(VolumeSortList))
+	global.RunLog.Println("交易所榜单更新完成", filePath)
 }
 
 type TickerMixOpt struct {

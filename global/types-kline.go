@@ -9,6 +9,7 @@ import (
 // 系统支持的 Bar
 type KlineBarType struct {
 	Interval int64  // 每一条数据之间间隔的毫秒数
+	DirName  string // 数据存储目录的值
 	Okx      string // Okx 的参数值
 	Binance  string // Binance 的参数值
 }
@@ -16,26 +17,31 @@ type KlineBarType struct {
 var KlineBarOpt = map[string]KlineBarType{
 	"1m": {
 		Interval: m_time.UnixTimeInt64.Minute * 1,
+		DirName:  "1m",
 		Okx:      "1m",
 		Binance:  "1m",
 	},
 	"5m": {
 		Interval: m_time.UnixTimeInt64.Minute * 5,
+		DirName:  "1m",
 		Okx:      "5m",
 		Binance:  "5m",
 	},
 	"15m": {
 		Interval: m_time.UnixTimeInt64.Minute * 15,
+		DirName:  "1m",
 		Okx:      "15m",
 		Binance:  "15m",
 	},
 	"30m": {
 		Interval: m_time.UnixTimeInt64.Minute * 30,
+		DirName:  "1m",
 		Okx:      "30m",
 		Binance:  "30m",
 	},
 	"1h": {
 		Interval: m_time.UnixTimeInt64.Hour * 1,
+		DirName:  "1m",
 		Okx:      "1H",
 		Binance:  "1h",
 	},
@@ -75,3 +81,5 @@ type KlineType struct {
 }
 
 type KlineSimpType [7]string // TimeUnix,O,H,L,C,V,Q
+
+const SendEndTimeFix = 1000 //K线的结束时间修订 1 秒钟，考虑到网络延迟以及交易所不同标准的修订问题

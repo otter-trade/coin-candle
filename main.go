@@ -2,17 +2,20 @@ package main
 
 import (
 	"coin-candle/exchange_api"
+	"coin-candle/exchange_api/binance"
+	"coin-candle/exchange_api/okx"
 	"coin-candle/global"
 	"fmt"
 	"time"
 
 	"github.com/handy-golang/go-tools/m_cycle"
+	"github.com/handy-golang/go-tools/m_file"
+	"github.com/handy-golang/go-tools/m_json"
 	"github.com/handy-golang/go-tools/m_time"
 )
 
 func main() {
 	Start()
-	Api()
 }
 
 func Start() {
@@ -54,20 +57,41 @@ func Start() {
 	// }
 	// fmt.Println("GoodsDetail", GoodsDetail)
 
-}
+	// time := m_time.TimeParse(m_time.LaySP_ss, "2023-05-06 18:56:43")
 
-func Api() {
+	// kline, err := exchange_api.GetKline(global.GetKlineOpt{
+	// 	GoodsId:  "BTC-USDT",
+	// 	Bar:      "1m",
+	// 	EndTime:  time, // 一年前
+	// 	Limit:    382,
+	// 	Exchange: []string{"okx", "binance"},
+	// })
 
-	time := m_time.TimeParse(m_time.LaySP_ss, "2023-05-06 18:56:43")
+	// fmt.Println("kline", kline, err)
 
-	kline, err := exchange_api.GetKline(global.GetKlineOpt{
-		GoodsId:  "BTC-USDT",
-		Bar:      "1m",
-		EndTime:  time, // 一年前
-		Limit:    382,
-		Exchange: []string{"okx", "binance"},
+	// ########### 来检测数据一致性吧 ###########
+
+	time := m_time.TimeParse(m_time.LaySP_ss, "2023-01-01 00:00:00")
+	okxKline, err := okx.GetKline(okx.GetKlineOpt{
+		Okx_instId: "BTC-USDT",
+		Bar:        "1m",
+		EndTime:    time,
 	})
+	if err != nil {
+		fmt.Println("okx Err:", err)
+	}
+	fmt.Println("数据获取成功", len(okxKline), err)
+	m_file.WriteByte(global.Path.Okx.Dir+"/kline.json", m_json.ToJson(okxKline))
 
-	fmt.Println("kline", kline, err)
+	binanceKline, err := binance.GetKline(binance.GetKlineOpt{
+		Binance_symbol: "BTCUSDT",
+		Bar:            "1m",
+		EndTime:        time,
+	})
+	if err != nil {
+		fmt.Println("binance Err:", err)
+	}
+	fmt.Println("数据获取成功", len(binanceKline), err)
+	m_file.WriteByte(global.Path.Binance.Dir+"/kline.json", m_json.ToJson(binanceKline))
 
 }

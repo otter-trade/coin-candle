@@ -14,7 +14,7 @@ import (
 type GetKlineOpt struct {
 	Okx_instId string `json:"Okx_instId"`
 	Bar        string `json:"Bar"`
-	EndTime    int64  `json:"EndTime"`
+	EndTime    int64  `json:"EndTime"` // 毫秒
 }
 
 /*
@@ -26,12 +26,13 @@ type GetKlineOpt struct {
 	fmt.Println(resData, err)
 */
 
-type OkxKlineType [9]string
 type KlineReqType struct {
 	Code string         `json:"Code"`
 	Data []OkxKlineType `json:"Data"`
 	Msg  string         `json:"Msg"`
 }
+
+type OkxKlineType [9]string
 
 func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 
@@ -54,23 +55,23 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 
 	// 当前时间
 	now := m_time.GetUnixInt64()
-	EndTime := now
-	// 时间 传入的时间戳 必须大于6年前 才有效
-	if opt.EndTime > now-m_time.UnixTimeInt64.Day*2190 {
-		EndTime = opt.EndTime
-	}
+	// EndTime := now
+	// // 时间 传入的时间戳 必须大于6年前 才有效
+	// if opt.EndTime > now-m_time.UnixTimeInt64.Day*2190 {
+	EndTime := opt.EndTime
+	// }
 
 	path := "/api/v5/market/candles"
 	// 当前时间 - 之前的时间 / 时间间隔 = 距离当前的历史条目
 	fromNowItem := (now - EndTime) / BarObj.Interval
-	if fromNowItem > 800 { // 大于 800 条就从历史接口提取数据
+	if fromNowItem > 300 { // 大于 300 条就从历史接口提取数据
 		path = "/api/v5/market/history-candles"
 	}
 
 	var DataMap = map[string]any{
 		"instId": opt.Okx_instId,
 		"bar":    BarObj.Okx,
-		"after":  m_str.ToStr(EndTime),
+		"after":  m_str.ToStr(EndTime + global.SendEndTimeFix), // 请求的时间 + 3 秒 进行修正
 		"limit":  limit,
 	}
 

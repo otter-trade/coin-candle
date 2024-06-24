@@ -63,7 +63,7 @@ type GetKlineOpt struct {
 	GoodsId  string   `json:"GoodsId"`  // 商品ID , 必传
 	Bar      string   `json:"Bar"`      // K 线之间的间隔; 允许值: global.KlineBarOpt
 	EndTime  int64    `json:"EndTime"`  // K 线的结束时间; 允许值: 13 位毫秒时间戳, 若时间无效，则为当前时间。
-	Limit    int      `json:"Limit"`    // 获取数据的总条目; 允许值: 1-500 缺省值 100
+	Limit    int      `json:"Limit"`    // 获取数据的总条目; 允许值: 1~KlineMaxLimit 缺省值 KlineLimitDefault
 	Exchange []string `json:"Exchange"` // 交易所名称列表; 允许值: global.ExchangeOpt , 缺省值 okx
 }
 
@@ -82,9 +82,16 @@ type KlineType struct {
 
 type KlineSimpType [7]string // TimeUnix,O,H,L,C,V,Q
 
-const SendEndTimeFix = 3 //K线的结束时间修订 3 毫秒，考虑到网络延迟以及交易所不同标准的修订问题
+const SendEndTimeFix = 30 // 请求 K线 时的时间戳修订 30 毫秒，考虑到网络延迟以及交易所不同标准的修订问题，不影响实盘实时数据的正常值
 
-// 如果小于  2018-01-11 22:00:00 这个时间，则交易所数据就不全了 ， 这里将合法的最小时间定为 2018-03-01
+// 如果小于  2018-01-11 22:00:00 这个时间，则交易所数据就不全了， 这里将合法的最小时间定为 2018-03-01
 var TimeOldest = m_time.TimeParse(m_time.LaySP_ss, "2018-03-01 00:00:00")
 
-var KlineMaxLimit = 500 // 请求 K线时 最大的 Limit
+const KlineMaxLimit = 500 // 请求 K线时 最大的 Limit
+
+const KlineLimitDefault = 10 // 请求 K线时 缺省的 Limit
+
+const ExchangeKlineLimit = 100 // 交易所拿取K线的最大值
+
+// 文件名基准时间
+var FileNameBaseTime = m_time.TimeParse(m_time.LaySP_ss, "2024-05-20 00:00:00")

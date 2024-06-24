@@ -43,8 +43,8 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 		return
 	}
 
-	// limit 固定为 100
-	limit := 100
+	// limit 固定为 global.ExchangeKlineLimit
+	limit := global.ExchangeKlineLimit
 
 	// 当前时间
 	now := m_time.GetUnixInt64()

@@ -18,12 +18,12 @@ type GetKlineOpt struct {
 }
 
 /*
-	resData, err := okx.GetKline(global.GetOkxKlineOpt{
+	time := m_time.TimeParse(m_time.LaySP_ss, "2018-01-11 22:00:00")
+	okxKline, err := okx.GetKline(okx.GetKlineOpt{
 		Okx_instId: "BTC-USDT",
 		Bar:        "1m",
-		EndTime:     m_time.GetUnixInt64() - m_time.UnixTimeInt64.Day*1, // 一天前的时间戳
+		EndTime:    time,
 	})
-	fmt.Println(resData, err)
 */
 
 type KlineReqType struct {
@@ -55,11 +55,11 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 
 	// 当前时间
 	now := m_time.GetUnixInt64()
-	// EndTime := now
-	// // 时间 传入的时间戳 必须大于6年前 才有效
-	// if opt.EndTime > now-m_time.UnixTimeInt64.Day*2190 {
-	EndTime := opt.EndTime
-	// }
+	EndTime := now
+	// 时间 传入的时间戳 必须大于6年前 才有效 ，否则重置为当前时间
+	if opt.EndTime > now-m_time.UnixTimeInt64.Day*2190 {
+		EndTime = opt.EndTime
+	}
 
 	path := "/api/v5/market/candles"
 	// 当前时间 - 之前的时间 / 时间间隔 = 距离当前的历史条目
@@ -71,7 +71,7 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 	var DataMap = map[string]any{
 		"instId": opt.Okx_instId,
 		"bar":    BarObj.Okx,
-		"after":  m_str.ToStr(EndTime + global.SendEndTimeFix), // 请求的时间 + 3 秒 进行修正
+		"after":  m_str.ToStr(EndTime + global.SendEndTimeFix), // 需要修正请求时间戳
 		"limit":  limit,
 	}
 
@@ -87,6 +87,22 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 		return
 	}
 
+	/*
+		开始时间 从 大 -> 小
+		[
+			"1687565880000",  开始时间 0
+			"30633.5",  开盘价格  1
+			"30637.6",  最高价格  2
+			"30620",  最低价格 3
+			"30626",  收盘价格 4
+			"3.97909485",  交易量 以张为单位 5
+			"121880.586345833",  交易量，以币为单位 6
+			"121880.586345833",  交易量，以计价货币为单位  单位均是USDT  7
+			"1"
+		],
+
+	*/
+
 	var result KlineReqType
 	jsoniter.Unmarshal(fetchData, &result)
 	if result.Code != "0" {
@@ -94,24 +110,8 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 		return
 	}
 
-	/*
-		开始时间 从 大 -> 小
-			[
-				"1687565880000",  开始时间 0
-				"30633.5",  开盘价格  1
-				"30637.6",  最高价格  2
-				"30620",  最低价格 3
-				"30626",  收盘价格 4
-				"3.97909485",  交易量 以张为单位 5
-				"121880.586345833",  交易量，以币为单位 6
-				"121880.586345833",  交易量，以计价货币为单位  单位均是USDT  7
-				"1"
-			],
-
-	*/
-
 	if len(result.Data) < 1 {
-		resErr = fmt.Errorf("错误:K线长度不正确: %+v", len(result.Data))
+		resErr = fmt.Errorf("错误:K线长度不正确: %+v", m_json.ToStr(fetchData))
 		return
 	}
 

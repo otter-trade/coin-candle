@@ -82,4 +82,4 @@ type KlineType struct {
 
 type KlineSimpType [7]string // TimeUnix,O,H,L,C,V,Q
 
-const SendEndTimeFix = 1000 //K线的结束时间修订 1 秒钟，考虑到网络延迟以及交易所不同标准的修订问题
+const SendEndTimeFix = 1 //K线的结束时间修订 1 毫秒，考虑到网络延迟以及交易所不同标准的修订问题

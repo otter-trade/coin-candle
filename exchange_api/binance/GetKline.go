@@ -18,10 +18,12 @@ type GetKlineOpt struct {
 }
 
 /*
-	resData, err  := binance.GetKline(binance.GetKlineOpt{
+time := m_time.TimeParse(m_time.LaySP_ss, "2018-01-11 22:00:00")
+
+	binanceKline, err := binance.GetKline(binance.GetKlineOpt{
 		Binance_symbol: "BTCUSDT",
 		Bar:            "1m",
-		EndTime:         m_time.GetUnixInt64() - m_time.UnixTimeInt64.Day*365, // 一年前
+		EndTime:        time,
 	})
 */
 type BinanceKlineType [12]any
@@ -44,17 +46,17 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 	// limit 固定为 100
 	limit := 100
 	// 当前时间
-	// now := m_time.GetUnixInt64()
-	// EndTime := now
-	// // 时间 传入的时间戳 必须大于6年前 才有效
-	// if opt.EndTime > now-m_time.UnixTimeInt64.Day*2190 {
-	EndTime := opt.EndTime
-	// }
+	now := m_time.GetUnixInt64()
+	EndTime := now
+	// 时间 传入的时间戳 必须大于6年前 才有效
+	if opt.EndTime > now-m_time.UnixTimeInt64.Day*2190 {
+		EndTime = opt.EndTime
+	}
 
 	var DataMap = map[string]any{
 		"symbol":   opt.Binance_symbol,
 		"interval": BarObj.Binance,
-		"endTime":  m_str.ToStr(EndTime + global.SendEndTimeFix), // 请求的时间 + 3 秒 进行修正
+		"endTime":  m_str.ToStr(EndTime + global.SendEndTimeFix), // 需要修正请求时间戳
 		"limit":    limit,
 	}
 
@@ -92,7 +94,7 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 	jsoniter.Unmarshal(fetchData, &listStr)
 
 	if len(listStr) < 1 {
-		resErr = fmt.Errorf("错误:K线长度不正确: %+v", len(listStr))
+		resErr = fmt.Errorf("错误:K线长度不正确: %+v", m_json.ToStr(fetchData))
 		return
 	}
 

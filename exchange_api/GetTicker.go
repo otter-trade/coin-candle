@@ -37,7 +37,7 @@ func GetTickerList() (resData []global.TickerType, resErr error) {
 	var filePath = GetTickerPath()
 
 	// 如果该文件不存在
-	if !m_path.Exists(filePath) {
+	if !m_path.IsExist(filePath) {
 		UpdateLocalGoodsList()
 	}
 

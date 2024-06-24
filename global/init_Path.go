@@ -42,7 +42,7 @@ func init_Path(opt SysInitOpt) {
 		)
 	}
 	// 不存在则新建
-	isLogoPath := m_path.Exists(Path.LogPath)
+	isLogoPath := m_path.IsExist(Path.LogPath)
 	if !isLogoPath {
 		os.MkdirAll(Path.LogPath, os.ModePerm)
 	}
@@ -58,7 +58,7 @@ func init_Path(opt SysInitOpt) {
 		)
 	}
 	// 不存在则新建
-	isDataPath := m_path.Exists(Path.DataPath)
+	isDataPath := m_path.IsExist(Path.DataPath)
 	if !isDataPath {
 		os.MkdirAll(Path.DataPath, os.ModePerm)
 	}
@@ -69,7 +69,7 @@ func init_Path(opt SysInitOpt) {
 		os.PathSeparator,
 		ExchangeOpt[0],
 	)
-	if !m_path.Exists(Path.Binance.Dir) {
+	if !m_path.IsExist(Path.Binance.Dir) {
 		os.MkdirAll(Path.Binance.Dir, os.ModePerm)
 	}
 
@@ -79,11 +79,11 @@ func init_Path(opt SysInitOpt) {
 		os.PathSeparator,
 		ExchangeOpt[1],
 	)
-	if !m_path.Exists(Path.Okx.Dir) {
+	if !m_path.IsExist(Path.Okx.Dir) {
 		os.MkdirAll(Path.Okx.Dir, os.ModePerm)
 	}
 
-	// 商品列表文件
+	// 商品列表文件路径
 	Path.GoodsListFile = m_str.Join(
 		Path.DataPath,
 		os.PathSeparator,

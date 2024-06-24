@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/handy-golang/go-tools/m_file"
 	"github.com/handy-golang/go-tools/m_json"
@@ -163,8 +164,8 @@ func GetKlineFilePath(opt GetKlineFilePathOpt) (resData []SendKlineRequestOpt) {
 
 			var SendKlineRequestOpt = SendKlineRequestOpt{
 				GoodsId: opt.Goods.GoodsId,
-				EndTime: timeUnix,           // 发出请求的时间
-				Bar:     opt.BarObj.DirName, // 发出请求的时间间隔
+				EndTime: timeUnix,   // 发出请求的时间
+				BarObj:  opt.BarObj, // 发出请求的时间间隔
 				StoreFilePath: m_str.Join( // 请求来的数据应当存放的目录
 					Dir,
 					os.PathSeparator,
@@ -193,12 +194,12 @@ func GetKlineFilePath(opt GetKlineFilePathOpt) (resData []SendKlineRequestOpt) {
 }
 
 type SendKlineRequestOpt struct {
-	GoodsId        string `json:"GoodsId"`
-	Okx_instId     string `json:"Okx_instId"` // 和 Binance_symbol 二选一
-	Binance_symbol string `json:"Binance_symbol"`
-	Bar            string `json:"Bar"`
-	EndTime        int64  `json:"EndTime"`
-	StoreFilePath  string `json:"StoreFilePath"`
+	GoodsId        string              `json:"GoodsId"`
+	Okx_instId     string              `json:"Okx_instId"` // 和 Binance_symbol 二选一
+	Binance_symbol string              `json:"Binance_symbol"`
+	BarObj         global.KlineBarType `json:"Bar"`
+	EndTime        int64               `json:"EndTime"`
+	StoreFilePath  string              `json:"StoreFilePath"`
 }
 
 func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, resErr error) {
@@ -226,44 +227,46 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 		}
 	}
 
+	// 去交易所请求
+	var fetchData []global.KlineSimpType
+	var err error
 	if len(opt.Okx_instId) > 2 {
-		fetchData, err := okx.GetKline(okx.GetKlineOpt{
+		fetchData, err = okx.GetKline(okx.GetKlineOpt{
 			Okx_instId: opt.Okx_instId,
-			Bar:        opt.Bar,
+			Bar:        opt.BarObj.Okx,
 			EndTime:    opt.EndTime,
 		})
-		if err != nil {
-			resErr = err
-			return
-		}
-		resData = fetchData
 
-		if resData[len(resData)-1][0] == m_str.ToStr(opt.EndTime) {
-			// 如果时间不一致，则应当裁切掉多余的时间
-
-		}
-
-		m_file.WriteByte(opt.StoreFilePath, m_json.ToJson(fetchData))
 	}
 
 	if len(opt.Binance_symbol) > 2 {
-		fetchData, err := binance.GetKline(binance.GetKlineOpt{
+		fetchData, err = binance.GetKline(binance.GetKlineOpt{
 			Binance_symbol: opt.Binance_symbol,
-			Bar:            opt.Bar,
+			Bar:            opt.BarObj.Binance,
 			EndTime:        opt.EndTime,
 		})
-		if err != nil {
-			resErr = err
-			return
-		}
-		resData = fetchData
-
-		if resData[len(resData)-1][0] == m_str.ToStr(opt.EndTime) {
-			// 如果时间不一致，则应当与计算时间保持一致
-		}
-
-		m_file.WriteByte(opt.StoreFilePath, m_json.ToJson(fetchData))
 	}
+
+	if err != nil {
+		resErr = err
+		return
+	}
+
+	lastTime, err := strconv.ParseInt(fetchData[len(fetchData)-1][0], 10, 64)
+	if err != nil {
+		resErr = err
+		return
+	}
+
+	// 如果存在未来时间
+	if opt.EndTime > lastTime {
+		diffLimit := (opt.EndTime - lastTime) / opt.BarObj.Interval
+		resData = fetchData[diffLimit:]
+	} else {
+		resData = fetchData
+	}
+
+	m_file.WriteByte(opt.StoreFilePath, m_json.ToJson(resData))
 
 	return
 }

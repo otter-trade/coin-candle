@@ -14,7 +14,7 @@ import (
 type GetKlineOpt struct {
 	Binance_symbol string `json:"Binance_symbol"`
 	Bar            string `json:"Bar"`
-	Before         int64  `json:"Before"`
+	EndTime        int64  `json:"EndTime"`
 }
 
 /*
@@ -45,16 +45,16 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 	limit := 100
 	// 当前时间
 	now := m_time.GetUnixInt64()
-	before := now
+	EndTime := now
 	// 时间 传入的时间戳 必须大于6年前 才有效
-	if opt.Before > now-m_time.UnixTimeInt64.Day*2190 {
-		before = opt.Before
+	if opt.EndTime > now-m_time.UnixTimeInt64.Day*2190 {
+		EndTime = opt.EndTime
 	}
 
 	var DataMap = map[string]any{
 		"symbol":   opt.Binance_symbol,
 		"interval": BarObj.Binance,
-		"endTime":  m_str.ToStr(before),
+		"endTime":  m_str.ToStr(EndTime),
 		"limit":    limit,
 	}
 

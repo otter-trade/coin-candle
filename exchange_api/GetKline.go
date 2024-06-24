@@ -227,7 +227,7 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 		fetchData, err := okx.GetKline(okx.GetKlineOpt{
 			Okx_instId: opt.Okx_instId,
 			Bar:        opt.Bar,
-			Before:     opt.Before,
+			EndTime:    opt.Before,
 		})
 		if err != nil {
 			resErr = err
@@ -240,7 +240,7 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 		fetchData, err := binance.GetKline(binance.GetKlineOpt{
 			Binance_symbol: opt.Binance_symbol,
 			Bar:            opt.Bar,
-			Before:         opt.Before,
+			EndTime:        opt.Before,
 		})
 		if err != nil {
 			resErr = err

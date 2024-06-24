@@ -14,14 +14,14 @@ import (
 type GetKlineOpt struct {
 	Okx_instId string `json:"Okx_instId"`
 	Bar        string `json:"Bar"`
-	Before     int64  `json:"Before"`
+	EndTime    int64  `json:"EndTime"`
 }
 
 /*
 	resData, err := okx.GetKline(global.GetOkxKlineOpt{
 		Okx_instId: "BTC-USDT",
 		Bar:        "1m",
-		Before:     m_time.GetUnixInt64() - m_time.UnixTimeInt64.Day*1, // 一天前的时间戳
+		EndTime:     m_time.GetUnixInt64() - m_time.UnixTimeInt64.Day*1, // 一天前的时间戳
 	})
 	fmt.Println(resData, err)
 */
@@ -54,15 +54,15 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 
 	// 当前时间
 	now := m_time.GetUnixInt64()
-	before := now
+	EndTime := now
 	// 时间 传入的时间戳 必须大于6年前 才有效
-	if opt.Before > now-m_time.UnixTimeInt64.Day*2190 {
-		before = opt.Before
+	if opt.EndTime > now-m_time.UnixTimeInt64.Day*2190 {
+		EndTime = opt.EndTime
 	}
 
 	path := "/api/v5/market/candles"
 	// 当前时间 - 之前的时间 / 时间间隔 = 距离当前的历史条目
-	fromNowItem := (now - before) / BarObj.Interval
+	fromNowItem := (now - EndTime) / BarObj.Interval
 	if fromNowItem > 800 { // 大于 800 条就从历史接口提取数据
 		path = "/api/v5/market/history-candles"
 	}
@@ -70,7 +70,7 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 	var DataMap = map[string]any{
 		"instId": opt.Okx_instId,
 		"bar":    BarObj.Okx,
-		"after":  m_str.ToStr(before),
+		"after":  m_str.ToStr(EndTime),
 		"limit":  limit,
 	}
 

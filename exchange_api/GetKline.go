@@ -2,24 +2,49 @@ package exchange_api
 
 import (
 	"coin-candle/global"
+	"fmt"
+
+	"github.com/handy-golang/go-tools/m_time"
 )
 
 func GetKline(opt global.GetKlineOpt) (resData []global.KlineType, resErr error) {
+	resData = nil
+	resErr = nil
 
-	// okxKline, errOkx := okx.GetKline(okx.GetKlineOpt{
-	// 	Okx_instId: "BTC-USDT",
-	// 	Bar:        "1m",
-	// 	// Before:     m_time.GetUnixInt64() - m_time.UnixTimeInt64.Day*365, // 一年前
-	// })
+	if len(opt.GoodsId) < 1 {
+		resErr = fmt.Errorf("缺少 GoodsId")
+		return
+	}
 
-	// fmt.Println("Okx", okxKline, errOkx)
+	GoodsDetail, err := GetGoodsDetail(GetGoodsDetailOpt{
+		GoodsId: opt.GoodsId,
+	})
+	if err != nil {
+		resErr = err
+		return
+	}
 
-	// binanceKline, errBinance := binance.GetKline(binance.GetKlineOpt{
-	// 	Binance_symbol: "BTCUSDT",
-	// 	Bar:            "1m",
-	// 	// Before:         m_time.GetUnixInt64() - m_time.UnixTimeInt64.Day*365, // 一年前
-	// })
+	if len(opt.Bar) < 1 {
+		resErr = fmt.Errorf("缺少 Bar")
+		return
+	}
 
-	// fmt.Println("binance", binanceKline, errBinance)
+	// 当前时间
+	now := m_time.GetUnixInt64()
+	Before := now
+	// 时间 传入的时间戳 必须大于6年前 才有效，否则等价与当前时间戳
+	if opt.Before > now-m_time.UnixTimeInt64.Day*2190 {
+		Before = opt.Before
+	}
+
+	Limit := 100
+	if Limit > 1 && Limit < 500 {
+		Limit = opt.Limit
+	} else {
+		resErr = fmt.Errorf("Limit必须为1-500的正整数")
+		return
+	}
+
+	fmt.Println(Before, Limit, GoodsDetail.GoodsId)
 	return
 }

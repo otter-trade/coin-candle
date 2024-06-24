@@ -6,12 +6,6 @@ import (
 	"github.com/handy-golang/go-tools/m_time"
 )
 
-// 系统支持的 交易所
-var ExchangeOpt = []string{
-	"binance", // 币安
-	"okx",     // 欧意
-}
-
 // 系统支持的 Bar
 type KlineBarType struct {
 	Interval int64  // 每一条数据之间间隔的毫秒数
@@ -53,12 +47,18 @@ func GetBarOpt(b string) (resData KlineBarType) {
 	return bar
 }
 
+// 系统支持的 交易所
+var ExchangeOpt = []string{
+	"binance", // 币安
+	"okx",     // 欧意
+}
+
 type GetKlineOpt struct {
-	GoodsId  string   `json:"GoodsId"`  // 商品ID
-	Bar      string   `json:"Bar"`      // K 线之间的间隔; 允许值: type KlineBarOpt
-	Before   int64    `json:"Before"`   // 此时间之前的内容; 允许值: 13 位毫秒时间戳
-	Limit    int      `json:"Limit"`    // 获取数据的总条目; 允许值: 1-500
-	Exchange []string `json:"Exchange"` // 交易所名称列表; 允许值: type ExchangeOpt
+	GoodsId  string   `json:"GoodsId"`  // 商品ID , 必传
+	Bar      string   `json:"Bar"`      // K 线之间的间隔; 允许值: global.KlineBarOpt
+	Before   int64    `json:"Before"`   // 此时间之前的内容; 允许值: 13 位毫秒时间戳, 缺省值 0
+	Limit    int      `json:"Limit"`    // 获取数据的总条目; 允许值: 1-500 缺省值 100
+	Exchange []string `json:"Exchange"` // 交易所名称列表; 允许值: global.ExchangeOpt , 缺省值 okx
 }
 
 type KlineType struct {

@@ -17,11 +17,10 @@ func main() {
 
 func Start() {
 
-	// 初始化系统
+	// 初始化系统的各项参数
 	global.SysInit(global.SysInitOpt{
 		ProxyURLs: []string{"http://127.0.0.1:10809"},
 	})
-
 	m_cycle.New(m_cycle.Opt{
 		Func: func() {
 			// 更新本地的商品列表
@@ -61,14 +60,14 @@ func Api() {
 
 	time := m_time.TimeParse(m_time.LaySP_ss, "2023-05-06 18:56:43")
 
-	fmt.Println(time)
-
-	exchange_api.GetKline(global.GetKlineOpt{
+	kline, err := exchange_api.GetKline(global.GetKlineOpt{
 		GoodsId:  "BTC-USDT",
 		Bar:      "1m",
 		Before:   time, // 一年前
-		Limit:    100,
+		Limit:    60,
 		Exchange: []string{"okx", "binance"},
 	})
+
+	fmt.Println("kline", kline, err)
 
 }

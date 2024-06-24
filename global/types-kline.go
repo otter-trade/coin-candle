@@ -49,14 +49,14 @@ func GetBarOpt(b string) (resData KlineBarType) {
 
 // 系统支持的 交易所
 var ExchangeOpt = []string{
-	"binance", // 币安
-	"okx",     // 欧意
+	"binance", // 0 币安
+	"okx",     // 1 欧意
 }
 
 type GetKlineOpt struct {
 	GoodsId  string   `json:"GoodsId"`  // 商品ID , 必传
 	Bar      string   `json:"Bar"`      // K 线之间的间隔; 允许值: global.KlineBarOpt
-	Before   int64    `json:"Before"`   // 此时间之前的内容; 允许值: 13 位毫秒时间戳, 缺省值 0
+	Before   int64    `json:"Before"`   // 此时间之前的内容; 允许值: 13 位毫秒时间戳, 缺省值0 为当前时间
 	Limit    int      `json:"Limit"`    // 获取数据的总条目; 允许值: 1-500 缺省值 100
 	Exchange []string `json:"Exchange"` // 交易所名称列表; 允许值: global.ExchangeOpt , 缺省值 okx
 }

@@ -67,7 +67,7 @@ func init_Path(opt SysInitOpt) {
 	Path.Binance.Dir = m_str.Join(
 		Path.DataPath,
 		os.PathSeparator,
-		"binance",
+		ExchangeOpt[0],
 	)
 	if !m_path.Exists(Path.Binance.Dir) {
 		os.MkdirAll(Path.Binance.Dir, os.ModePerm)
@@ -77,7 +77,7 @@ func init_Path(opt SysInitOpt) {
 	Path.Okx.Dir = m_str.Join(
 		Path.DataPath,
 		os.PathSeparator,
-		"okx",
+		ExchangeOpt[1],
 	)
 	if !m_path.Exists(Path.Okx.Dir) {
 		os.MkdirAll(Path.Okx.Dir, os.ModePerm)

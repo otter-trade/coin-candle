@@ -123,10 +123,22 @@ func GetKlineFilePath(opt GetKlineFilePathOpt) (resData []SendKlineRequestOpt) {
 			os.PathSeparator,
 			opt.BarObj.Binance, // 统一采用小写作为目录
 		)
+		/*
+			以月份为目录，最多遍历 400 次
+		*/
+		year_month := m_time.MsToTime(opt.EndTime, "0").Format("2006-01")
+		findDir := m_str.Join(
+			Dir,
+			os.PathSeparator,
+			year_month,
+		)
+
 		// 获得初始的 Before , 也就是 最大值
 		var Before_original int64
 		// 读取目录下的文件列表
-		files, _ := os.ReadDir(Dir)
+		files, _ := os.ReadDir(findDir)
+
+		fmt.Println(111, files)
 		if len(files) < 1 {
 			// 目录下没有文件,则以 EndTime 作为Before_original
 			Before_original = opt.EndTime
@@ -153,7 +165,7 @@ func GetKlineFilePath(opt GetKlineFilePathOpt) (resData []SendKlineRequestOpt) {
 				StoreFilePath: m_str.Join(
 					Dir,
 					os.PathSeparator,
-					year,
+					year, // 年份
 					os.PathSeparator,
 					timeUnix, ".json",
 				),

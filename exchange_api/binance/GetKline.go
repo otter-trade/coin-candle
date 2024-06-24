@@ -45,11 +45,12 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 
 	// limit 固定为 100
 	limit := 100
+
 	// 当前时间
 	now := m_time.GetUnixInt64()
 	EndTime := now
-	// 时间 传入的时间戳 必须大于6年前 才有效
-	if opt.EndTime > now-m_time.UnixTimeInt64.Day*2190 {
+	// 时间 传入的时间戳 必须大于最早时间才有效否则重置为当 now
+	if opt.EndTime > global.TimeOldest {
 		EndTime = opt.EndTime
 	}
 

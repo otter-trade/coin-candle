@@ -69,17 +69,19 @@ func Start() {
 
 	// fmt.Println("kline", kline, err)
 
+	KlineActionTest()
 }
 
 func KlineActionTest() {
 	// ########### 交易所K线数据行为一致性检测 ###########
 
 	// 早于这个时间，则欧意交易所没数据， 也就是当前时间6年起算
-	var TimeOldest = m_time.TimeParse(m_time.LaySP_ss, "2018-01-11 22:00:00")
+	// var TimeOldest = m_time.TimeParse(m_time.LaySP_ss, "2018-01-11 22:00:00")
 
-	diff := m_time.GetUnixInt64() - TimeOldest
-	fmt.Println("diff", diff)
+	// diff := m_time.GetUnixInt64() - TimeOldest
+	// fmt.Println("diff", diff)
 
+	// time := m_time.TimeParse(m_time.LaySP_ss, "2028-01-01 00:00:00")
 	time := m_time.TimeParse(m_time.LaySP_ss, "2018-01-11 22:00:00")
 	okxKline, err := okx.GetKline(okx.GetKlineOpt{
 		Okx_instId: "BTC-USDT",

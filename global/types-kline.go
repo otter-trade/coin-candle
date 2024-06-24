@@ -82,4 +82,7 @@ type KlineType struct {
 
 type KlineSimpType [7]string // TimeUnix,O,H,L,C,V,Q
 
-const SendEndTimeFix = 1 //K线的结束时间修订 1 毫秒，考虑到网络延迟以及交易所不同标准的修订问题
+const SendEndTimeFix = 3 //K线的结束时间修订 3 毫秒，考虑到网络延迟以及交易所不同标准的修订问题
+
+// 如果小于  2018-01-11 22:00:00 这个时间，则交易所数据就不全了 ， 这里将合法的最小时间定为 2018-03-01
+var TimeOldest = m_time.TimeParse(m_time.LaySP_ss, "2018-03-01 00:00:00")

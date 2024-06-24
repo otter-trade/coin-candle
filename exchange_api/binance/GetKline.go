@@ -21,7 +21,7 @@ type GetKlineOpt struct {
 	resData, err  := binance.GetKline(binance.GetKlineOpt{
 		Binance_symbol: "BTCUSDT",
 		Bar:            "1m",
-		Before:         m_time.GetUnixInt64() - m_time.UnixTimeInt64.Day*365, // 一年前
+		EndTime:         m_time.GetUnixInt64() - m_time.UnixTimeInt64.Day*365, // 一年前
 	})
 */
 type BinanceKlineType [12]any

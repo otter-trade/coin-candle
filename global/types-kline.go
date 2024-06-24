@@ -56,7 +56,7 @@ var ExchangeOpt = []string{
 type GetKlineOpt struct {
 	GoodsId  string   `json:"GoodsId"`  // 商品ID , 必传
 	Bar      string   `json:"Bar"`      // K 线之间的间隔; 允许值: global.KlineBarOpt
-	Before   int64    `json:"Before"`   // 此时间之前的内容; 允许值: 13 位毫秒时间戳, 缺省值0 为当前时间
+	EndTime  int64    `json:"EndTime"`  // K 线的结束时间; 允许值: 13 位毫秒时间戳, 若时间无效，则为当前时间。
 	Limit    int      `json:"Limit"`    // 获取数据的总条目; 允许值: 1-500 缺省值 100
 	Exchange []string `json:"Exchange"` // 交易所名称列表; 允许值: global.ExchangeOpt , 缺省值 okx
 }

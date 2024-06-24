@@ -63,7 +63,7 @@ func Api() {
 	kline, err := exchange_api.GetKline(global.GetKlineOpt{
 		GoodsId:  "BTC-USDT",
 		Bar:      "1m",
-		Before:   time, // 一年前
+		EndTime:  time, // 一年前
 		Limit:    382,
 		Exchange: []string{"okx", "binance"},
 	})

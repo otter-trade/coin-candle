@@ -94,7 +94,7 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 	}
 
 	/*
-		  开始时间 从 大 -> 小
+		开始时间 从 大 -> 小
 			[
 				"1687565880000",  开始时间 0
 				"30633.5",  开盘价格  1

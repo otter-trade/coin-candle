@@ -39,14 +39,6 @@ func GetKline(opt global.GetKlineOpt) (resData []global.KlineType, resErr error)
 		return
 	}
 
-	// Before 缺省值
-	now := m_time.GetUnixInt64()
-	Before := now
-	// 时间 传入的时间戳 必须大于6年前 才有效，否则等价与当前时间戳
-	if opt.Before > now-m_time.UnixTimeInt64.Day*2190 {
-		Before = opt.Before
-	}
-
 	// Limit 缺省值
 	Limit := 10
 	if opt.Limit > 1 && opt.Limit < 500 {
@@ -55,6 +47,16 @@ func GetKline(opt global.GetKlineOpt) (resData []global.KlineType, resErr error)
 		resErr = fmt.Errorf("Limit必须为1-500的正整数")
 		return
 	}
+
+	// EndTime 缺省值
+	now := m_time.GetUnixInt64()
+	EndTime := now
+	// 时间 传入的时间戳 必须大于6年前 才有效，否则等价与当前时间戳
+	if opt.EndTime > now-m_time.UnixTimeInt64.Day*2190 {
+		EndTime = opt.EndTime
+	}
+	// 计算出起止时间  // 结束时间 - 时间间隔 * 条数
+	StartTime := EndTime - BarObj.Interval*int64(Limit)
 
 	// Exchange 缺省值, 过滤有效值
 	var Exchange []string
@@ -74,10 +76,6 @@ func GetKline(opt global.GetKlineOpt) (resData []global.KlineType, resErr error)
 		resErr = fmt.Errorf("参数 Exchange 无效")
 		return
 	}
-
-	// 计算出起止时间  // 结束时间 - 时间间隔 * 条数
-	EndTime := Before
-	StartTime := EndTime - BarObj.Interval*int64(Limit)
 
 	SendParamList := GetKlineFilePath(GetKlineFilePathOpt{
 		Limit:     Limit,
@@ -160,8 +158,8 @@ func GetKlineFilePath(opt GetKlineFilePathOpt) (resData []SendKlineRequestOpt) {
 			var timeUnix = Before_original - opt.BarObj.Interval*int64(i)*100
 			year := m_time.MsToTime(timeUnix, "0").Format("2006")
 			var SendKlineRequestOpt = SendKlineRequestOpt{
-				Before: timeUnix,
-				Bar:    opt.BarObj.Binance, //内部会进行处理
+				EndTime: timeUnix,
+				Bar:     opt.BarObj.Binance, //内部会进行处理
 				StoreFilePath: m_str.Join(
 					Dir,
 					os.PathSeparator,
@@ -193,7 +191,7 @@ type SendKlineRequestOpt struct {
 	Okx_instId     string `json:"Okx_instId"` // 和 Binance_symbol 二选一
 	Binance_symbol string `json:"Binance_symbol"`
 	Bar            string `json:"Bar"`
-	Before         int64  `json:"Before"`
+	EndTime        int64  `json:"EndTime"`
 	StoreFilePath  string `json:"StoreFilePath"`
 }
 
@@ -227,7 +225,7 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 		fetchData, err := okx.GetKline(okx.GetKlineOpt{
 			Okx_instId: opt.Okx_instId,
 			Bar:        opt.Bar,
-			EndTime:    opt.Before,
+			EndTime:    opt.EndTime,
 		})
 		if err != nil {
 			resErr = err
@@ -240,7 +238,7 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 		fetchData, err := binance.GetKline(binance.GetKlineOpt{
 			Binance_symbol: opt.Binance_symbol,
 			Bar:            opt.Bar,
-			EndTime:        opt.Before,
+			EndTime:        opt.EndTime,
 		})
 		if err != nil {
 			resErr = err

@@ -132,6 +132,11 @@ func GetKlineFilePath(opt GetKlineFilePathOpt) (resData []SendKlineRequestOpt) {
 			Before_original = opt.EndTime
 		} else {
 			// 有文件则找到那个 最接近  opt.EndTime 的文件
+
+			for _, file := range files {
+				m_json.Println(file)
+			}
+
 		}
 
 		// 计算最多遍历多少次 MaxLoop = Limit / 100（请求时的固定条目） + 2 （前后时间拢余都算上）

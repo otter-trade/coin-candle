@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/handy-golang/go-tools/m_file"
 	"github.com/handy-golang/go-tools/m_json"
@@ -148,6 +147,9 @@ func GetKlineFilePath(opt GetKlineFilePathOpt) (resData []SendKlineRequestOpt) {
 				fmt.Println("fileList", file.Name())
 			}
 		}
+		// 利用 int64 没有余数的机制，将时间进行整除，获取和交易所同步的时间戳
+		Before_original = Before_original / opt.BarObj.Interval
+		Before_original = Before_original * opt.BarObj.Interval
 
 		// 计算最多遍历多少次 MaxLoop = Limit / 100（请求时的固定条目） + 2 （前后时间拢余都算上）
 		var MaxLoop = 10 //  Limit 最大 500  , 所以遍历次数最大 10
@@ -205,7 +207,6 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 	resErr = nil
 
 	// 先读取文件看看是否存在
-
 	IsExist := m_path.IsExist(opt.StoreFilePath)
 	if IsExist {
 		// 存在该文件，则进行读取
@@ -225,7 +226,6 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 		}
 	}
 
-	writeDir, _ := filepath.Split(opt.StoreFilePath) //  解析写入的目录
 	if len(opt.Okx_instId) > 2 {
 		fetchData, err := okx.GetKline(okx.GetKlineOpt{
 			Okx_instId: opt.Okx_instId,
@@ -237,13 +237,13 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 			return
 		}
 		resData = fetchData
-		writeFilePath := m_str.Join(
-			writeDir,
-			os.PathSeparator,
-			resData[len(resData)-1][0], // 按照最后一条数据的时间戳进行文件命名
-			".json",
-		)
-		m_file.WriteByte(writeFilePath, m_json.ToJson(fetchData))
+
+		if resData[len(resData)-1][0] == m_str.ToStr(opt.EndTime) {
+			// 如果时间不一致，则应当裁切掉多余的时间
+
+		}
+
+		m_file.WriteByte(opt.StoreFilePath, m_json.ToJson(fetchData))
 	}
 
 	if len(opt.Binance_symbol) > 2 {
@@ -257,13 +257,12 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 			return
 		}
 		resData = fetchData
-		writeFilePath := m_str.Join(
-			writeDir,
-			os.PathSeparator,
-			resData[len(resData)-1][0], // 按照最后一条数据的时间戳进行文件命名
-			".json",
-		)
-		m_file.WriteByte(writeFilePath, m_json.ToJson(fetchData))
+
+		if resData[len(resData)-1][0] == m_str.ToStr(opt.EndTime) {
+			// 如果时间不一致，则应当与计算时间保持一致
+		}
+
+		m_file.WriteByte(opt.StoreFilePath, m_json.ToJson(fetchData))
 	}
 
 	return

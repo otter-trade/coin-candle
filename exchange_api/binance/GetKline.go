@@ -94,7 +94,7 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 	var listStr []BinanceKlineType
 	jsoniter.Unmarshal(fetchData, &listStr)
 
-	if len(listStr) < 1 {
+	if len(listStr) != limit {
 		resErr = fmt.Errorf("错误:K线长度不正确: %+v", m_json.ToStr(fetchData))
 		return
 	}

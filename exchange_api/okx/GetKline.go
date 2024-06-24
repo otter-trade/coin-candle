@@ -110,7 +110,7 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 		return
 	}
 
-	if len(result.Data) < 1 {
+	if len(result.Data) != limit {
 		resErr = fmt.Errorf("错误:K线长度不正确: %+v", m_json.ToStr(fetchData))
 		return
 	}

@@ -49,8 +49,8 @@ func GetBarOpt(b string) (resData KlineBarType) {
 
 // 系统支持的 交易所
 var ExchangeOpt = []string{
-	"binance", // 0 币安
-	"okx",     // 1 欧意
+	"binance", // 0 币安 顺序不可打乱
+	"okx",     // 1 欧意 顺序不可打乱
 }
 
 type GetKlineOpt struct {
@@ -63,6 +63,7 @@ type GetKlineOpt struct {
 
 type KlineType struct {
 	GoodsId  string `json:"GoodsId"`  // 商品ID
+	Exchange string `json:"Exchange"` // 交易所
 	TimeUnix int64  `json:"TimeUnix"` // 开始时间
 	TimeStr  string `json:"TimeStr"`  // 开始时间 字符串形式
 	O        string `json:"O"`        // 开盘价

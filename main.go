@@ -64,7 +64,7 @@ func Api() {
 		GoodsId:  "BTC-USDT",
 		Bar:      "1m",
 		Before:   time, // 一年前
-		Limit:    60,
+		Limit:    382,
 		Exchange: []string{"okx", "binance"},
 	})
 

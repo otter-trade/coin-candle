@@ -87,15 +87,31 @@ func GetKline(opt global.GetKlineOpt) (resData []global.KlineType, resErr error)
 		Exchange:  Exchange,
 	})
 
-	for _, item := range SendParamList {
+	// 在这里进行K线的整合并返回
+	var KlineMap = map[string][]global.KlineSimpType{}
 
+	for _, item := range SendParamList {
 		kline, err := SendKlineRequest(item)
 		if err != nil {
 			resErr = err
 			return
 		}
+		// 将 kline 串起来
+		KlineMap[item.Exchange] = append(kline, KlineMap[item.Exchange]...)
+	}
 
-		fmt.Println("kline", item.StoreFilePath, len(kline))
+	// var ExchangeMapList = []global.KlineExchangeMap{}
+	for key, kline := range KlineMap {
+		var list = []global.KlineSimpType{}
+		for _, item := range kline {
+			timeUnix, _ := strconv.ParseInt(item[0], 10, 64)
+			// 过滤，挑选出符合规则的数据
+			if timeUnix >= StartTime && timeUnix <= EndTime {
+				list = append(list, item)
+			}
+		}
+
+		fmt.Println(key, len(list))
 	}
 
 	return
@@ -143,9 +159,10 @@ func GetKlineFilePath(opt GetKlineFilePathOpt) (resData []SendKlineRequestOpt) {
 			year_month := m_time.MsToTime(opt.EndTime, "0").Format("2006-01")
 
 			var SendKlineRequestOpt = SendKlineRequestOpt{
-				GoodsId: opt.Goods.GoodsId,
-				EndTime: timeUnix,   // 发出请求的时间
-				BarObj:  opt.BarObj, // 发出请求的时间间隔
+				GoodsId:  opt.Goods.GoodsId,
+				Exchange: exchange,
+				EndTime:  timeUnix,   // 发出请求的时间
+				BarObj:   opt.BarObj, // 发出请求的时间间隔
 				StoreFilePath: m_str.Join( // 请求来的数据应当存放的目录
 					Dir,
 					os.PathSeparator,
@@ -158,9 +175,6 @@ func GetKlineFilePath(opt GetKlineFilePathOpt) (resData []SendKlineRequestOpt) {
 			// 币安
 			if exchange == global.ExchangeOpt[0] {
 				SendKlineRequestOpt.Binance_symbol = opt.Goods.BinanceInfo.Symbol
-
-				fmt.Println("timeUnix", m_time.UnixFormat(timeUnix), "opt.StartTime", m_time.UnixFormat(opt.StartTime))
-
 			}
 			// 欧意
 			if exchange == global.ExchangeOpt[1] {
@@ -179,6 +193,7 @@ func GetKlineFilePath(opt GetKlineFilePathOpt) (resData []SendKlineRequestOpt) {
 
 type SendKlineRequestOpt struct {
 	GoodsId        string              `json:"GoodsId"`
+	Exchange       string              `json:"Exchange"`   // 交易所
 	Okx_instId     string              `json:"Okx_instId"` // 和 Binance_symbol 二选一
 	Binance_symbol string              `json:"Binance_symbol"`
 	BarObj         global.KlineBarType `json:"Bar"`
@@ -203,7 +218,6 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 		} else {
 			if len(kline) == global.ExchangeKlineLimit { //数据解析成功并返回
 				resData = kline
-				global.RunLog.Println("已从本地文件中返回数据", opt.StoreFilePath)
 				return
 			} else {
 				global.LogErr("数据不完整，将重新获取并写入", opt.StoreFilePath)
@@ -242,16 +256,14 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 		return
 	}
 
-	// 如果存在未来时间
+	// 如果存在未来时间,则进行摘除
 	if opt.EndTime > lastTime {
 		diffLimit := (opt.EndTime - lastTime) / opt.BarObj.Interval
 		resData = fetchData[diffLimit:]
 	} else {
 		resData = fetchData
 	}
-
 	m_file.WriteByte(opt.StoreFilePath, m_json.ToJson(resData))
-
 	return
 }
 

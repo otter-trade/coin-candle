@@ -82,6 +82,11 @@ type KlineType struct {
 
 type KlineSimpType [7]string // TimeUnix,O,H,L,C,V,Q
 
+type KlineExchangeMap struct {
+	Binance KlineSimpType `json:"binance"`
+	Okx     KlineSimpType `json:"okx"`
+}
+
 const SendEndTimeFix = 30 // 请求 K线 时的时间戳修订 30 毫秒，考虑到网络延迟以及交易所不同标准的修订问题，不影响实盘实时数据的正常值
 
 // 如果小于  2018-01-11 22:00:00 这个时间，则交易所数据就不全了， 这里将合法的最小时间定为 2018-03-01

@@ -1,8 +1,9 @@
 package binance
 
 import (
-	"coin-candle/global"
 	"fmt"
+
+	"github.com/otter-trade/coin-candle/global"
 
 	"github.com/handy-golang/go-tools/m_count"
 	"github.com/handy-golang/go-tools/m_fetch"

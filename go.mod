@@ -1,4 +1,4 @@
-module coin-candle
+module github.com/otter-trade/coin-candle
 
 go 1.22.4
 

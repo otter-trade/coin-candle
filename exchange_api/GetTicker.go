@@ -1,12 +1,13 @@
 package exchange_api
 
 import (
-	"coin-candle/exchange_api/binance"
-	"coin-candle/exchange_api/okx"
-	"coin-candle/global"
 	"fmt"
 	"os"
 	"time"
+
+	"github.com/otter-trade/coin-candle/exchange_api/binance"
+	"github.com/otter-trade/coin-candle/exchange_api/okx"
+	"github.com/otter-trade/coin-candle/global"
 
 	"github.com/handy-golang/go-tools/m_count"
 	"github.com/handy-golang/go-tools/m_file"

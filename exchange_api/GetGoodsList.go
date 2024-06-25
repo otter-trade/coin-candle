@@ -62,7 +62,7 @@ ${InstID} OkxState:${OkxState} BinanceStatus:${BinanceStatus}`
 
 	okx_GoodsList_SWAP, err := okx.GetGoodsList_SWAP()
 	if err != nil {
-		global.LogErr("错误:exchange_api.GetGoodsList -> okx.GetGoodsList_SPOT", err)
+		global.LogErr("错误:exchange_api.GetGoodsList -> okx.GetGoodsList_SWAP", err)
 	}
 	// m_file.Write(global.Path.Okx.Dir+"/okx_GoodsList_SWAP.json", m_json.ToStr(okx_GoodsList_SWAP))
 
@@ -189,7 +189,7 @@ func GetGoodsDetail(opt GetGoodsDetailOpt) (resData global.GoodsType, resErr err
 	resErr = nil
 
 	if len(global.GoodsMap) < 10 {
-		resErr = fmt.Errorf("没有初始化 global.GoodsMap")
+		resErr = fmt.Errorf("没有初始化 global.GoodsMap : %+v", m_json.ToStr(global.GoodsMap))
 		return
 	}
 

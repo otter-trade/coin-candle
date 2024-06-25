@@ -32,6 +32,8 @@ func Start() {
 			exchange_api.UpdateLocalGoodsList()
 			// 更新本地的榜单
 			exchange_api.UpdateLocalTicker()
+			// 啊暗示
+			exchange_api.GetGoodsList()
 		},
 		SleepTime: time.Hour * 4, // 每4小时执行一次更新
 	}).Start()

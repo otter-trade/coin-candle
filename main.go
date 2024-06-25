@@ -38,45 +38,48 @@ func Start() {
 		SleepTime: time.Hour * 4, // 每4小时执行一次更新
 	}).Start()
 
-	// ####### 获取商品列表 #######
-	GoodsList, err := exchange_api.GetGoodsList()
-	if err != nil {
-		fmt.Println("获取商品列表失败", err)
-	}
-	fmt.Println("GoodsList 商品总数:", len(GoodsList))
+	// // ####### 获取商品列表 #######
+	// GoodsList, err := exchange_api.GetGoodsList()
+	// if err != nil {
+	// 	fmt.Println("获取商品列表失败", err)
+	// }
+	// fmt.Println("GoodsList 商品总数:", len(GoodsList))
 
-	// ####### 获取商品详情 #######
-	GoodsDetail, err := exchange_api.GetGoodsDetail(exchange_api.GetGoodsDetailOpt{
-		GoodsId: "BTC-USDT",
-	})
-	if err != nil {
-		fmt.Println("获取商品详情失败", err)
-	}
-	fmt.Println("GoodsDetail 最后更新时间", GoodsDetail.GoodsId, GoodsDetail.UpdateStr)
+	// // ####### 获取商品详情 #######
+	// GoodsDetail, err := exchange_api.GetGoodsDetail(exchange_api.GetGoodsDetailOpt{
+	// 	GoodsId: "BTC-USDT",
+	// })
+	// if err != nil {
+	// 	fmt.Println("获取商品详情失败", err)
+	// }
+	// fmt.Println("GoodsDetail 最后更新时间", GoodsDetail.GoodsId, GoodsDetail.UpdateStr)
 
-	// ####### 获取榜单数据  #######
-	TickerList, err := exchange_api.GetTickerList()
-	if err != nil {
-		fmt.Println("获取榜单数据失败", err)
-	}
-	fmt.Println("TickerList 上榜币种数量:", len(TickerList))
+	// // ####### 获取榜单数据  #######
+	// TickerList, err := exchange_api.GetTickerList()
+	// if err != nil {
+	// 	fmt.Println("获取榜单数据失败", err)
+	// }
+	// fmt.Println("TickerList 上榜币种数量:", len(TickerList))
 
 	// ####### K线数据 #######
 	// time := m_time.TimeParse(m_time.LaySP_ss, "2023-05-06 18:56:43")
-	time := m_time.TimeParse(m_time.LaySP_ss, "2024-05-21 18:55:43")
-	// time := m_time.GetUnixInt64()
+	// time := m_time.TimeParse(m_time.LaySP_ss, "2024-05-21 18:55:43")
+	time := m_time.GetUnixInt64()
 	klineMap, err := exchange_api.GetKline(global.GetKlineOpt{
-		GoodsId:  "BTC-USDT",
-		Bar:      "1m",
-		EndTime:  time, // 一年前
-		Limit:    320,
-		Exchange: []string{"okx", "binance"},
+		GoodsId: "BTC-USDT",
+		Bar:     "1m",
+		EndTime: time, // 一年前
+		Limit:   5,
+		// Exchange: []string{"okx", "binance"},
+		Exchange: []string{"okx"},
 	})
 
 	if err != nil {
 		fmt.Println("获取K线数据失败", err)
 	}
-	fmt.Println("kline 总长度", len(klineMap["binance"]))
+	// fmt.Println("kline 总长度", len(klineMap["binance"]))
+
+	m_file.WriteByte(global.Path.DataPath+"/kline-test1.json", m_json.ToJson(klineMap))
 
 }
 

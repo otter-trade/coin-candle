@@ -52,17 +52,17 @@ func GetKline(opt global.GetKlineOpt) (resData global.KlineExchangeMap, resErr e
 	// EndTime 缺省值
 	now := m_time.GetUnixInt64()
 	EndTime := opt.EndTime
-	// 时间 传入的时间戳 必须大于最早时间才有效否则重置为当 now
+	// 如果时间 小于最小值， 或者 大于 当前时间， 则重置为当前时间
 	if opt.EndTime < global.TimeOldest || EndTime > now {
 		EndTime = now
 	}
-	// 计算起始时间  //  结束时间 - 时间间隔 * 条数
+	// 计算起始时间  =  结束时间 - 时间间隔 * 条数
 	StartTime := EndTime - BarObj.Interval*int64(Limit)
 
-	// Exchange 缺省值, 过滤有效值
+	// Exchange 缺省值, 选取有效值
 	var Exchange []string
 	if len(opt.Exchange) < 1 {
-		Exchange = []string{"okx"}
+		Exchange = []string{opt.Exchange[0]} // 如果用户未填写，则缺省
 	} else {
 		for _, item := range global.ExchangeOpt {
 			for _, exchange := range opt.Exchange {
@@ -100,14 +100,11 @@ func GetKline(opt global.GetKlineOpt) (resData global.KlineExchangeMap, resErr e
 		KlineMap[item.Exchange] = append(kline, KlineMap[item.Exchange]...)
 	}
 
-	// var ExchangeMapList = []global.KlineExchangeMap{}
 	for key, kline := range KlineMap {
-
 		time_end, _ := strconv.ParseInt(kline[len(kline)-1][0], 10, 64)
 		diffLimit_end := (time_end - EndTime) / BarObj.Interval
 		var list2 = kline[:len(kline)-int(diffLimit_end)-1]
 		var list3 = list2[len(list2)-Limit:]
-
 		// 数据检查
 		// fmt.Println("list3", m_time.UnixFormat(list3[0][0]), m_time.UnixFormat(list3[len(list3)-1][0]))
 		// fmt.Println("time", m_time.UnixFormat(StartTime), m_time.UnixFormat(EndTime))
@@ -152,18 +149,13 @@ func GetKlineFilePath(opt GetKlineFilePathOpt) (resData []SendKlineRequestOpt) {
 		// 获得 file name 的时间颗粒度
 		Before_Time := FindFileTime(opt)
 
-		if Before_Time == 0 {
-			global.LogErr("没有找到文件时间戳列表")
-			return
-		}
-
-		// 计算最多遍历多少次 MaxLoop = Limit / 100  + 2 （前后时间拢余都算上）
-		var MaxLoop = global.KlineMaxLimit/global.ExchangeKlineLimit + 2
+		// 计算最多遍历多少次 MaxLoop = Limit / 100  + 3 （前后时间拢余都算上）
+		var MaxLoop = global.KlineMaxLimit/global.ExchangeKlineLimit + 5
+		var fileInterval = opt.BarObj.Interval * global.ExchangeKlineLimit
 
 		// 计算要发送的请求列表
 		SendKlineRequestOptList := []SendKlineRequestOpt{}
 		for i := 0; i < MaxLoop; i++ {
-			var fileInterval = opt.BarObj.Interval * global.ExchangeKlineLimit
 			var timeUnix = Before_Time - fileInterval*int64(i) // 最初的时间 挨个递减 条
 			year_month := m_time.MsToTime(opt.EndTime, "0").Format("2006-01")
 
@@ -215,21 +207,25 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 	resData = nil
 	resErr = nil
 
-	// 先读取文件看看是否存在
-	IsExist := m_path.IsExist(opt.StoreFilePath)
-	if IsExist {
-		// 存在该文件，则进行读取
-		fileCont := m_file.ReadFile(opt.StoreFilePath)
-		var kline []global.KlineSimpType
-		err := json.Unmarshal(fileCont, &kline)
-		if err != nil {
-			global.LogErr("exchange_api.SendKlineRequest 文件解析失败,将重新获取并覆盖", opt.StoreFilePath)
-		} else {
-			if len(kline) == global.ExchangeKlineLimit { //数据解析成功并返回
-				resData = kline
-				return
+	now := m_time.GetUnixInt64()
+	// 如果 当前时间 EndTime 和当前时间相比 小于一个间隔，则直接走交易所
+	if now-opt.EndTime > opt.BarObj.Interval {
+		// 先读取文件看看是否存在
+		IsExist := m_path.IsExist(opt.StoreFilePath)
+		if IsExist {
+			// 存在该文件，则进行读取
+			fileCont := m_file.ReadFile(opt.StoreFilePath)
+			var kline []global.KlineSimpType
+			err := json.Unmarshal(fileCont, &kline)
+			if err != nil {
+				global.LogErr("exchange_api.SendKlineRequest 文件解析失败,将重新获取并覆盖", opt.StoreFilePath)
 			} else {
-				global.LogErr("数据不完整，将重新获取并写入", opt.StoreFilePath)
+				if len(kline) == global.ExchangeKlineLimit { //数据解析成功并返回
+					resData = kline
+					return
+				} else {
+					global.LogErr("数据不完整，将重新获取并写入", opt.StoreFilePath)
+				}
 			}
 		}
 	}

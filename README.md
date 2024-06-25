@@ -11,5 +11,5 @@ go get github.com/otter-trade/coin-candle
 或者
 
 ```bash
-go get -u github.com/otter-trade/coin-candle@v0.0.1
+go get -u github.com/otter-trade/coin-candle@v1.0.1
 ```

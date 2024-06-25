@@ -17,6 +17,7 @@ import (
 
 func main() {
 	Start()
+	KlineActionTest()
 }
 
 func Start() {

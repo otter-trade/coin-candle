@@ -21,10 +21,10 @@ func main() {
 
 func Start() {
 
-	// 初始化系统的各项参数
 	global.SysInit(global.SysInitOpt{
 		ProxyURLs: []string{"http://127.0.0.1:10809"},
 	})
+
 	m_cycle.New(m_cycle.Opt{
 		Func: func() {
 			// 更新本地的商品列表
@@ -36,33 +36,33 @@ func Start() {
 	}).Start()
 
 	// ####### 获取商品列表 #######
-	// GoodsList, err := exchange_api.GetTickerList()
-	// if err != nil {
-	// 	fmt.Println("获取商品列表失败", err)
-	// }
-	// fmt.Println("GoodsList", GoodsList)
+	GoodsList, err := exchange_api.GetGoodsList()
+	if err != nil {
+		fmt.Println("获取商品列表失败", err)
+	}
+	fmt.Println("GoodsList 商品总数:", len(GoodsList))
 
 	// ####### 获取商品详情 #######
-	// GoodsDetail, err := exchange_api.GetGoodsDetail(exchange_api.GetGoodsDetailOpt{
-	// 	GoodsId: "BTC-USDT",
-	// })
-	// if err != nil {
-	// 	fmt.Println("获取商品详情失败", err)
-	// }
-	// fmt.Println("GoodsDetail", GoodsDetail)
+	GoodsDetail, err := exchange_api.GetGoodsDetail(exchange_api.GetGoodsDetailOpt{
+		GoodsId: "BTC-USDT",
+	})
+	if err != nil {
+		fmt.Println("获取商品详情失败", err)
+	}
+	fmt.Println("GoodsDetail 最后更新时间", GoodsDetail.GoodsId, GoodsDetail.UpdateStr)
 
 	// ####### 获取榜单数据  #######
-	// Ticker, err := exchange_api.GetTickerList()
-	// if err != nil {
-	// 	fmt.Println("获取榜单数据失败", err)
-	// }
-	// fmt.Println("Ticker", Ticker)
+	TickerList, err := exchange_api.GetTickerList()
+	if err != nil {
+		fmt.Println("获取榜单数据失败", err)
+	}
+	fmt.Println("TickerList 上榜币种数量:", len(TickerList))
 
 	// ####### K线数据 #######
 	// time := m_time.TimeParse(m_time.LaySP_ss, "2023-05-06 18:56:43")
 	time := m_time.TimeParse(m_time.LaySP_ss, "2024-05-21 18:55:43")
 	// time := m_time.GetUnixInt64()
-	kline, err := exchange_api.GetKline(global.GetKlineOpt{
+	klineMap, err := exchange_api.GetKline(global.GetKlineOpt{
 		GoodsId:  "BTC-USDT",
 		Bar:      "1m",
 		EndTime:  time, // 一年前
@@ -73,7 +73,7 @@ func Start() {
 	if err != nil {
 		fmt.Println("获取K线数据失败", err)
 	}
-	m_file.Write(global.Path.DataPath+"/kline-Simp.json", m_json.ToStr(kline))
+	fmt.Println("kline 总长度", len(klineMap["binance"]))
 
 }
 
@@ -82,7 +82,6 @@ func KlineActionTest() {
 
 	// 早于这个时间，则欧意交易所没数据， 也就是当前时间6年起算
 	// var TimeOldest = m_time.TimeParse(m_time.LaySP_ss, "2018-01-11 22:00:00")
-
 	// diff := m_time.GetUnixInt64() - TimeOldest
 	// fmt.Println("diff", diff)
 

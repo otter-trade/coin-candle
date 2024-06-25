@@ -82,10 +82,7 @@ type KlineType struct {
 
 type KlineSimpType [7]string // TimeUnix,O,H,L,C,V,Q
 
-type KlineExchangeMap struct {
-	Binance KlineSimpType `json:"binance"`
-	Okx     KlineSimpType `json:"okx"`
-}
+type KlineExchangeMap map[string][]KlineSimpType
 
 const SendEndTimeFix = 30 // 请求 K线 时的时间戳修订 30 毫秒，考虑到网络延迟以及交易所不同标准的修订问题，不影响实盘实时数据的正常值
 

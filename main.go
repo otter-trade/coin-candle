@@ -59,8 +59,8 @@ func Start() {
 
 	// ####### K线数据 #######
 	// time := m_time.TimeParse(m_time.LaySP_ss, "2023-05-06 18:56:43")
-	// time := m_time.TimeParse(m_time.LaySP_ss, "2024-05-21 18:55:43")
-	time := m_time.GetUnixInt64()
+	time := m_time.TimeParse(m_time.LaySP_ss, "2024-05-21 18:55:43")
+	// time := m_time.GetUnixInt64()
 	kline, err := exchange_api.GetKline(global.GetKlineOpt{
 		GoodsId:  "BTC-USDT",
 		Bar:      "1m",
@@ -69,9 +69,11 @@ func Start() {
 		Exchange: []string{"okx", "binance"},
 	})
 
-	fmt.Println("kline", kline, err)
+	if err != nil {
+		fmt.Println("获取K线数据失败", err)
+	}
+	m_file.Write(global.Path.DataPath+"/kline-Simp.json", m_json.ToStr(kline))
 
-	// KlineActionTest()
 }
 
 func KlineActionTest() {

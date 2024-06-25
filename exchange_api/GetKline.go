@@ -16,8 +16,8 @@ import (
 	"github.com/handy-golang/go-tools/m_time"
 )
 
-func GetKline(opt global.GetKlineOpt) (resData []global.KlineType, resErr error) {
-	resData = nil
+func GetKline(opt global.GetKlineOpt) (resData global.KlineExchangeMap, resErr error) {
+	resData = global.KlineExchangeMap{}
 	resErr = nil
 
 	// 检查参数 GoodsId
@@ -51,10 +51,10 @@ func GetKline(opt global.GetKlineOpt) (resData []global.KlineType, resErr error)
 
 	// EndTime 缺省值
 	now := m_time.GetUnixInt64()
-	EndTime := now
+	EndTime := opt.EndTime
 	// 时间 传入的时间戳 必须大于最早时间才有效否则重置为当 now
-	if opt.EndTime > global.TimeOldest {
-		EndTime = opt.EndTime
+	if opt.EndTime < global.TimeOldest || EndTime > now {
+		EndTime = now
 	}
 	// 计算起始时间  //  结束时间 - 时间间隔 * 条数
 	StartTime := EndTime - BarObj.Interval*int64(Limit)
@@ -102,16 +102,25 @@ func GetKline(opt global.GetKlineOpt) (resData []global.KlineType, resErr error)
 
 	// var ExchangeMapList = []global.KlineExchangeMap{}
 	for key, kline := range KlineMap {
-		var list = []global.KlineSimpType{}
-		for _, item := range kline {
-			timeUnix, _ := strconv.ParseInt(item[0], 10, 64)
-			// 过滤，挑选出符合规则的数据
-			if timeUnix >= StartTime && timeUnix <= EndTime {
-				list = append(list, item)
-			}
-		}
 
-		fmt.Println(key, len(list))
+		time_end, _ := strconv.ParseInt(kline[len(kline)-1][0], 10, 64)
+		diffLimit_end := (time_end - EndTime) / BarObj.Interval
+		var list2 = kline[:len(kline)-int(diffLimit_end)-1]
+		var list3 = list2[len(list2)-Limit:]
+
+		// 数据检查
+		// fmt.Println("list3", m_time.UnixFormat(list3[0][0]), m_time.UnixFormat(list3[len(list3)-1][0]))
+		// fmt.Println("time", m_time.UnixFormat(StartTime), m_time.UnixFormat(EndTime))
+		// fmt.Println(key, "list3", len(list3))
+		// for key2, item2 := range list3 {
+		// 	preTime := item2[0]
+		// 	if key2-1 > -1 {
+		// 		preTime = list3[key2-1][0]
+		// 	}
+		// 	now := item2[0]
+		// 	fmt.Println("diff", m_count.Sub(now, preTime))
+		// }
+		resData[key] = list3
 	}
 
 	return

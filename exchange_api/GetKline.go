@@ -63,7 +63,7 @@ func GetKline(opt global.GetKlineOpt) (resData global.KlineExchangeMap, resErr e
 	// Exchange 缺省值, 选取有效值
 	var Exchange []string
 	if len(opt.Exchange) < 1 {
-		Exchange = []string{opt.Exchange[0]} // 如果用户未填写，则缺省
+		Exchange = []string{global.ExchangeOpt[0]} // 如果用户未填写，则缺省
 	} else {
 		for _, item := range global.ExchangeOpt {
 			for _, exchange := range opt.Exchange {

@@ -21,7 +21,6 @@ func main() {
 }
 
 func Start() {
-
 	global.SysInit(global.SysInitOpt{
 		ProxyURLs: []string{"http://127.0.0.1:10809"},
 	})
@@ -35,7 +34,7 @@ func Start() {
 			// 读取本地并缓存
 			exchange_api.GetGoodsList()
 		},
-		SleepTime: time.Hour * 4, // 每4小时执行一次更新
+		SleepTime: time.Hour * 4, // 执行一次后 每4小时再执行一次
 	}).Start()
 
 	// // ####### 获取商品列表 #######
@@ -73,14 +72,12 @@ func Start() {
 		// Exchange: []string{"okx", "binance"},
 		Exchange: []string{"okx"},
 	})
-
 	if err != nil {
 		fmt.Println("获取K线数据失败", err)
 	}
 	// fmt.Println("kline 总长度", len(klineMap["binance"]))
 
 	m_file.WriteByte(global.Path.DataPath+"/kline-test1.json", m_json.ToJson(klineMap))
-
 }
 
 func KlineActionTest() {
@@ -114,5 +111,4 @@ func KlineActionTest() {
 	}
 	fmt.Println("数据获取成功", len(binanceKline), err)
 	m_file.WriteByte(global.Path.Binance.Dir+"/kline.json", m_json.ToJson(binanceKline))
-
 }

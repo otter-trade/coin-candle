@@ -68,7 +68,7 @@ func Start() {
 		GoodsId:  "BTC-USDT",
 		Bar:      "1m",
 		EndTime:  time,
-		Limit:    5,
+		Limit:    130,
 		Exchange: []string{"okx", "binance"},
 		// Exchange: []string{"okx"},
 	})

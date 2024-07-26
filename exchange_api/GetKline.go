@@ -88,7 +88,7 @@ func GetKline(opt global.GetKlineOpt) (resData global.KlineExchangeMap, resErr e
 		Exchange:  Exchange,
 	})
 
-	// 在这里进行K线的整合并返回
+	// 在这里进行K线请求参数的整合并返回
 	KlineMap := map[string][]global.KlineSimpType{}
 
 	for _, item := range SendParamList {
@@ -208,7 +208,8 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 	resErr = nil
 
 	now := m_time.GetUnixInt64()
-	// 如果 当前时间 EndTime 和当前时间相比 小于一个间隔，则直接走交易所
+	// 如果  EndTime 和当前时间相比 小于一个间隔，则直接走交易所
+	// 也就是说，当前时间 大于 EndTime 一个间隔，请求的一定是历史数据
 	if now-opt.EndTime > opt.BarObj.Interval {
 		// 先读取文件看看是否存在
 		IsExist := m_path.IsExist(opt.StoreFilePath)
@@ -260,7 +261,7 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 		return
 	}
 
-	// 如果存在未来时间,则进行摘除
+	// 如果存在未来时间, 则进行摘除 防止文件重复
 	if opt.EndTime > lastTime {
 		diffLimit := (opt.EndTime - lastTime) / opt.BarObj.Interval
 		resData = fetchData[diffLimit:]
@@ -271,7 +272,7 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 	return
 }
 
-// 获取目录时间戳列表 并排序
+// 计算文件名
 func FindFileTime(opt GetKlineFilePathOpt) (resData int64) {
 	// 文件之间的时间间隔
 	fileInterval := opt.BarObj.Interval * global.ExchangeKlineLimit

@@ -17,7 +17,7 @@ import (
 
 func main() {
 	Start()
-	KlineActionTest()
+	// KlineActionTest()
 }
 
 func Start() {
@@ -65,12 +65,12 @@ func Start() {
 	// time := m_time.TimeParse(m_time.LaySP_ss, "2024-05-21 18:55:43")
 	time := m_time.GetUnixInt64()
 	klineMap, err := exchange_api.GetKline(global.GetKlineOpt{
-		GoodsId: "BTC-USDT",
-		Bar:     "1m",
-		EndTime: time, // 一年前
-		Limit:   5,
-		// Exchange: []string{"okx", "binance"},
-		Exchange: []string{"okx"},
+		GoodsId:  "BTC-USDT",
+		Bar:      "1m",
+		EndTime:  time,
+		Limit:    5,
+		Exchange: []string{"okx", "binance"},
+		// Exchange: []string{"okx"},
 	})
 	if err != nil {
 		fmt.Println("获取K线数据失败", err)

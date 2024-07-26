@@ -89,7 +89,7 @@ func GetKline(opt global.GetKlineOpt) (resData global.KlineExchangeMap, resErr e
 	})
 
 	// 在这里进行K线的整合并返回
-	var KlineMap = map[string][]global.KlineSimpType{}
+	KlineMap := map[string][]global.KlineSimpType{}
 
 	for _, item := range SendParamList {
 		kline, err := SendKlineRequest(item)
@@ -104,8 +104,8 @@ func GetKline(opt global.GetKlineOpt) (resData global.KlineExchangeMap, resErr e
 	for key, kline := range KlineMap {
 		time_end, _ := strconv.ParseInt(kline[len(kline)-1][0], 10, 64)
 		diffLimit_end := (time_end - EndTime) / BarObj.Interval
-		var list2 = kline[:len(kline)-int(diffLimit_end)-1]
-		var list3 = list2[len(list2)-Limit:]
+		list2 := kline[:len(kline)-int(diffLimit_end)-1]
+		list3 := list2[len(list2)-Limit:]
 		// 数据检查
 		// fmt.Println("list3", m_time.UnixFormat(list3[0][0]), m_time.UnixFormat(list3[len(list3)-1][0]))
 		// fmt.Println("time", m_time.UnixFormat(StartTime), m_time.UnixFormat(EndTime))
@@ -137,7 +137,7 @@ func GetKlineFilePath(opt GetKlineFilePathOpt) (resData []SendKlineRequestOpt) {
 	resData = []SendKlineRequestOpt{}
 	for _, exchange := range opt.Exchange {
 		// 拼接目录
-		var Dir = m_str.Join(
+		Dir := m_str.Join(
 			global.Path.DataPath, // 数据目录
 			os.PathSeparator,
 			exchange, // 按照交易所名称分开存储
@@ -151,16 +151,16 @@ func GetKlineFilePath(opt GetKlineFilePathOpt) (resData []SendKlineRequestOpt) {
 		Before_Time := FindFileTime(opt)
 
 		// 计算最多遍历多少次 MaxLoop = Limit / 100  + 3 （前后时间拢余都算上）
-		var MaxLoop = global.KlineMaxLimit/global.ExchangeKlineLimit + 5
-		var fileInterval = opt.BarObj.Interval * global.ExchangeKlineLimit
+		MaxLoop := global.KlineMaxLimit/global.ExchangeKlineLimit + 5
+		fileInterval := opt.BarObj.Interval * global.ExchangeKlineLimit
 
 		// 计算要发送的请求列表
 		SendKlineRequestOptList := []SendKlineRequestOpt{}
 		for i := 0; i < MaxLoop; i++ {
-			var timeUnix = Before_Time - fileInterval*int64(i) // 最初的时间 挨个递减 条
+			timeUnix := Before_Time - fileInterval*int64(i) // 最初的时间 挨个递减 条
 			year_month := m_time.MsToTime(opt.EndTime, "0").Format("2006-01")
 
-			var SendKlineRequestOpt = SendKlineRequestOpt{
+			SendKlineRequestOpt := SendKlineRequestOpt{
 				GoodsId:  opt.Goods.GoodsId,
 				Exchange: exchange,
 				EndTime:  timeUnix,   // 发出请求的时间
@@ -204,7 +204,6 @@ type SendKlineRequestOpt struct {
 }
 
 func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, resErr error) {
-
 	resData = nil
 	resErr = nil
 
@@ -221,7 +220,7 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 			if err != nil {
 				global.LogErr("exchange_api.SendKlineRequest 文件解析失败,将重新获取并覆盖", opt.StoreFilePath)
 			} else {
-				if len(kline) == global.ExchangeKlineLimit { //数据解析成功并返回
+				if len(kline) == global.ExchangeKlineLimit { // 数据解析成功并返回
 					resData = kline
 					return
 				} else {
@@ -240,7 +239,6 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 			Bar:        opt.BarObj.Okx,
 			EndTime:    opt.EndTime,
 		})
-
 	}
 
 	if len(opt.Binance_symbol) > 2 {
@@ -275,18 +273,17 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 
 // 获取目录时间戳列表 并排序
 func FindFileTime(opt GetKlineFilePathOpt) (resData int64) {
-
 	// 文件之间的时间间隔
-	var fileInterval = opt.BarObj.Interval * global.ExchangeKlineLimit
+	fileInterval := opt.BarObj.Interval * global.ExchangeKlineLimit
 
 	// 计算用户和基准时间之间的差值
 	var maxFileTime int64
 	if opt.EndTime > global.FileNameBaseTime {
-		var diffLimit = (opt.EndTime-global.FileNameBaseTime)/fileInterval + 1
-		maxFileTime = global.FileNameBaseTime + (diffLimit * fileInterval) //加文件间隔
+		diffLimit := (opt.EndTime-global.FileNameBaseTime)/fileInterval + 1
+		maxFileTime = global.FileNameBaseTime + (diffLimit * fileInterval) // 加文件间隔
 	} else {
-		var diffLimit = (global.FileNameBaseTime-opt.EndTime)/fileInterval + 1
-		maxFileTime = global.FileNameBaseTime - (diffLimit * fileInterval) //减文件间隔
+		diffLimit := (global.FileNameBaseTime-opt.EndTime)/fileInterval + 1
+		maxFileTime = global.FileNameBaseTime - (diffLimit * fileInterval) // 减文件间隔
 	}
 
 	return maxFileTime

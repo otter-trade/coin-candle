@@ -66,18 +66,20 @@ func Start() {
 	time := m_time.GetUnixInt64()
 	klineMap, err := exchange_api.GetKline(global.GetKlineOpt{
 		GoodsId:  "BTC-USDT",
-		Bar:      "1m",
+		Bar:      "1h",
 		EndTime:  time,
-		Limit:    130,
+		Limit:    5,
 		Exchange: []string{"okx", "binance"},
 		// Exchange: []string{"okx"},
 	})
 	if err != nil {
 		fmt.Println("获取K线数据失败", err)
 	}
-	// fmt.Println("kline 总长度", len(klineMap["binance"]))
 
-	m_file.WriteByte(global.Path.DataPath+"/kline-test1.json", m_json.ToJson(klineMap))
+	kline := klineMap["binance"]
+	fmt.Println("kline 最新时间", len(kline), kline[len(kline)-1][0])
+
+	m_file.WriteByte(global.Path.DataPath+"/kline-test-h.json", m_json.ToJson(klineMap))
 }
 
 func KlineActionTest() {

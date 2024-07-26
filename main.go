@@ -62,8 +62,8 @@ func Start() {
 
 	// ####### K线数据 #######
 	// time := m_time.TimeParse(m_time.LaySP_ss, "2023-05-06 18:56:43")
-	// time := m_time.TimeParse(m_time.LaySP_ss, "2024-05-21 18:55:43")
-	time := m_time.GetUnixInt64()
+	time := m_time.TimeParse(m_time.LaySP_ss, "2024-07-26 16:00:00")
+	// time := m_time.GetUnixInt64()
 	klineMap, err := exchange_api.GetKline(global.GetKlineOpt{
 		GoodsId:  "BTC-USDT",
 		Bar:      "1h",

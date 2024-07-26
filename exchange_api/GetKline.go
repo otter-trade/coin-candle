@@ -103,9 +103,14 @@ func GetKline(opt global.GetKlineOpt) (resData global.KlineExchangeMap, resErr e
 
 	for key, kline := range KlineMap {
 		time_end, _ := strconv.ParseInt(kline[len(kline)-1][0], 10, 64)
+
+		// （ K线的结束时间 - 需要的结束时间 ）/ 时间间隔  =  需要的数据条数
 		diffLimit_end := (time_end - EndTime) / BarObj.Interval
-		list2 := kline[:len(kline)-int(diffLimit_end)-1]
+
+		// 从开头 截去 末尾 -1 条
+		list2 := kline[:len(kline)-int(diffLimit_end)]
 		list3 := list2[len(list2)-Limit:]
+
 		// 数据检查
 		// fmt.Println("list3", m_time.UnixFormat(list3[0][0]), m_time.UnixFormat(list3[len(list3)-1][0]))
 		// fmt.Println("time", m_time.UnixFormat(StartTime), m_time.UnixFormat(EndTime))
@@ -118,6 +123,8 @@ func GetKline(opt global.GetKlineOpt) (resData global.KlineExchangeMap, resErr e
 		// 	now := item2[0]
 		// 	fmt.Println("diff", m_count.Sub(now, preTime))
 		// }
+		// 数据检查 -- end
+
 		resData[key] = list3
 	}
 
@@ -208,8 +215,8 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 	resErr = nil
 
 	now := m_time.GetUnixInt64()
-	// 如果  EndTime 和当前时间相比 小于一个间隔，则直接走交易所
 	// 也就是说，当前时间 大于 EndTime 一个间隔，请求的一定是历史数据
+
 	if now-opt.EndTime > opt.BarObj.Interval {
 		// 先读取文件看看是否存在
 		IsExist := m_path.IsExist(opt.StoreFilePath)

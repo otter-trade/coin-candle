@@ -214,9 +214,10 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 	resData = nil
 	resErr = nil
 
+	isFileStatusOk := true // 文件是否OK
+
 	now := m_time.GetUnixInt64()
 	// 也就是说，当前时间 大于 EndTime 一个间隔，请求的一定是历史数据
-
 	if now-opt.EndTime > opt.BarObj.Interval {
 		// 先读取文件看看是否存在
 		IsExist := m_path.IsExist(opt.StoreFilePath)
@@ -226,14 +227,37 @@ func SendKlineRequest(opt SendKlineRequestOpt) (resData []global.KlineSimpType, 
 			var kline []global.KlineSimpType
 			err := json.Unmarshal(fileCont, &kline)
 			if err != nil {
-				global.LogErr("exchange_api.SendKlineRequest 文件解析失败,将重新获取并覆盖", opt.StoreFilePath)
+				isFileStatusOk = false // 文件读取失败
+				global.LogErr("exchange_api.SendKlineRequest 文件解析失败,将重新请求并覆盖", opt.StoreFilePath)
 			} else {
 				if len(kline) == global.ExchangeKlineLimit { // 数据解析成功并返回
 					resData = kline
 					return
 				} else {
-					global.LogErr("数据不完整，将重新获取并写入", opt.StoreFilePath)
+					// 数据不完整，但是文件本身 OK 啊
+					global.LogErr("数据不完整，将重新请求并覆盖写入", opt.StoreFilePath)
 				}
+			}
+		} else {
+			isFileStatusOk = false // 文件不存在
+		}
+	}
+
+	// 文件不存在问题则 获取文件的更新时间，判断是否需要去交易所更新 ，也就是说 40 秒内最多请求一次
+
+	if isFileStatusOk {
+		fileInfo, _ := os.Stat(opt.StoreFilePath)
+		fileLastEditTime := fileInfo.ModTime()
+		fileLastEditTime_unix := m_time.ToUnixMsec(fileLastEditTime)
+
+		// 当前时间 - 文件最后修改时间 < 请求间隔 则读取文件返回
+		if now-fileLastEditTime_unix < global.KlineRequestInterval {
+			fileCont := m_file.ReadFile(opt.StoreFilePath)
+			var kline []global.KlineSimpType
+			err := json.Unmarshal(fileCont, &kline)
+			if err == nil {
+				resData = kline
+				return
 			}
 		}
 	}

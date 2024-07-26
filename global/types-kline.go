@@ -95,5 +95,7 @@ const KlineLimitDefault = 10 // 请求 K线时 缺省的 Limit
 
 const ExchangeKlineLimit = 100 // 交易所拿取K线的最大值
 
-// 文件名基准时间
+var KlineRequestInterval = m_time.UnixTimeInt64.Seconds * 40 // 在 40 秒内，不重复请求，意思就是说价格允许 30 秒的延迟，可修改为 0 但是请求频率会很高
+
+// 文件名计算基准时间
 var FileNameBaseTime = m_time.TimeParse(m_time.LaySP_ss, "2024-05-20 00:00:00")

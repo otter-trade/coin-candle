@@ -11,7 +11,7 @@ go get github.com/otter-trade/coin-candle
 ## 升级使用最新发布的版本
 
 ```bash
-go get -u github.com/otter-trade/coin-candle@v1.1.1
+go get -u github.com/otter-trade/coin-candle@v1.1.2
 ```
 
 ## 使用文档和示例

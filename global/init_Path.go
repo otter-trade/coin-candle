@@ -20,6 +20,7 @@ var Path struct {
 	Binance       ExchangeDir // 币安数据目录
 	Okx           ExchangeDir // 欧意数据目录
 	GoodsListFile string      // 商品列表文件
+	MockTradeDir  string      // 虚拟持仓数据目录
 }
 
 // 初始化日志目录 ，且必须为有效目录
@@ -90,4 +91,14 @@ func init_Path(opt SysInitOpt) {
 		"goods-list.json",
 	)
 
+	// 初始化虚拟持仓数据目录
+
+	Path.MockTradeDir = m_str.Join(
+		Path.DataPath,
+		os.PathSeparator,
+		"mock-trade",
+	)
+	if !m_path.IsExist(Path.MockTradeDir) {
+		os.MkdirAll(Path.MockTradeDir, os.ModePerm)
+	}
 }

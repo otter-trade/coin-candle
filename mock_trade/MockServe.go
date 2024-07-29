@@ -222,3 +222,24 @@ func GetMockServeInfo(opt global.FindMockServeOpt) (resData global.MockServeConf
 
 	return
 }
+
+// 删除一个策略
+func ClearStrategy(StrategyID string) (resErr error) {
+	resErr = nil
+	// 检查是否超出最大条目
+	StrategyDir := m_str.Join(
+		global.Path.MockTradeDir,
+		os.PathSeparator,
+		StrategyID,
+	)
+	files, err := os.ReadDir(StrategyDir)
+	if err != nil {
+		resErr = err
+		return
+	}
+	if len(files) > 0 {
+		resErr = fmt.Errorf("请先删除该策略下的所有 MockServe")
+		return
+	}
+	return
+}

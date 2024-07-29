@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/otter-trade/coin-candle/exchange_api"
 	"github.com/otter-trade/coin-candle/exchange_api/binance"
@@ -9,16 +10,18 @@ import (
 	"github.com/otter-trade/coin-candle/global"
 	"github.com/otter-trade/coin-candle/mock_trade"
 
+	"github.com/handy-golang/go-tools/m_cycle"
 	"github.com/handy-golang/go-tools/m_file"
 	"github.com/handy-golang/go-tools/m_json"
 	"github.com/handy-golang/go-tools/m_time"
 )
 
 func main() {
-	SysInit()
+	SysInit() //  系统的初始化
 	// KlineActionTest()
-	// MarketFunc()    // 市场K线模块
-	MockTradeFunc() // 模拟交易
+	// MarketFunc()    // 市场相关的数据
+	// KlineFunc()     // K线相关的数据
+	// MockServeFunc() // MockServe 的增删查
 }
 
 func SysInit() {
@@ -26,22 +29,22 @@ func SysInit() {
 		ProxyURLs: []string{"http://127.0.0.1:10809"},
 	})
 
-	// m_cycle.New(m_cycle.Opt{
-	// 	Func: func() {
-	// 		// 更新本地的商品列表
-	// 		exchange_api.UpdateLocalGoodsList()
-	// 		// 更新本地的榜单
-	// 		exchange_api.UpdateLocalTicker()
-	// 		// 读取本地并缓存 并存入内存中
-	// 		exchange_api.GetGoodsList()
-	// 	},
-	// 	SleepTime: time.Hour * 4, // 执行一次后 每4小时再执行一次
-	// }).Start()
+	m_cycle.New(m_cycle.Opt{
+		Func: func() {
+			// 更新本地的商品列表
+			// exchange_api.UpdateLocalGoodsList()
+			// 更新本地的榜单
+			// exchange_api.UpdateLocalTicker()
+			// 读取获取商品列表 并存入内存中
+			exchange_api.GetGoodsList()
+		},
+		SleepTime: time.Hour * 4, // 执行一次后 每隔 4h 再执行一次
+	}).Start()
 }
 
-func MockTradeFunc() {
+func MockServeFunc() {
 	//  ####### 创建一个 MockServe #######
-	res, err := mock_trade.CreateMockServe(global.CreateMockServeOpt{
+	mockServeInfo, err := mock_trade.CreateMockServe(global.CreateMockServeOpt{
 		StrategyID:   "mo7_StrategyID_001",
 		MockName:     "测试_MockName_1",
 		RunMode:      "1",
@@ -50,14 +53,14 @@ func MockTradeFunc() {
 	if err != nil {
 		fmt.Println("创建持仓失败", err)
 	}
-	m_json.Println(res)
+	m_json.Println(mockServeInfo)
 
 	// #######  查看 MockServe 列表 #######
 	mockServeList := mock_trade.GetMockServeList("mo7_StrategyID_001")
 	m_json.Println(mockServeList)
 
 	// #######  查看 MockServe 详情 #######
-	mockServeInfo, err := mock_trade.GetMockServeInfo(global.FindMockServeOpt{
+	mockServeInfo, err = mock_trade.GetMockServeInfo(global.FindMockServeOpt{
 		StrategyID: "mo7_StrategyID_001",
 		MockName:   "测试_MockName_2",
 	})
@@ -73,6 +76,12 @@ func MockTradeFunc() {
 	})
 	if err != nil {
 		fmt.Println("删除虚拟持仓失败", err)
+	}
+
+	// ####### 删除一个 策略 #######
+	err = mock_trade.ClearStrategy("mo7_StrategyID_001")
+	if err != nil {
+		fmt.Println("删除策略失败", err)
 	}
 }
 
@@ -100,8 +109,10 @@ func MarketFunc() {
 		fmt.Println("获取榜单数据失败", err)
 	}
 	fmt.Println("TickerList 上榜币种数量:", len(TickerList))
+}
 
-	// ####### K线数据 #######
+// K线数据
+func KlineFunc() {
 	// time := m_time.TimeParse(m_time.LaySP_ss, "2023-05-06 18:56:43")
 	// time := m_time.TimeParse(m_time.LaySP_ss, "2024-07-26 16:00:00")
 

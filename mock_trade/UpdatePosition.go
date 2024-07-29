@@ -1,8 +1,10 @@
 package mock_trade
 
+import "github.com/otter-trade/coin-candle/global"
+
 // 更新一次仓位
 
-var TradeModeList = MapAny{
+var TradeModeList = global.MapAny{
 	"SWAP": map[string]any{
 		"description": "永续合约",
 	},
@@ -11,7 +13,7 @@ var TradeModeList = MapAny{
 	},
 }
 
-var TradeTypeList = MapAny{
+var TradeTypeList = global.MapAny{
 	"Coin": map[string]any{
 		"description": "数字货币",
 	},

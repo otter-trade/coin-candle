@@ -3,6 +3,7 @@ package mock_trade
 import (
 	"fmt"
 	"os"
+	"regexp"
 
 	"github.com/handy-golang/go-tools/m_str"
 	"github.com/otter-trade/coin-candle/global"
@@ -25,50 +26,45 @@ import (
 	基于本地文件系统，支持超高频率的读取和更新。
 */
 
-type MapAny map[string]any
-
-// 运行模式可选参数
-var RunTypeList = MapAny{
-	"1": MapAny{
-		"description": "回测模式，交易只会在本地产生订单，方便查询和以及辅助策略的修改。",
-	},
-	"2": map[string]any{
-		"description": "社区模式，交易不仅会在本地产生订单，还会同时将订单结果同步至交易所完成下单。需要OtterTrade平台的权限。",
-	},
-	"3": map[string]any{
-		"description": "生产模式，交易不仅会在本地产生订单，还会同时将订单结果同步至交易所完成下单。策略需要通过 OtterTrade 平台的审核。",
-	},
-}
-
 // 注册虚拟一个持仓服务
-type CreatePositionOpt struct {
-	StrategyID   string // 策略的Id，从 OtterTrade 用户数据中读取，不可为空
-	MockName     string // 模拟交易的名称，策略开发者自定义，不可为空，1-12位中文，字母和数字。
-	RunType      string // 虚拟持仓的运行模式，缺省值 1 ，可选值 RunTypeList
-	InitialAsset string // 初始资产(USDT)  缺省值 10000
-	FeeRate      string // 手续费率 缺省值 0.001 参考 https://www.okx.com/zh-hans/fees
-}
+func CreatePosition(opt global.CreatePositionOpt) (resData any, resErr error) {
+	resData = nil
+	resErr = nil
+	// 检查参数
+	if len(opt.StrategyID) < 1 {
+		resErr = fmt.Errorf("StrategyID 不能为空")
+		return
+	}
 
-func CreatePosition(opt CreatePositionOpt) {
+	if len(opt.MockName) < 1 {
+		resErr = fmt.Errorf("MockName 不能为空")
+		return
+	}
+
+	reg := regexp.MustCompile(global.MockNamePattern)
+	match := reg.MatchString(opt.MockName)
+	if !match {
+		resErr = fmt.Errorf("MockName 只能由1-12位汉字、字母、数字、下划线组成")
+		return
+	}
+
+	fmt.Println("正则结果", opt.MockName, match)
 	// 存储目录为
-	dir := m_str.Join(
+	configFile := m_str.Join(
 		global.Path.MockTradeDir,
 		os.PathSeparator,
 		opt.StrategyID,
 		os.PathSeparator,
 		opt.MockName,
-	)
-	fmt.Println("存储目录为", dir)
-
-	// 配置文件为
-	configFile := m_str.Join(
-		dir,
 		os.PathSeparator,
 		"config.json",
 	)
+
 	fmt.Println("配置文件为", configFile)
 
 	// 配置文件有，则抛错，表示该虚拟持仓已建立。无，则创建，并返回成功状态。
+
+	return
 }
 
 // 删除一个持仓服务

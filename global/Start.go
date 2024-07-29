@@ -14,7 +14,7 @@ type SysInitOpt struct {
 }
 
 func SysInit(opt SysInitOpt) {
-	// 初始化项 运行所需要的各种 目录
+	// 初始化项 准备好运行所需要的各种 目录
 	init_Path(opt)
 
 	// 初始化日志系统

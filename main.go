@@ -2,41 +2,53 @@ package main
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/otter-trade/coin-candle/exchange_api"
 	"github.com/otter-trade/coin-candle/exchange_api/binance"
 	"github.com/otter-trade/coin-candle/exchange_api/okx"
 	"github.com/otter-trade/coin-candle/global"
+	"github.com/otter-trade/coin-candle/mock_trade"
 
-	"github.com/handy-golang/go-tools/m_cycle"
 	"github.com/handy-golang/go-tools/m_file"
 	"github.com/handy-golang/go-tools/m_json"
 	"github.com/handy-golang/go-tools/m_time"
 )
 
 func main() {
-	Start()
+	SysInit()
 	// KlineActionTest()
+	// MarketFunc()    // 市场K线模块
+	MockTradeFunc() // 模拟交易
 }
 
-func Start() {
+func SysInit() {
 	global.SysInit(global.SysInitOpt{
 		ProxyURLs: []string{"http://127.0.0.1:10809"},
 	})
 
-	m_cycle.New(m_cycle.Opt{
-		Func: func() {
-			// 更新本地的商品列表
-			exchange_api.UpdateLocalGoodsList()
-			// 更新本地的榜单
-			exchange_api.UpdateLocalTicker()
-			// 读取本地并缓存
-			exchange_api.GetGoodsList()
-		},
-		SleepTime: time.Hour * 4, // 执行一次后 每4小时再执行一次
-	}).Start()
+	// m_cycle.New(m_cycle.Opt{
+	// 	Func: func() {
+	// 		// 更新本地的商品列表
+	// 		exchange_api.UpdateLocalGoodsList()
+	// 		// 更新本地的榜单
+	// 		exchange_api.UpdateLocalTicker()
+	// 		// 读取本地并缓存 并存入内存中
+	// 		exchange_api.GetGoodsList()
+	// 	},
+	// 	SleepTime: time.Hour * 4, // 执行一次后 每4小时再执行一次
+	// }).Start()
+}
 
+func MockTradeFunc() {
+	res, err := mock_trade.CreatePosition(global.CreatePositionOpt{
+		StrategyID: "mo7_StrategyID_001",
+		MockName:   "你好123abcAS_",
+	})
+
+	fmt.Println(res, err)
+}
+
+func MarketFunc() {
 	// // ####### 获取商品列表 #######
 	// GoodsList, err := exchange_api.GetGoodsList()
 	// if err != nil {

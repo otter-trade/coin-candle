@@ -3,7 +3,7 @@ module github.com/otter-trade/coin-candle
 go 1.22.5
 
 require (
-	github.com/handy-golang/go-tools v1.0.5
+	github.com/handy-golang/go-tools v1.0.6
 	github.com/json-iterator/go v1.1.12
 )
 

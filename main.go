@@ -41,11 +41,15 @@ func SysInit() {
 
 func MockTradeFunc() {
 	res, err := mock_trade.CreatePosition(global.CreatePositionOpt{
-		StrategyID: "mo7_StrategyID_001",
-		MockName:   "你好123abcAS_",
+		StrategyID:   "mo7_StrategyID_001",
+		MockName:     "测试_MockName_1",
+		RunMode:      "1",
+		InitialAsset: "1000",
 	})
-
-	fmt.Println(res, err)
+	if err != nil {
+		fmt.Println("创建持仓失败", err)
+	}
+	m_json.Println(res)
 }
 
 func MarketFunc() {

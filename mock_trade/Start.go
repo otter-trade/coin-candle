@@ -1,10 +1,14 @@
 package mock_trade
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
-	"regexp"
 
+	"github.com/handy-golang/go-tools/m_count"
+	"github.com/handy-golang/go-tools/m_file"
+	"github.com/handy-golang/go-tools/m_json"
+	"github.com/handy-golang/go-tools/m_path"
 	"github.com/handy-golang/go-tools/m_str"
 	"github.com/otter-trade/coin-candle/global"
 )
@@ -27,30 +31,44 @@ import (
 */
 
 // 注册虚拟一个持仓服务
-func CreatePosition(opt global.CreatePositionOpt) (resData any, resErr error) {
-	resData = nil
+
+func CreatePosition(opt global.CreatePositionOpt) (resData global.PositionConfigType, resErr error) {
+	resData = global.PositionConfigType{}
 	resErr = nil
-	// 检查参数
+	// StrategyID 不能为空
 	if len(opt.StrategyID) < 1 {
 		resErr = fmt.Errorf("StrategyID 不能为空")
 		return
 	}
 
-	if len(opt.MockName) < 1 {
-		resErr = fmt.Errorf("MockName 不能为空")
+	// MockName 必须为2-24位字母数字下划线和中文
+	isMockNameReg := global.IsMockNameReg(opt.MockName)
+	if !isMockNameReg {
+		resErr = fmt.Errorf("MockName必须为2-24位字母数字下划线和中文")
 		return
 	}
 
-	reg := regexp.MustCompile(global.MockNamePattern)
-	match := reg.MatchString(opt.MockName)
-	if !match {
-		resErr = fmt.Errorf("MockName 只能由1-12位汉字、字母、数字、下划线组成")
+	// 检查 RunMode
+	RunMode, err := global.GetRunMode(opt.RunMode)
+	if err != nil {
+		resErr = err
 		return
 	}
 
-	fmt.Println("正则结果", opt.MockName, match)
+	// 检查初始资产
+	InitialAsset := m_count.Sub(opt.InitialAsset, "0")
+	if m_count.Le(InitialAsset, "1000") < 0 {
+		InitialAsset = "1000"
+	}
+
+	// 检查手续费率
+	FeeRate := m_count.Sub(opt.FeeRate, "0")
+	if m_count.Le(FeeRate, "1") >= 0 || m_count.Le(FeeRate, "0") == 0 {
+		FeeRate = "0.001"
+	}
+
 	// 存储目录为
-	configFile := m_str.Join(
+	configPath := m_str.Join(
 		global.Path.MockTradeDir,
 		os.PathSeparator,
 		opt.StrategyID,
@@ -60,9 +78,29 @@ func CreatePosition(opt global.CreatePositionOpt) (resData any, resErr error) {
 		"config.json",
 	)
 
-	fmt.Println("配置文件为", configFile)
+	var config global.PositionConfigType
+	isExist := m_path.IsExist(configPath)
+	if isExist {
+		resErr = fmt.Errorf("该虚拟持仓已存在")
+		fileCont := m_file.ReadFile(configPath)
+		err := json.Unmarshal(fileCont, &config)
+		if err != nil {
+			resErr = err
+			return
+		}
+		resData = config
+		return
+	}
 
-	// 配置文件有，则抛错，表示该虚拟持仓已建立。无，则创建，并返回成功状态。
+	config.StrategyID = opt.StrategyID
+	config.MockName = opt.MockName
+	config.InitialAsset = InitialAsset
+	config.FeeRate = FeeRate
+	config.RunMode = RunMode
+
+	resData = config
+
+	m_file.Write(configPath, m_json.ToStr(config))
 
 	return
 }

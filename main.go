@@ -85,6 +85,10 @@ func MockServeFunc() {
 	}
 }
 
+// 更新持仓状态
+func PositionFunc() {
+}
+
 // 市场数据
 func MarketFunc() {
 	// ####### 获取商品列表 #######

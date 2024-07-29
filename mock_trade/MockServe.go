@@ -36,7 +36,7 @@ func CreateMockServe(opt global.CreateMockServeOpt) (resData global.MockServeCon
 	resErr = nil
 
 	// 检查 StrategyID 和 MockName 并获取存储目录
-	mockPath, err := global.CheckMockName(global.FindMockServeOpt{
+	mockPath, err := CheckMockName(global.FindMockServeOpt{
 		StrategyID: opt.StrategyID,
 		MockName:   opt.MockName,
 	})
@@ -45,7 +45,7 @@ func CreateMockServe(opt global.CreateMockServeOpt) (resData global.MockServeCon
 		return
 	}
 
-	isDesc := global.IsDescReg(opt.Description)
+	isDesc := IsDescReg(opt.Description)
 	if !isDesc {
 		resErr = fmt.Errorf("Description禁止包含特殊符号")
 		return
@@ -121,7 +121,7 @@ func CreateMockServe(opt global.CreateMockServeOpt) (resData global.MockServeCon
 func DeleteMockServe(opt global.FindMockServeOpt) (resErr error) {
 	resErr = nil
 	// 检查 StrategyID 和 MockName 并获取存储目录
-	mockPath, err := global.CheckMockName(global.FindMockServeOpt{
+	mockPath, err := CheckMockName(global.FindMockServeOpt{
 		StrategyID: opt.StrategyID,
 		MockName:   opt.MockName,
 	})
@@ -196,7 +196,7 @@ func GetMockServeInfo(opt global.FindMockServeOpt) (resData global.MockServeConf
 	resData = global.MockServeConfigType{}
 	resErr = nil
 	// 检查 StrategyID 和 MockName 并获取存储目录
-	mockPath, err := global.CheckMockName(global.FindMockServeOpt{
+	mockPath, err := CheckMockName(global.FindMockServeOpt{
 		StrategyID: opt.StrategyID,
 		MockName:   opt.MockName,
 	})

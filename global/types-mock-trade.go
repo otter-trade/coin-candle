@@ -2,68 +2,10 @@ package global
 
 import (
 	"fmt"
-	"os"
-	"regexp"
 
 	"github.com/handy-golang/go-tools/m_count"
 	"github.com/handy-golang/go-tools/m_str"
 )
-
-// 文本描述的检查
-func IsDescReg(str string) bool {
-	pattern := "[<>/|{}\\[\\]\\\\:;\"\\`\\*\\s\\'\\\"]"
-	reg := regexp.MustCompile(pattern)
-	return !reg.MatchString(str)
-}
-
-// 2-24位字母数字下划线和中文
-func IsMockNameReg(str string) bool {
-	pattern := "^[a-zA-Z0-9_\u4e00-\u9fa5]{2,24}$"
-	reg := regexp.MustCompile(pattern)
-	return reg.MatchString(str)
-}
-
-type MockPathType struct {
-	ConfigPath  string
-	MockDataDir string
-}
-
-func CheckMockName(opt FindMockServeOpt) (resData MockPathType, resErr error) {
-	resData = MockPathType{}
-	resErr = nil
-	// StrategyID 不能为空
-	if len(opt.StrategyID) < 1 {
-		resErr = fmt.Errorf("StrategyID不能为空")
-		return
-	}
-	// MockName 必须为2-24位字母数字下划线和中文
-	isMockNameReg := IsMockNameReg(opt.MockName)
-	if !isMockNameReg {
-		resErr = fmt.Errorf("MockName必须为2-24位字母数字下划线和中文")
-		return
-	}
-
-	MockDataDir := m_str.Join(
-		Path.MockTradeDir,
-		os.PathSeparator,
-		opt.StrategyID,
-		os.PathSeparator,
-		opt.MockName,
-		os.PathSeparator,
-	)
-
-	ConfigPath := m_str.Join(
-		MockDataDir,
-		"config.json",
-	)
-
-	resData = MockPathType{
-		ConfigPath:  ConfigPath,
-		MockDataDir: MockDataDir,
-	}
-
-	return
-}
 
 // map 类型
 type MapAny map[string]any
@@ -77,10 +19,9 @@ type CreateMockServeOpt struct {
 	Description  string // 用户对本次 Mock 的描述，缺省值 空
 }
 
-var (
-	DefaultFeeRate      = "0.001" // 默认手续费率
-	DefaultInitialAsset = "1000"  // 默认的初始资产
-)
+var DefaultFeeRate = "0.001" // 默认手续费率
+
+var DefaultInitialAsset = "1000" // 默认的初始资产
 
 type RunModeType struct {
 	Key         int

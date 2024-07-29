@@ -50,6 +50,6 @@ type UpdatePositionOpt struct {
 	NewPosition []NewPositionType
 }
 
+// 更新一次仓位状态
 func UpdatePosition(opt UpdatePositionOpt) {
-	// 更新一次仓位
 }

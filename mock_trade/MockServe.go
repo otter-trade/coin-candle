@@ -91,6 +91,8 @@ func CreateMockServe(opt global.CreateMockServeOpt) (resData global.MockServeCon
 	config.InitialAsset = InitialAsset
 	config.FeeRate = FeeRate
 	config.RunMode = RunMode
+	config.DataDir = mockPath.MockDataDir
+	config.DataIndex = []string{}
 
 	resData = config
 
@@ -173,7 +175,7 @@ func GetMockServeList(StrategyID string) (resData []global.MockServeConfigType) 
 	return
 }
 
-// 获取一个 MockServe 的配置信息
+// 获取一个 MockServe 的详情
 func GetMockServeInfo(opt global.FindMockServeOpt) (resData global.MockServeConfigType, resErr error) {
 	resData = global.MockServeConfigType{}
 	resErr = nil

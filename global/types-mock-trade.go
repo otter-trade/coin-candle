@@ -9,7 +9,7 @@ import (
 	"github.com/handy-golang/go-tools/m_str"
 )
 
-// 特殊符号或空格
+// 文本描述的检查
 func IsDescReg(str string) bool {
 	pattern := "[<>/|{}\\[\\]\\\\:;\"\\`\\*\\s\\'\\\"]"
 	reg := regexp.MustCompile(pattern)
@@ -118,7 +118,9 @@ func GetRunMode(key string) (resData RunModeType, resErr error) {
 
 type MockServeConfigType struct {
 	CreateMockServeOpt
-	RunMode RunModeType
+	RunMode   RunModeType
+	DataDir   string   // 数据存储路径
+	DataIndex []string // 数据索引
 }
 
 type FindMockServeOpt struct {

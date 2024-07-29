@@ -40,18 +40,18 @@ func SysInit() {
 }
 
 func MockTradeFunc() {
-	res, err := mock_trade.CreateMockServe(global.CreateMockServeOpt{
-		StrategyID:   "mo7_StrategyID",
-		MockName:     "测试_MockName_6",
-		RunMode:      "1",
-		InitialAsset: "1000",
-	})
-	if err != nil {
-		fmt.Println("创建持仓失败", err)
-	}
-	m_json.Println(res)
+	// res, err := mock_trade.CreateMockServe(global.CreateMockServeOpt{
+	// 	StrategyID:   "mo7_StrategyID_001",
+	// 	MockName:     "测试_MockName_1",
+	// 	RunMode:      "1",
+	// 	InitialAsset: "1000",
+	// })
+	// if err != nil {
+	// 	fmt.Println("创建持仓失败", err)
+	// }
+	// m_json.Println(res)
 
-	// err := mock_trade.DeleteMockServe(global.FindPositionOpt{
+	// err := mock_trade.DeleteMockServe(global.FindMockServeOpt{
 	// 	StrategyID: "mo7_StrategyID_001",
 	// 	MockName:   "测试_MockName_1",
 	// })
@@ -59,8 +59,17 @@ func MockTradeFunc() {
 	// 	fmt.Println("删除虚拟持仓失败", err)
 	// }
 
-	// mockServeList := mock_trade.GetMockServeList("mo7_StrategyID")
+	// mockServeList := mock_trade.GetMockServeList("mo7_StrategyID_001")
 	// m_json.Println(mockServeList)
+
+	mockServeInfo, err := mock_trade.GetMockServeInfo(global.FindMockServeOpt{
+		StrategyID: "mo7_StrategyID_001",
+		MockName:   "测试_MockName_2",
+	})
+	if err != nil {
+		fmt.Println("获取MockServe信息失败", err)
+	}
+	m_json.Println(mockServeInfo)
 }
 
 func MarketFunc() {

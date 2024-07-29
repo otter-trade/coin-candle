@@ -24,22 +24,22 @@ var DefaultFeeRate = "0.001" // 默认手续费率
 var DefaultInitialAsset = "1000" // 默认的初始资产
 
 type RunModeType struct {
-	Key         int
+	Value       int
 	Description string
 }
 
 // 运行模式可选参数
 var RunModeList = []RunModeType{
 	{
-		Key:         1,
+		Value:       1,
 		Description: "回测模式，交易只会在本地产生订单，方便查询和以及辅助策略的修改。",
 	},
 	{
-		Key:         2,
+		Value:       2,
 		Description: "社区模式，交易不仅会在本地产生订单，还会同时将订单结果同步至交易所完成下单。需要OtterTrade平台的权限。",
 	},
 	{
-		Key:         3,
+		Value:       3,
 		Description: "生产模式，交易不仅会在本地产生订单，还会同时将订单结果同步至交易所完成下单。策略需要通过 OtterTrade 平台的审核。",
 	},
 }
@@ -50,12 +50,12 @@ func GetRunMode(key string) (resData RunModeType, resErr error) {
 	}
 	resErr = nil
 	for _, v := range RunModeList {
-		if m_count.Le(key, m_str.ToStr(v.Key)) == 0 {
+		if m_count.Le(key, m_str.ToStr(v.Value)) == 0 {
 			resData = v
 			break
 		}
 	}
-	if resData.Key < 1 {
+	if resData.Value < 1 {
 		resErr = fmt.Errorf("RunMode 不正确")
 		return
 	}
@@ -75,3 +75,75 @@ type FindMockServeOpt struct {
 }
 
 var MaxMockServeCount = 60 // 每个策略允许的最大 MockServe 数量
+
+// 交易模式
+type TradeModeType struct {
+	Value       string
+	Description string
+}
+
+var TradeModeList = []TradeModeType{
+	{
+		Value:       "SWAP",
+		Description: "永续合约，杠杆做多，卖出做空。",
+	},
+	{
+		Value:       "SPOT",
+		Description: "现货，买入卖出赚取差价。",
+	},
+}
+
+func GetTradeMode(Value string) (resData TradeModeType, resErr error) {
+	resErr = nil
+	for _, v := range TradeModeList {
+		if v.Value == Value {
+			resData = v
+			break
+		}
+	}
+	if len(resData.Value) < 1 {
+		resErr = fmt.Errorf("TradeMode不正确")
+		return
+	}
+	return
+}
+
+// 交易种类
+var TradeTypeList = []TradeModeType{
+	{
+		Value:       "Coin",
+		Description: "数字货币，成熟且自由的交易市场，允许永续合约做多做空",
+	},
+}
+
+func GetTradeType(Value string) (resData TradeModeType, resErr error) {
+	resErr = nil
+	for _, v := range TradeTypeList {
+		if v.Value == Value {
+			resData = v
+			break
+		}
+	}
+	if len(resData.Value) < 1 {
+		resErr = fmt.Errorf("TradeType不正确")
+		return
+	}
+	return
+}
+
+// 更新一次持仓状态
+type NewPositionType struct {
+	GoodsId   string // OtterTrade 的 商品 ID ， 从 exchange_api.GetGoodsList 获取
+	TradeMode string // 交易模式，缺省值 SPOT 可选值 TradeModeList
+	TradeType string // 交易种类，缺省值 Coin 可选值 TradeTypeList
+	Leverage  string // 杠杆倍率，缺省值 1 ，只有 TradeMode = SWAP 时有效
+	Side      string // 下单方向 Buy , Sell , 只有 TradeMode = SWAP 时有效
+	Amount    string // 下单金额，不可超过账户结余
+}
+
+type UpdatePositionOpt struct {
+	StrategyID  string            // 策略的Id
+	MockName    string            // 本次回测的名称
+	Timestamp   int64             // 更新本次仓位的时间(13位毫秒时间戳)，只有在 RunType 为 1 时 才会读取。也就是只有在回测模式下才允许在任意时间更新仓位，否则只能在当前时间点更新仓位。
+	NewPosition []NewPositionType // 允许多个不同品类的仓位持仓
+}

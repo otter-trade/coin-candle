@@ -30,7 +30,7 @@ import (
 	基于本地文件系统，支持超高频率的读取和更新。
 */
 
-// 注册虚拟一个 MockServe
+// 创建 MockServe
 func CreateMockServe(opt global.CreateMockServeOpt) (resData global.MockServeConfigType, resErr error) {
 	resData = global.MockServeConfigType{}
 	resErr = nil
@@ -60,21 +60,21 @@ func CreateMockServe(opt global.CreateMockServeOpt) (resData global.MockServeCon
 
 	// 检查初始资产
 	InitialAsset := m_count.Sub(opt.InitialAsset, "0")
-	if m_count.Le(InitialAsset, "1000") < 0 {
-		InitialAsset = "1000"
+	if m_count.Le(InitialAsset, global.DefaultInitialAsset) < 0 {
+		InitialAsset = global.DefaultInitialAsset
 	}
 
-	// 检查手续费率
+	// 检查手续费率 大于 0.5 的活阎王 和 0 都重置为 初始值
 	FeeRate := m_count.Sub(opt.FeeRate, "0")
-	if m_count.Le(FeeRate, "1") >= 0 || m_count.Le(FeeRate, "0") == 0 {
-		FeeRate = "0.001"
+	if m_count.Le(FeeRate, "0.9") >= 0 || m_count.Le(FeeRate, "0") == 0 {
+		FeeRate = global.DefaultFeeRate
 	}
 
+	// 检查是否存在
 	var config global.MockServeConfigType
-
 	isExist := m_path.IsExist(mockPath.ConfigPath)
 	if isExist {
-		resErr = fmt.Errorf("该虚拟持仓已存在")
+		resErr = fmt.Errorf("该MockServe已存在")
 		fileCont := m_file.ReadFile(mockPath.ConfigPath)
 		err := json.Unmarshal(fileCont, &config)
 		if err != nil {
@@ -95,6 +95,22 @@ func CreateMockServe(opt global.CreateMockServeOpt) (resData global.MockServeCon
 	config.DataIndex = []string{}
 
 	resData = config
+
+	// 检查是否超出最大条目
+	StrategyDir := m_str.Join(
+		global.Path.MockTradeDir,
+		os.PathSeparator,
+		opt.StrategyID,
+	)
+	files, err := os.ReadDir(StrategyDir)
+	if err != nil {
+		resErr = err
+		return
+	}
+	if len(files) > global.MaxMockServeCount {
+		resErr = fmt.Errorf("超出最大条目,该条 MockServe 将不会写入磁盘。")
+		return
+	}
 
 	m_file.Write(mockPath.ConfigPath, m_json.ToStr(config))
 

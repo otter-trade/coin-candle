@@ -40,28 +40,23 @@ func SysInit() {
 }
 
 func MockTradeFunc() {
-	// res, err := mock_trade.CreateMockServe(global.CreateMockServeOpt{
-	// 	StrategyID:   "mo7_StrategyID_001",
-	// 	MockName:     "测试_MockName_1",
-	// 	RunMode:      "1",
-	// 	InitialAsset: "1000",
-	// })
-	// if err != nil {
-	// 	fmt.Println("创建持仓失败", err)
-	// }
-	// m_json.Println(res)
+	//  ####### 创建一个 MockServe #######
+	res, err := mock_trade.CreateMockServe(global.CreateMockServeOpt{
+		StrategyID:   "mo7_StrategyID_001",
+		MockName:     "测试_MockName_1",
+		RunMode:      "1",
+		InitialAsset: "1000",
+	})
+	if err != nil {
+		fmt.Println("创建持仓失败", err)
+	}
+	m_json.Println(res)
 
-	// err := mock_trade.DeleteMockServe(global.FindMockServeOpt{
-	// 	StrategyID: "mo7_StrategyID_001",
-	// 	MockName:   "测试_MockName_1",
-	// })
-	// if err != nil {
-	// 	fmt.Println("删除虚拟持仓失败", err)
-	// }
+	// #######  查看 MockServe 列表 #######
+	mockServeList := mock_trade.GetMockServeList("mo7_StrategyID_001")
+	m_json.Println(mockServeList)
 
-	// mockServeList := mock_trade.GetMockServeList("mo7_StrategyID_001")
-	// m_json.Println(mockServeList)
-
+	// #######  查看 MockServe 详情 #######
 	mockServeInfo, err := mock_trade.GetMockServeInfo(global.FindMockServeOpt{
 		StrategyID: "mo7_StrategyID_001",
 		MockName:   "测试_MockName_2",
@@ -70,31 +65,41 @@ func MockTradeFunc() {
 		fmt.Println("获取MockServe信息失败", err)
 	}
 	m_json.Println(mockServeInfo)
+
+	// ####### 删除一个 MockServe #######
+	err = mock_trade.DeleteMockServe(global.FindMockServeOpt{
+		StrategyID: "mo7_StrategyID_001",
+		MockName:   "测试_MockName_1",
+	})
+	if err != nil {
+		fmt.Println("删除虚拟持仓失败", err)
+	}
 }
 
+// 市场数据
 func MarketFunc() {
-	// // ####### 获取商品列表 #######
-	// GoodsList, err := exchange_api.GetGoodsList()
-	// if err != nil {
-	// 	fmt.Println("获取商品列表失败", err)
-	// }
-	// fmt.Println("GoodsList 商品总数:", len(GoodsList))
+	// ####### 获取商品列表 #######
+	GoodsList, err := exchange_api.GetGoodsList()
+	if err != nil {
+		fmt.Println("获取商品列表失败", err)
+	}
+	fmt.Println("GoodsList 商品总数:", len(GoodsList))
 
-	// // ####### 获取商品详情 #######
-	// GoodsDetail, err := exchange_api.GetGoodsDetail(exchange_api.GetGoodsDetailOpt{
-	// 	GoodsId: "BTC-USDT",
-	// })
-	// if err != nil {
-	// 	fmt.Println("获取商品详情失败", err)
-	// }
-	// fmt.Println("GoodsDetail 最后更新时间", GoodsDetail.GoodsId, GoodsDetail.UpdateStr)
+	// ####### 获取商品详情 #######
+	GoodsDetail, err := exchange_api.GetGoodsDetail(exchange_api.GetGoodsDetailOpt{
+		GoodsId: "BTC-USDT",
+	})
+	if err != nil {
+		fmt.Println("获取商品详情失败", err)
+	}
+	fmt.Println("GoodsDetail 最后更新时间", GoodsDetail.GoodsId, GoodsDetail.UpdateStr)
 
-	// // ####### 获取榜单数据  #######
-	// TickerList, err := exchange_api.GetTickerList()
-	// if err != nil {
-	// 	fmt.Println("获取榜单数据失败", err)
-	// }
-	// fmt.Println("TickerList 上榜币种数量:", len(TickerList))
+	// ####### 获取榜单数据  #######
+	TickerList, err := exchange_api.GetTickerList()
+	if err != nil {
+		fmt.Println("获取榜单数据失败", err)
+	}
+	fmt.Println("TickerList 上榜币种数量:", len(TickerList))
 
 	// ####### K线数据 #######
 	// time := m_time.TimeParse(m_time.LaySP_ss, "2023-05-06 18:56:43")
@@ -118,11 +123,10 @@ func MarketFunc() {
 	kline := klineMap["okx"]
 	fmt.Println("kline 最新时间", len(kline), kline[len(kline)-1][0])
 
-	mo7_end_time := m_time.GetUnixInt64()
-
-	fmt.Println("耗时", mo7_end_time-mo7_start_time)
-
 	m_file.WriteByte(global.Path.DataPath+"/kline-test-h.json", m_json.ToJson(klineMap))
+
+	mo7_end_time := m_time.GetUnixInt64()
+	fmt.Println("耗时", mo7_end_time-mo7_start_time)
 }
 
 // ########### 交易所K线数据行为一致性检测 ###########

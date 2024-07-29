@@ -77,6 +77,11 @@ type CreateMockServeOpt struct {
 	Description  string // 用户对本次 Mock 的描述，缺省值 空
 }
 
+var (
+	DefaultFeeRate      = "0.001" // 默认手续费率
+	DefaultInitialAsset = "1000"  // 默认的初始资产
+)
+
 type RunModeType struct {
 	Key         int
 	Description string
@@ -127,3 +132,5 @@ type FindMockServeOpt struct {
 	StrategyID string
 	MockName   string
 }
+
+var MaxMockServeCount = 60 // 每个策略允许的最大 MockServe 数量

@@ -9,6 +9,13 @@ import (
 	"github.com/handy-golang/go-tools/m_str"
 )
 
+// 特殊符号或空格
+func IsDescReg(str string) bool {
+	pattern := "[<>/|{}\\[\\]\\\\:;\"\\`\\*\\s\\'\\\"]"
+	reg := regexp.MustCompile(pattern)
+	return !reg.MatchString(str)
+}
+
 // 2-24位字母数字下划线和中文
 func IsMockNameReg(str string) bool {
 	pattern := "^[a-zA-Z0-9_\u4e00-\u9fa5]{2,24}$"
@@ -21,12 +28,12 @@ type MockPathType struct {
 	MockDataDir string
 }
 
-func CheckMockName(opt FindPositionOpt) (resData MockPathType, resErr error) {
+func CheckMockName(opt FindMockServeOpt) (resData MockPathType, resErr error) {
 	resData = MockPathType{}
 	resErr = nil
 	// StrategyID 不能为空
 	if len(opt.StrategyID) < 1 {
-		resErr = fmt.Errorf("StrategyID 不能为空")
+		resErr = fmt.Errorf("StrategyID不能为空")
 		return
 	}
 	// MockName 必须为2-24位字母数字下划线和中文
@@ -61,12 +68,13 @@ func CheckMockName(opt FindPositionOpt) (resData MockPathType, resErr error) {
 // map 类型
 type MapAny map[string]any
 
-type CreatePositionOpt struct {
+type CreateMockServeOpt struct {
 	StrategyID   string // 策略的Id，从 OtterTrade 用户数据中读取，不可为空
 	MockName     string // 模拟交易的名称，策略开发者自定义，不可为空，1-12位中文，字母或数字。
 	RunMode      string // 运行模式，缺省值 1 ，可选值 RunTypeList
 	InitialAsset string // 初始资产(USDT)  最小值/缺省值 1000
 	FeeRate      string // 手续费率 缺省值 0.001 参考 https://www.okx.com/zh-hans/fees
+	Description  string // 用户对本次 Mock 的描述，缺省值 空
 }
 
 type RunModeType struct {
@@ -108,12 +116,12 @@ func GetRunMode(key string) (resData RunModeType, resErr error) {
 	return
 }
 
-type PositionConfigType struct {
-	CreatePositionOpt
+type MockServeConfigType struct {
+	CreateMockServeOpt
 	RunMode RunModeType
 }
 
-type FindPositionOpt struct {
+type FindMockServeOpt struct {
 	StrategyID string
 	MockName   string
 }

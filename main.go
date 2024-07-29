@@ -40,9 +40,9 @@ func SysInit() {
 }
 
 func MockTradeFunc() {
-	res, err := mock_trade.CreateMockServe(global.CreatePositionOpt{
-		StrategyID:   "mo7_StrategyID_001",
-		MockName:     "测试_MockName_5",
+	res, err := mock_trade.CreateMockServe(global.CreateMockServeOpt{
+		StrategyID:   "mo7_StrategyID",
+		MockName:     "测试_MockName_6",
 		RunMode:      "1",
 		InitialAsset: "1000",
 	})
@@ -59,7 +59,8 @@ func MockTradeFunc() {
 	// 	fmt.Println("删除虚拟持仓失败", err)
 	// }
 
-	mock_trade.GetMockServe("mo7_StrategyID_001")
+	// mockServeList := mock_trade.GetMockServeList("mo7_StrategyID")
+	// m_json.Println(mockServeList)
 }
 
 func MarketFunc() {

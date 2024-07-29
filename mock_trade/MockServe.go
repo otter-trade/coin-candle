@@ -31,17 +31,23 @@ import (
 */
 
 // 注册虚拟一个 MockServe
-func CreateMockServe(opt global.CreatePositionOpt) (resData global.PositionConfigType, resErr error) {
-	resData = global.PositionConfigType{}
+func CreateMockServe(opt global.CreateMockServeOpt) (resData global.MockServeConfigType, resErr error) {
+	resData = global.MockServeConfigType{}
 	resErr = nil
 
 	// 检查 StrategyID 和 MockName 并获取存储目录
-	mockPath, err := global.CheckMockName(global.FindPositionOpt{
+	mockPath, err := global.CheckMockName(global.FindMockServeOpt{
 		StrategyID: opt.StrategyID,
 		MockName:   opt.MockName,
 	})
 	if err != nil {
 		resErr = err
+		return
+	}
+
+	isDesc := global.IsDescReg(opt.Description)
+	if !isDesc {
+		resErr = fmt.Errorf("Description禁止包含特殊符号")
 		return
 	}
 
@@ -64,7 +70,7 @@ func CreateMockServe(opt global.CreatePositionOpt) (resData global.PositionConfi
 		FeeRate = "0.001"
 	}
 
-	var config global.PositionConfigType
+	var config global.MockServeConfigType
 
 	isExist := m_path.IsExist(mockPath.ConfigPath)
 	if isExist {
@@ -81,6 +87,7 @@ func CreateMockServe(opt global.CreatePositionOpt) (resData global.PositionConfi
 
 	config.StrategyID = opt.StrategyID
 	config.MockName = opt.MockName
+	config.Description = opt.Description
 	config.InitialAsset = InitialAsset
 	config.FeeRate = FeeRate
 	config.RunMode = RunMode
@@ -93,10 +100,10 @@ func CreateMockServe(opt global.CreatePositionOpt) (resData global.PositionConfi
 }
 
 // 删除一个 MockServe
-func DeleteMockServe(opt global.FindPositionOpt) (resErr error) {
+func DeleteMockServe(opt global.FindMockServeOpt) (resErr error) {
 	resErr = nil
 	// 检查 StrategyID 和 MockName 并获取存储目录
-	mockPath, err := global.CheckMockName(global.FindPositionOpt{
+	mockPath, err := global.CheckMockName(global.FindMockServeOpt{
 		StrategyID: opt.StrategyID,
 		MockName:   opt.MockName,
 	})
@@ -115,8 +122,8 @@ func DeleteMockServe(opt global.FindPositionOpt) (resErr error) {
 }
 
 // 获取某个策略下所有的 MockServe
-func GetMockServeList(StrategyID string) (resData []global.PositionConfigType) {
-	resData = []global.PositionConfigType{}
+func GetMockServeList(StrategyID string) (resData []global.MockServeConfigType) {
+	resData = []global.MockServeConfigType{}
 	if len(StrategyID) < 1 {
 		return
 	}
@@ -152,7 +159,14 @@ func GetMockServeList(StrategyID string) (resData []global.PositionConfigType) {
 			if !isExist {
 				continue
 			}
-			fmt.Println(configPath)
+
+			var config global.MockServeConfigType
+			fileCont := m_file.ReadFile(configPath)
+			err = json.Unmarshal(fileCont, &config)
+			if err != nil {
+				continue
+			}
+			resData = append(resData, config)
 		}
 	}
 
@@ -160,5 +174,33 @@ func GetMockServeList(StrategyID string) (resData []global.PositionConfigType) {
 }
 
 // 获取一个 MockServe 的配置信息
-func GetMockServeConfig(opt global.FindPositionOpt) {
+func GetMockServeInfo(opt global.FindMockServeOpt) (resData global.MockServeConfigType, resErr error) {
+	resData = global.MockServeConfigType{}
+	resErr = nil
+	// 检查 StrategyID 和 MockName 并获取存储目录
+	mockPath, err := global.CheckMockName(global.FindMockServeOpt{
+		StrategyID: opt.StrategyID,
+		MockName:   opt.MockName,
+	})
+	if err != nil {
+		resErr = err
+		return
+	}
+
+	var config global.MockServeConfigType
+	fileCont := m_file.ReadFile(mockPath.ConfigPath)
+	err = json.Unmarshal(fileCont, &config)
+	if err != nil {
+		resErr = err
+		return
+	}
+
+	if len(config.MockName) < 1 {
+		resErr = fmt.Errorf("解析失败")
+		return
+	}
+
+	resData = config
+
+	return
 }

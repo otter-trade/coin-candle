@@ -30,21 +30,18 @@ import (
 	基于本地文件系统，支持超高频率的读取和更新。
 */
 
-// 注册虚拟一个持仓服务
-
-func CreatePosition(opt global.CreatePositionOpt) (resData global.PositionConfigType, resErr error) {
+// 注册虚拟一个 MockServe
+func CreateMockServe(opt global.CreatePositionOpt) (resData global.PositionConfigType, resErr error) {
 	resData = global.PositionConfigType{}
 	resErr = nil
-	// StrategyID 不能为空
-	if len(opt.StrategyID) < 1 {
-		resErr = fmt.Errorf("StrategyID 不能为空")
-		return
-	}
 
-	// MockName 必须为2-24位字母数字下划线和中文
-	isMockNameReg := global.IsMockNameReg(opt.MockName)
-	if !isMockNameReg {
-		resErr = fmt.Errorf("MockName必须为2-24位字母数字下划线和中文")
+	// 检查 StrategyID 和 MockName 并获取存储目录
+	mockPath, err := global.CheckMockName(global.FindPositionOpt{
+		StrategyID: opt.StrategyID,
+		MockName:   opt.MockName,
+	})
+	if err != nil {
+		resErr = err
 		return
 	}
 
@@ -67,22 +64,12 @@ func CreatePosition(opt global.CreatePositionOpt) (resData global.PositionConfig
 		FeeRate = "0.001"
 	}
 
-	// 存储目录为
-	configPath := m_str.Join(
-		global.Path.MockTradeDir,
-		os.PathSeparator,
-		opt.StrategyID,
-		os.PathSeparator,
-		opt.MockName,
-		os.PathSeparator,
-		"config.json",
-	)
-
 	var config global.PositionConfigType
-	isExist := m_path.IsExist(configPath)
+
+	isExist := m_path.IsExist(mockPath.ConfigPath)
 	if isExist {
 		resErr = fmt.Errorf("该虚拟持仓已存在")
-		fileCont := m_file.ReadFile(configPath)
+		fileCont := m_file.ReadFile(mockPath.ConfigPath)
 		err := json.Unmarshal(fileCont, &config)
 		if err != nil {
 			resErr = err
@@ -100,18 +87,78 @@ func CreatePosition(opt global.CreatePositionOpt) (resData global.PositionConfig
 
 	resData = config
 
-	m_file.Write(configPath, m_json.ToStr(config))
+	m_file.Write(mockPath.ConfigPath, m_json.ToStr(config))
 
 	return
 }
 
-// 删除一个持仓服务
-type DeletePositionOpt struct {
-	StrategyID string // 策略的Id,
-	MockName   string // 需要删除
+// 删除一个 MockServe
+func DeleteMockServe(opt global.FindPositionOpt) (resErr error) {
+	resErr = nil
+	// 检查 StrategyID 和 MockName 并获取存储目录
+	mockPath, err := global.CheckMockName(global.FindPositionOpt{
+		StrategyID: opt.StrategyID,
+		MockName:   opt.MockName,
+	})
+	if err != nil {
+		resErr = err
+		return
+	}
+
+	err = os.Remove(mockPath.MockDataDir)
+	if err != nil {
+		resErr = err
+		return
+	}
+
+	return
 }
 
-func DeletePosition(opt DeletePositionOpt) {
-	// RunType 1 则可以随便删除
-	// RunType 2 或者 3 则需要权限，才能删除。
+// 获取某个策略下所有的 MockServe
+func GetMockServeList(StrategyID string) (resData []global.PositionConfigType) {
+	resData = []global.PositionConfigType{}
+	if len(StrategyID) < 1 {
+		return
+	}
+
+	StrategyDir := m_str.Join(
+		global.Path.MockTradeDir,
+		os.PathSeparator,
+		StrategyID,
+	)
+
+	isExist := m_path.IsExist(StrategyDir)
+	if !isExist {
+		return
+	}
+
+	files, err := os.ReadDir(StrategyDir)
+	if err != nil {
+		return
+	}
+
+	for _, v := range files {
+		if v.Type().IsDir() {
+			MockName := v.Name()
+
+			configPath := m_str.Join(
+				StrategyDir,
+				os.PathSeparator,
+				MockName,
+				os.PathSeparator,
+				"config.json",
+			)
+			isExist := m_path.IsExist(StrategyDir)
+			if !isExist {
+				continue
+			}
+			fmt.Println(configPath)
+		}
+	}
+
+	return
+}
+
+// 获取一个 MockServe 的配置信息
+func GetMockServeConfig(opt global.FindPositionOpt) {
 }

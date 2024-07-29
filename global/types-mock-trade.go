@@ -2,6 +2,7 @@ package global
 
 import (
 	"fmt"
+	"os"
 	"regexp"
 
 	"github.com/handy-golang/go-tools/m_count"
@@ -13,6 +14,48 @@ func IsMockNameReg(str string) bool {
 	pattern := "^[a-zA-Z0-9_\u4e00-\u9fa5]{2,24}$"
 	reg := regexp.MustCompile(pattern)
 	return reg.MatchString(str)
+}
+
+type MockPathType struct {
+	ConfigPath  string
+	MockDataDir string
+}
+
+func CheckMockName(opt FindPositionOpt) (resData MockPathType, resErr error) {
+	resData = MockPathType{}
+	resErr = nil
+	// StrategyID 不能为空
+	if len(opt.StrategyID) < 1 {
+		resErr = fmt.Errorf("StrategyID 不能为空")
+		return
+	}
+	// MockName 必须为2-24位字母数字下划线和中文
+	isMockNameReg := IsMockNameReg(opt.MockName)
+	if !isMockNameReg {
+		resErr = fmt.Errorf("MockName必须为2-24位字母数字下划线和中文")
+		return
+	}
+
+	MockDataDir := m_str.Join(
+		Path.MockTradeDir,
+		os.PathSeparator,
+		opt.StrategyID,
+		os.PathSeparator,
+		opt.MockName,
+		os.PathSeparator,
+	)
+
+	ConfigPath := m_str.Join(
+		MockDataDir,
+		"config.json",
+	)
+
+	resData = MockPathType{
+		ConfigPath:  ConfigPath,
+		MockDataDir: MockDataDir,
+	}
+
+	return
 }
 
 // map 类型
@@ -68,4 +111,9 @@ func GetRunMode(key string) (resData RunModeType, resErr error) {
 type PositionConfigType struct {
 	CreatePositionOpt
 	RunMode RunModeType
+}
+
+type FindPositionOpt struct {
+	StrategyID string
+	MockName   string
 }

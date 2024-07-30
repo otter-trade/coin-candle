@@ -3,7 +3,7 @@ package mock_trade
 import (
 	"fmt"
 
-	"github.com/handy-golang/go-tools/m_json"
+	"github.com/handy-golang/go-tools/m_count"
 	"github.com/handy-golang/go-tools/m_time"
 	"github.com/otter-trade/coin-candle/exchange_api"
 	"github.com/otter-trade/coin-candle/global"
@@ -65,6 +65,13 @@ func NewPositionFunc(opt global.NewPositionType) (resData global.NewPositionType
 	}
 	resData.TradeType = opt.TradeType
 
+	if opt.Side == "Buy" || opt.Side == "Sell" {
+		resData.Side = opt.Side
+	} else {
+		resErr = fmt.Errorf("Side不正确")
+		return
+	}
+
 	GoodsDetail, err := exchange_api.GetGoodsDetail(exchange_api.GetGoodsDetailOpt{
 		GoodsId: opt.GoodsId,
 	})
@@ -88,10 +95,20 @@ func NewPositionFunc(opt global.NewPositionType) (resData global.NewPositionType
 	} else {
 		TradeModeValue = global.TradeModeList[0].Value
 	}
-
 	resData.TradeMode = TradeModeValue
 
-	m_json.Println(resData)
+	Leverage := m_count.Sub(opt.Leverage, "0")
+	if m_count.Le(Leverage, "1") < 0 {
+		Leverage = "1" // 最小值为 1
+	}
+	if m_count.Le(Leverage, global.MaxLeverage) > 0 {
+		Leverage = global.MaxLeverage // 最大值
+	}
+	resData.Leverage = Leverage
+
+	fmt.Println("Leverage", Leverage)
+
+	// m_json.Println(resData)
 
 	// fmt.Println("item", item, GoodsDetail, TradeMode)
 

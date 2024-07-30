@@ -116,7 +116,7 @@ func CreateMockServe(opt global.CreateMockServeOpt) (resData global.MockServeCon
 		}
 	}
 
-	m_file.Write(mockPath.ConfigFullPath, m_json.ToStr(config))
+	m_file.WriteByte(mockPath.ConfigFullPath, m_json.ToJson(config))
 
 	return
 }

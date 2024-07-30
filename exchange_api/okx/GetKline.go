@@ -36,7 +36,6 @@ type KlineReqType struct {
 type OkxKlineType [9]string
 
 func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
-
 	resData = nil
 	resErr = nil
 
@@ -69,7 +68,7 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 		path = "/api/v5/market/history-candles"
 	}
 
-	var DataMap = map[string]any{
+	DataMap := map[string]any{
 		"instId": opt.Okx_instId,
 		"bar":    BarObj.Okx,
 		"after":  m_str.ToStr(EndTime + global.SendEndTimeFix), // 需要修正请求时间戳
@@ -82,7 +81,6 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 		DataMap:   DataMap,
 		ProxyURLs: global.Path.ProxyURLs,
 	}).Get()
-
 	if err != nil {
 		resErr = err
 		return
@@ -117,7 +115,7 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 	}
 
 	// var Kline = []global.KlineType{}
-	var KlineSimp = []global.KlineSimpType{}
+	KlineSimp := []global.KlineSimpType{}
 	for i := len(result.Data) - 1; i >= 0; i-- {
 		item := result.Data[i]
 		// var time = m_time.TimeGet(item[0])
@@ -146,7 +144,5 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 		})
 	}
 	resData = KlineSimp
-	// m_file.Write(global.Path.Okx.Dir+"/kline-Format.json", m_json.Format(Kline))
-	// m_file.WriteByte(global.Path.Okx.Dir+"/kline-Simp-byte.json", m_json.ToJson(KlineSimp))
 	return
 }

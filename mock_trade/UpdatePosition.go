@@ -2,9 +2,12 @@ package mock_trade
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/handy-golang/go-tools/m_count"
+	"github.com/handy-golang/go-tools/m_file"
 	"github.com/handy-golang/go-tools/m_json"
+	"github.com/handy-golang/go-tools/m_str"
 	"github.com/handy-golang/go-tools/m_time"
 	"github.com/otter-trade/coin-candle/exchange_api"
 	"github.com/otter-trade/coin-candle/global"
@@ -37,7 +40,6 @@ func UpdatePosition(opt global.UpdatePositionOpt) (resErr error) {
 	}
 
 	var NewPositionList []global.NewPositionType
-
 	for _, item := range opt.NewPosition {
 		if len(item.GoodsId) > 1 {
 			position, err := NewPositionFunc(item)
@@ -49,15 +51,24 @@ func UpdatePosition(opt global.UpdatePositionOpt) (resErr error) {
 			if m_count.Le(position.Amount, "0") > 0 {
 				NewPositionList = append(NewPositionList, position)
 			}
-
 		}
 	}
 
+	mockPath, _ := CheckMockName(global.FindMockServeOpt{
+		StrategyID: MockConfig.StrategyID,
+		MockName:   MockConfig.MockName,
+	})
+
 	MockConfig.DataIndex = append(MockConfig.DataIndex, UpdateTime)
 
-	m_json.Println(MockConfig)
+	NewPositionListJsonPath := m_str.Join(
+		mockPath.MockDataFullDir,
+		os.PathSeparator,
+		UpdateTime, ".json",
+	)
 
-	fmt.Println("UpdateTime", UpdateTime, NewPositionList)
+	m_file.WriteByte(NewPositionListJsonPath, m_json.ToJson(NewPositionList))
+	m_file.WriteByte(mockPath.ConfigFullPath, m_json.ToJson(MockConfig))
 
 	return
 }

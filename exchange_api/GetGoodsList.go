@@ -50,19 +50,15 @@ ${InstID} OkxState:${OkxState} BinanceStatus:${BinanceStatus}`
 		global.LogErr("错误:exchange_api.GetGoodsList -> binance.GetGoodsList", err)
 	}
 
-	// m_file.Write(global.Path.Binance.Dir+"/binance_GoodsList.json", m_json.ToStr(binanceGoodsList))
-
 	okx_GoodsList_SPOT, err := okx.GetGoodsList_SPOT()
 	if err != nil {
 		global.LogErr("错误:exchange_api.GetGoodsList -> okx.GetGoodsList_SPOT", err)
 	}
-	// m_file.Write(global.Path.Okx.Dir+"/okx_GoodsList_SPOT.json", m_json.ToStr(okx_GoodsList_SPOT))
 
 	okx_GoodsList_SWAP, err := okx.GetGoodsList_SWAP()
 	if err != nil {
 		global.LogErr("错误:exchange_api.GetGoodsList -> okx.GetGoodsList_SWAP", err)
 	}
-	// m_file.Write(global.Path.Okx.Dir+"/okx_GoodsList_SWAP.json", m_json.ToStr(okx_GoodsList_SWAP))
 
 	// 整理现货 ， 基于现货做产品基础 结构 的构建
 	GoodsList := []global.GoodsType{}
@@ -157,7 +153,7 @@ ${InstID} OkxState:${OkxState} BinanceStatus:${BinanceStatus}`
 	// 如果数量不对则发出警告
 	if len(NewGoodsList2) > 10 {
 		UpdateGoodsMap(NewGoodsList2) // 更新 global.GoodsMap
-		m_file.Write(global.Path.GoodsListFile, m_json.ToStr(NewGoodsList2))
+		m_file.WriteByte(global.Path.GoodsListFile, m_json.ToJson(NewGoodsList2))
 		global.RunLog.Println("商品列表更新完成", global.Path.GoodsListFile)
 	} else {
 		global.LogErr("exchange_api.GetGoodsList 数量不足", len(NewGoodsList2))

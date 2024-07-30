@@ -55,7 +55,7 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 		EndTime = opt.EndTime
 	}
 
-	var DataMap = map[string]any{
+	DataMap := map[string]any{
 		"symbol":   opt.Binance_symbol,
 		"interval": BarObj.Binance,
 		"endTime":  m_str.ToStr(EndTime + global.SendEndTimeFix), // 需要修正请求时间戳
@@ -68,7 +68,6 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 		DataMap:   DataMap,
 		ProxyURLs: global.Path.ProxyURLs,
 	}).Get()
-
 	if err != nil {
 		resErr = err
 		return
@@ -101,7 +100,7 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 	}
 
 	// var Kline = []global.KlineType{}
-	var KlineSimp = []global.KlineSimpType{}
+	KlineSimp := []global.KlineSimpType{}
 	for _, item := range listStr {
 		time_unix_str := m_json.ToStr(item[0])
 		// var time = m_time.TimeGet(time_unix_str)
@@ -131,7 +130,5 @@ func GetKline(opt GetKlineOpt) (resData []global.KlineSimpType, resErr error) {
 	}
 
 	resData = KlineSimp
-	// m_file.Write(global.Path.Binance.Dir+"/kline-Format.json", m_json.ToStr(Kline))
-	// m_file.WriteByte(global.Path.Binance.Dir+"/kline-Simp-byte.json", m_json.ToJson(KlineSimp))
 	return
 }

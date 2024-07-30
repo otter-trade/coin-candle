@@ -16,11 +16,10 @@ import (
 
 // 读取 GoodsList
 func GetGoodsList() (resData []global.GoodsType, resErr error) {
-
 	resData = nil
 	resErr = nil
 
-	var fileData = m_file.ReadFile(global.Path.GoodsListFile)
+	fileData := m_file.ReadFile(global.Path.GoodsListFile)
 	if len(fileData) < 2 {
 		resErr = fmt.Errorf("文件读取失败: %s", global.Path.GoodsListFile)
 		return
@@ -43,8 +42,7 @@ func GetGoodsList() (resData []global.GoodsType, resErr error) {
 
 // 更新 GoodsList 至本地
 func UpdateLocalGoodsList() {
-
-	var CoinStatusErrTemp = `
+	CoinStatusErrTemp := `
 ${InstID} OkxState:${OkxState} BinanceStatus:${BinanceStatus}`
 
 	binanceGoodsList, err := binance.GetGoodsList()
@@ -67,24 +65,23 @@ ${InstID} OkxState:${OkxState} BinanceStatus:${BinanceStatus}`
 	// m_file.Write(global.Path.Okx.Dir+"/okx_GoodsList_SWAP.json", m_json.ToStr(okx_GoodsList_SWAP))
 
 	// 整理现货 ， 基于现货做产品基础 结构 的构建
-	var GoodsList = []global.GoodsType{}
+	GoodsList := []global.GoodsType{}
 
-	var WarningList = []string{}
+	WarningList := []string{}
 
-	var UpdateTime = m_time.GetTime()
+	UpdateTime := m_time.GetTime()
 	for _, item := range okx_GoodsList_SPOT {
 		if item.QuoteCcy == global.SystemSettleCcy { // 只有 现货商品的 QuoteCcy 才等于 USDT
 			Symbol := m_str.Join(item.BaseCcy, global.SystemSettleCcy)
 			for _, item2 := range binanceGoodsList {
 				if item2.Symbol == Symbol { // 提取两家交易所均有的货币
 
-					var OkxInfo = item
-					var BinanceInfo = item2
+					OkxInfo := item
+					BinanceInfo := item2
 
-					var State = "live"
+					State := "live"
 
 					if OkxInfo.State == "live" && BinanceInfo.Status == "TRADING" {
-
 					} else {
 						State = "warning:商品现货状态异常;"
 						WarningInfo := m_str.Temp(CoinStatusErrTemp, map[string]string{
@@ -114,10 +111,10 @@ ${InstID} OkxState:${OkxState} BinanceStatus:${BinanceStatus}`
 	}
 
 	// 把合约信息也整理进去
-	var NewGoodsList = []global.GoodsType{}
+	NewGoodsList := []global.GoodsType{}
 	for _, item := range GoodsList {
-		var SWAP_InstId = m_str.Join(item.Okx_SPOT_Info.InstID, "-SWAP")
-		var NewItem = item
+		SWAP_InstId := m_str.Join(item.Okx_SPOT_Info.InstID, "-SWAP")
+		NewItem := item
 
 		// 只有现货状态没问题的，才有资格去整理合约
 		if NewItem.State == "live" {
@@ -125,7 +122,6 @@ ${InstID} OkxState:${OkxState} BinanceStatus:${BinanceStatus}`
 				if SWAP_InstId == item2.InstID {
 
 					if item2.State == "live" {
-
 					} else {
 						NewItem.State += "warning:OKX的合约状态异常;" // 增加异常状态
 						WarningInfo := m_str.Temp(CoinStatusErrTemp, map[string]string{
@@ -144,9 +140,9 @@ ${InstID} OkxState:${OkxState} BinanceStatus:${BinanceStatus}`
 	}
 
 	// 合约信息标记
-	var NewGoodsList2 = []global.GoodsType{}
+	NewGoodsList2 := []global.GoodsType{}
 	for _, item := range NewGoodsList {
-		var NewItem2 = item
+		NewItem2 := item
 		if len(NewItem2.Okx_SWAP_Info.InstID) < 2 {
 			NewItem2.State += "warning:没有OKX合约信息"
 		}
@@ -184,7 +180,6 @@ type GetGoodsDetailOpt struct {
 }
 
 func GetGoodsDetail(opt GetGoodsDetailOpt) (resData global.GoodsType, resErr error) {
-
 	resData = global.GoodsType{}
 	resErr = nil
 
@@ -219,7 +214,7 @@ func GetGoodsDetail(opt GetGoodsDetailOpt) (resData global.GoodsType, resErr err
 	}
 
 	if len(resData.GoodsId) < 2 {
-		resErr = fmt.Errorf("没有找到商品")
+		resErr = fmt.Errorf("OtterTrade 不支持该交易品类！")
 		return
 	}
 

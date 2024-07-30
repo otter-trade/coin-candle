@@ -77,23 +77,23 @@ type FindMockServeOpt struct {
 var MaxMockServeCount = 60 // 每个策略允许的最大 MockServe 数量
 
 // 交易模式
-type TradeModeType struct {
+type KeyDescType struct {
 	Value       string
 	Description string
 }
 
-var TradeModeList = []TradeModeType{
-	{
-		Value:       "SWAP",
-		Description: "永续合约，杠杆做多，卖出做空。",
-	},
+var TradeModeList = []KeyDescType{
 	{
 		Value:       "SPOT",
 		Description: "现货，买入卖出赚取差价。",
 	},
+	{
+		Value:       "SWAP",
+		Description: "永续合约，杠杆做多，卖出做空。",
+	},
 }
 
-func GetTradeMode(Value string) (resData TradeModeType, resErr error) {
+func GetTradeMode(Value string) (resData KeyDescType, resErr error) {
 	resErr = nil
 	for _, v := range TradeModeList {
 		if v.Value == Value {
@@ -109,14 +109,14 @@ func GetTradeMode(Value string) (resData TradeModeType, resErr error) {
 }
 
 // 交易种类
-var TradeTypeList = []TradeModeType{
+var TradeTypeList = []KeyDescType{
 	{
 		Value:       "Coin",
 		Description: "数字货币，成熟且自由的交易市场，允许永续合约做多做空",
 	},
 }
 
-func GetTradeType(Value string) (resData TradeModeType, resErr error) {
+func GetTradeType(Value string) (resData KeyDescType, resErr error) {
 	resErr = nil
 	for _, v := range TradeTypeList {
 		if v.Value == Value {
@@ -135,7 +135,7 @@ func GetTradeType(Value string) (resData TradeModeType, resErr error) {
 type NewPositionType struct {
 	GoodsId   string // OtterTrade 的 商品 ID ， 从 exchange_api.GetGoodsList 获取
 	TradeMode string // 交易模式，缺省值 SPOT 可选值 TradeModeList
-	TradeType string // 交易种类，缺省值 Coin 可选值 TradeTypeList
+	TradeType string // 交易种类，可选值 TradeTypeList
 	Leverage  string // 杠杆倍率，缺省值 1 ，只有 TradeMode = SWAP 时有效
 	Side      string // 下单方向 Buy , Sell , 只有 TradeMode = SWAP 时有效
 	Amount    string // 下单金额，不可超过账户结余
@@ -144,6 +144,6 @@ type NewPositionType struct {
 type UpdatePositionOpt struct {
 	StrategyID  string            // 策略的Id
 	MockName    string            // 本次回测的名称
-	Timestamp   int64             // 更新本次仓位的时间(13位毫秒时间戳)，只有在 RunType 为 1 时 才会读取。也就是只有在回测模式下才允许在任意时间更新仓位，否则只能在当前时间点更新仓位。
+	UpdateTime  int64             // 更新本次仓位的时间(13位毫秒时间戳)，只有在 RunType 为 1 时 才会读取。也就是只有在回测模式下才允许在任意时间更新仓位，否则只能在当前时间点更新仓位。
 	NewPosition []NewPositionType // 允许多个不同品类的仓位持仓，空代表清空所有仓位。
 }

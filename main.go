@@ -56,12 +56,12 @@ func MockServeFunc() {
 	}
 	m_json.Println(mockServeInfo)
 
-	#######  查看 MockServe 列表 #######
+	// #######  查看 MockServe 列表 #######
 	mockServeList := mock_trade.GetMockServeList("mo7_StrategyID_001")
 	m_json.Println(mockServeList)
 
 	// #######  查看 MockServe 详情 #######
-	mockServeInfo, err := mock_trade.GetMockServeInfo(global.FindMockServeOpt{
+	mockServeInfo, err = mock_trade.GetMockServeInfo(global.FindMockServeOpt{
 		StrategyID: "mo7_StrategyID_001",
 		MockName:   "测试_MockName_21",
 	})
@@ -92,23 +92,23 @@ func PositionFunc() {
 	err := mock_trade.UpdatePosition(global.UpdatePositionOpt{
 		StrategyID: "mo7_StrategyID_001",
 		MockName:   "测试_MockName_1",
-		Timestamp:  time,
+		UpdateTime: time,
 		NewPosition: []global.NewPositionType{
 			{
-				GoodsId:   "BTC-USDT",
-				TradeMode: "100",
-				TradeType: "1",
+				GoodsId: "BTC-USDT",
+				// TradeMode: "100",
+				TradeType: "Coin",
 				Leverage:  "10",
 				Side:      "",
 				Amount:    "10",
 			},
 			{
-				GoodsId:   "ETH-USDT",
-				TradeMode: "100",
-				TradeType: "1",
-				Leverage:  "10",
-				Side:      "",
-				Amount:    "10",
+				GoodsId: "ETH-USDT",
+				// TradeMode: "100",
+				// TradeType: "1",
+				Leverage: "10",
+				Side:     "",
+				Amount:   "10",
 			},
 		},
 	})

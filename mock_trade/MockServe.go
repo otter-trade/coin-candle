@@ -102,14 +102,17 @@ func CreateMockServe(opt global.CreateMockServeOpt) (resData global.MockServeCon
 		os.PathSeparator,
 		opt.StrategyID,
 	)
-	files, err := os.ReadDir(StrategyDir)
-	if err != nil {
-		resErr = err
-		return
-	}
-	if len(files) > global.MaxMockServeCount {
-		resErr = fmt.Errorf("超出最大条目,该条 MockServe 将不会写入磁盘。")
-		return
+	isExist = m_path.IsExist(StrategyDir)
+	if isExist {
+		files, err := os.ReadDir(StrategyDir)
+		if err != nil {
+			resErr = err
+			return
+		}
+		if len(files) > global.MaxMockServeCount {
+			resErr = fmt.Errorf("超出最大条目,该条 MockServe 将不会写入磁盘。")
+			return
+		}
 	}
 
 	m_file.Write(mockPath.ConfigPath, m_json.ToStr(config))
@@ -202,6 +205,12 @@ func GetMockServeInfo(opt global.FindMockServeOpt) (resData global.MockServeConf
 	})
 	if err != nil {
 		resErr = err
+		return
+	}
+
+	isExist := m_path.IsExist(mockPath.ConfigPath)
+	if !isExist {
+		resErr = fmt.Errorf("该MockServe不存在")
 		return
 	}
 

@@ -22,6 +22,7 @@ func main() {
 	// MarketFunc()    // 市场相关的数据
 	// KlineFunc()     // K线相关的数据
 	// MockServeFunc() // MockServe 的增删查
+	PositionFunc() // 持仓管理
 }
 
 func SysInit() {
@@ -31,9 +32,9 @@ func SysInit() {
 
 	m_cycle.New(m_cycle.Opt{
 		Func: func() {
-			// 更新本地的商品列表
+			// // 更新本地的商品列表
 			// exchange_api.UpdateLocalGoodsList()
-			// 更新本地的榜单
+			// // 更新本地的榜单
 			// exchange_api.UpdateLocalTicker()
 			// 读取获取商品列表 并存入内存中
 			exchange_api.GetGoodsList()
@@ -46,7 +47,7 @@ func MockServeFunc() {
 	//  ####### 创建一个 MockServe #######
 	mockServeInfo, err := mock_trade.CreateMockServe(global.CreateMockServeOpt{
 		StrategyID:   "mo7_StrategyID_001",
-		MockName:     "测试_MockName_1",
+		MockName:     "测试_MockName_2",
 		RunMode:      "1",
 		InitialAsset: "1000",
 	})
@@ -55,14 +56,14 @@ func MockServeFunc() {
 	}
 	m_json.Println(mockServeInfo)
 
-	// #######  查看 MockServe 列表 #######
+	#######  查看 MockServe 列表 #######
 	mockServeList := mock_trade.GetMockServeList("mo7_StrategyID_001")
 	m_json.Println(mockServeList)
 
 	// #######  查看 MockServe 详情 #######
-	mockServeInfo, err = mock_trade.GetMockServeInfo(global.FindMockServeOpt{
+	mockServeInfo, err := mock_trade.GetMockServeInfo(global.FindMockServeOpt{
 		StrategyID: "mo7_StrategyID_001",
-		MockName:   "测试_MockName_2",
+		MockName:   "测试_MockName_21",
 	})
 	if err != nil {
 		fmt.Println("获取MockServe信息失败", err)
@@ -88,7 +89,7 @@ func MockServeFunc() {
 // 更新持仓状态
 func PositionFunc() {
 	time := m_time.TimeParse(m_time.LaySP_ss, "2024-07-24 12:00:00")
-	mock_trade.UpdatePosition(global.UpdatePositionOpt{
+	err := mock_trade.UpdatePosition(global.UpdatePositionOpt{
 		StrategyID: "mo7_StrategyID_001",
 		MockName:   "测试_MockName_1",
 		Timestamp:  time,
@@ -101,8 +102,19 @@ func PositionFunc() {
 				Side:      "",
 				Amount:    "10",
 			},
+			{
+				GoodsId:   "ETH-USDT",
+				TradeMode: "100",
+				TradeType: "1",
+				Leverage:  "10",
+				Side:      "",
+				Amount:    "10",
+			},
 		},
 	})
+	if err != nil {
+		fmt.Println("更新持仓失败", err)
+	}
 }
 
 // 市场数据

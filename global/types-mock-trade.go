@@ -145,5 +145,5 @@ type UpdatePositionOpt struct {
 	StrategyID  string            // 策略的Id
 	MockName    string            // 本次回测的名称
 	Timestamp   int64             // 更新本次仓位的时间(13位毫秒时间戳)，只有在 RunType 为 1 时 才会读取。也就是只有在回测模式下才允许在任意时间更新仓位，否则只能在当前时间点更新仓位。
-	NewPosition []NewPositionType // 允许多个不同品类的仓位持仓
+	NewPosition []NewPositionType // 允许多个不同品类的仓位持仓，空代表清空所有仓位。
 }

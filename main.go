@@ -87,6 +87,22 @@ func MockServeFunc() {
 
 // 更新持仓状态
 func PositionFunc() {
+	time := m_time.TimeParse(m_time.LaySP_ss, "2024-07-24 12:00:00")
+	mock_trade.UpdatePosition(global.UpdatePositionOpt{
+		StrategyID: "mo7_StrategyID_001",
+		MockName:   "测试_MockName_1",
+		Timestamp:  time,
+		NewPosition: []global.NewPositionType{
+			{
+				GoodsId:   "BTC-USDT",
+				TradeMode: "100",
+				TradeType: "1",
+				Leverage:  "10",
+				Side:      "",
+				Amount:    "10",
+			},
+		},
+	})
 }
 
 // 市场数据

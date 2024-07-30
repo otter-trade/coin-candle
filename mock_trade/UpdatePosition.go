@@ -44,7 +44,11 @@ func UpdatePosition(opt global.UpdatePositionOpt) (resErr error) {
 				resErr = fmt.Errorf("%+v,%+v", item.GoodsId, err) // 只要有一个持仓有问题，则该次持仓判定为失效
 				return
 			}
-			NewPosition = append(NewPosition, position)
+			// 下单金额大于 0 才有效
+			if m_count.Le(position.Amount, "0") > 0 {
+				NewPosition = append(NewPosition, position)
+			}
+
 		}
 	}
 
@@ -97,20 +101,24 @@ func NewPositionFunc(opt global.NewPositionType) (resData global.NewPositionType
 	}
 	resData.TradeMode = TradeModeValue
 
-	Leverage := m_count.Sub(opt.Leverage, "0")
-	if m_count.Le(Leverage, "1") < 0 {
-		Leverage = "1" // 最小值为 1
-	}
-	if m_count.Le(Leverage, global.MaxLeverage) > 0 {
-		Leverage = global.MaxLeverage // 最大值
+	Leverage := "1"
+	if resData.TradeMode == "SWAP" {
+		Leverage = m_count.Sub(opt.Leverage, "0")
+		if m_count.Le(Leverage, "1") < 0 {
+			Leverage = "1" // 最小值为 1
+		}
+		if m_count.Le(Leverage, global.MaxLeverage) > 0 {
+			Leverage = global.MaxLeverage // 最大值
+		}
 	}
 	resData.Leverage = Leverage
 
-	fmt.Println("Leverage", Leverage)
-
-	// m_json.Println(resData)
-
-	// fmt.Println("item", item, GoodsDetail, TradeMode)
+	// 买入金额
+	Amount := m_count.Sub(opt.Amount, "0")
+	if m_count.Le(Amount, "0") < 0 {
+		Amount = "0" // 最小值为 0
+	}
+	resData.Amount = Amount
 
 	return
 }

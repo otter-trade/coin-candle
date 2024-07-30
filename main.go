@@ -46,8 +46,8 @@ func SysInit() {
 func MockServeFunc() {
 	//  ####### 创建一个 MockServe #######
 	mockServeInfo, err := mock_trade.CreateMockServe(global.CreateMockServeOpt{
-		StrategyID:   "mo7_StrategyID_001",
-		MockName:     "测试_MockName_2",
+		StrategyID:   "mo7_StrategyID_002",
+		MockName:     "测试_MockName_6",
 		RunMode:      "1",
 		InitialAsset: "1000",
 	})
@@ -57,13 +57,13 @@ func MockServeFunc() {
 	m_json.Println(mockServeInfo)
 
 	// #######  查看 MockServe 列表 #######
-	mockServeList := mock_trade.GetMockServeList("mo7_StrategyID_001")
+	mockServeList := mock_trade.GetMockServeList("mo7_StrategyID_002")
 	m_json.Println(mockServeList)
 
 	// #######  查看 MockServe 详情 #######
 	mockServeInfo, err = mock_trade.GetMockServeInfo(global.FindMockServeOpt{
-		StrategyID: "mo7_StrategyID_001",
-		MockName:   "测试_MockName_21",
+		StrategyID: "mo7_StrategyID_002",
+		MockName:   "测试_MockName_6",
 	})
 	if err != nil {
 		fmt.Println("获取MockServe信息失败", err)
@@ -72,15 +72,15 @@ func MockServeFunc() {
 
 	// ####### 删除一个 MockServe #######
 	err = mock_trade.DeleteMockServe(global.FindMockServeOpt{
-		StrategyID: "mo7_StrategyID_001",
-		MockName:   "测试_MockName_1",
+		StrategyID: "mo7_StrategyID_002",
+		MockName:   "测试_MockName_6",
 	})
 	if err != nil {
 		fmt.Println("删除虚拟持仓失败", err)
 	}
 
 	// ####### 删除一个 策略 #######
-	err = mock_trade.ClearStrategy("mo7_StrategyID_001")
+	err = mock_trade.ClearStrategy("mo7_StrategyID_002")
 	if err != nil {
 		fmt.Println("删除策略失败", err)
 	}

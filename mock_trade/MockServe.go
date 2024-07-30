@@ -72,10 +72,10 @@ func CreateMockServe(opt global.CreateMockServeOpt) (resData global.MockServeCon
 
 	// 检查是否存在
 	var config global.MockServeConfigType
-	isExist := m_path.IsExist(mockPath.ConfigPath)
+	isExist := m_path.IsExist(mockPath.ConfigFullPath)
 	if isExist {
 		resErr = fmt.Errorf("该MockServe已存在")
-		fileCont := m_file.ReadFile(mockPath.ConfigPath)
+		fileCont := m_file.ReadFile(mockPath.ConfigFullPath)
 		err := json.Unmarshal(fileCont, &config)
 		if err != nil {
 			resErr = err
@@ -116,7 +116,7 @@ func CreateMockServe(opt global.CreateMockServeOpt) (resData global.MockServeCon
 		}
 	}
 
-	m_file.Write(mockPath.ConfigPath, m_json.ToStr(config))
+	m_file.Write(mockPath.ConfigFullPath, m_json.ToStr(config))
 
 	return
 }
@@ -134,7 +134,7 @@ func DeleteMockServe(opt global.FindMockServeOpt) (resErr error) {
 		return
 	}
 
-	err = os.Remove(mockPath.MockDataDir)
+	err = os.RemoveAll(mockPath.MockDataFullDir)
 	if err != nil {
 		resErr = err
 		return
@@ -209,14 +209,14 @@ func GetMockServeInfo(opt global.FindMockServeOpt) (resData global.MockServeConf
 		return
 	}
 
-	isExist := m_path.IsExist(mockPath.ConfigPath)
+	isExist := m_path.IsExist(mockPath.ConfigFullPath)
 	if !isExist {
 		resErr = fmt.Errorf("该MockServe不存在")
 		return
 	}
 
 	var config global.MockServeConfigType
-	fileCont := m_file.ReadFile(mockPath.ConfigPath)
+	fileCont := m_file.ReadFile(mockPath.ConfigFullPath)
 	err = json.Unmarshal(fileCont, &config)
 	if err != nil {
 		resErr = err
@@ -236,7 +236,6 @@ func GetMockServeInfo(opt global.FindMockServeOpt) (resData global.MockServeConf
 // 删除一个策略
 func ClearStrategy(StrategyID string) (resErr error) {
 	resErr = nil
-	// 检查是否超出最大条目
 	StrategyDir := m_str.Join(
 		global.Path.MockTradeDir,
 		os.PathSeparator,
@@ -249,6 +248,12 @@ func ClearStrategy(StrategyID string) (resErr error) {
 	}
 	if len(files) > 0 {
 		resErr = fmt.Errorf("请先删除该策略下的所有 MockServe")
+		return
+	}
+
+	err = os.RemoveAll(StrategyDir)
+	if err != nil {
+		resErr = err
 		return
 	}
 	return

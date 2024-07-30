@@ -10,13 +10,16 @@ import (
 )
 
 type MockPathType struct {
-	ConfigPath  string
-	MockDataDir string
+	MockDataDir     string
+	MockDataFullDir string
+	ConfigPath      string
+	ConfigFullPath  string
 }
 
 func CheckMockName(opt global.FindMockServeOpt) (resData MockPathType, resErr error) {
 	resData = MockPathType{}
 	resErr = nil
+
 	// StrategyID 不能为空
 	if len(opt.StrategyID) < 1 {
 		resErr = fmt.Errorf("StrategyID不能为空")
@@ -30,6 +33,13 @@ func CheckMockName(opt global.FindMockServeOpt) (resData MockPathType, resErr er
 	}
 
 	MockDataDir := m_str.Join(
+		opt.StrategyID,
+		os.PathSeparator,
+		opt.MockName,
+		os.PathSeparator,
+	)
+
+	MockDataFullDir := m_str.Join(
 		global.Path.MockTradeDir,
 		os.PathSeparator,
 		opt.StrategyID,
@@ -42,10 +52,16 @@ func CheckMockName(opt global.FindMockServeOpt) (resData MockPathType, resErr er
 		MockDataDir,
 		"config.json",
 	)
+	ConfigFullPath := m_str.Join(
+		MockDataFullDir,
+		"config.json",
+	)
 
 	resData = MockPathType{
-		ConfigPath:  ConfigPath,
-		MockDataDir: MockDataDir,
+		MockDataDir:     MockDataDir,
+		MockDataFullDir: MockDataFullDir,
+		ConfigPath:      ConfigPath,
+		ConfigFullPath:  ConfigFullPath,
 	}
 
 	return

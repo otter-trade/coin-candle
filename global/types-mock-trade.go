@@ -64,9 +64,10 @@ func GetRunMode(key string) (resData RunModeType, resErr error) {
 
 type MockServeConfigType struct {
 	CreateMockServeOpt
-	RunMode   RunModeType
-	DataDir   string   // 数据存储路径
-	DataIndex []string // 数据索引
+	RunMode     RunModeType
+	MockDataDir string  // 数据存储路径
+	ConfigPath  string  // 配置文件存放路径
+	DataIndex   []int64 // 数据索引
 }
 
 type FindMockServeOpt struct {

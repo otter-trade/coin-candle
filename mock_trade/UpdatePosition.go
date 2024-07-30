@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/handy-golang/go-tools/m_count"
+	"github.com/handy-golang/go-tools/m_json"
 	"github.com/handy-golang/go-tools/m_time"
 	"github.com/otter-trade/coin-candle/exchange_api"
 	"github.com/otter-trade/coin-candle/global"
@@ -35,7 +36,7 @@ func UpdatePosition(opt global.UpdatePositionOpt) (resErr error) {
 		UpdateTime = nowTime
 	}
 
-	var NewPosition []global.NewPositionType
+	var NewPositionList []global.NewPositionType
 
 	for _, item := range opt.NewPosition {
 		if len(item.GoodsId) > 1 {
@@ -46,13 +47,17 @@ func UpdatePosition(opt global.UpdatePositionOpt) (resErr error) {
 			}
 			// 下单金额大于 0 才有效
 			if m_count.Le(position.Amount, "0") > 0 {
-				NewPosition = append(NewPosition, position)
+				NewPositionList = append(NewPositionList, position)
 			}
 
 		}
 	}
 
-	fmt.Println("UpdateTime", UpdateTime, NewPosition)
+	MockConfig.DataIndex = append(MockConfig.DataIndex, UpdateTime)
+
+	m_json.Println(MockConfig)
+
+	fmt.Println("UpdateTime", UpdateTime, NewPositionList)
 
 	return
 }

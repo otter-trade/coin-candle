@@ -91,8 +91,9 @@ func CreateMockServe(opt global.CreateMockServeOpt) (resData global.MockServeCon
 	config.InitialAsset = InitialAsset
 	config.FeeRate = FeeRate
 	config.RunMode = RunMode
-	config.DataDir = mockPath.MockDataDir
-	config.DataIndex = []string{}
+	config.MockDataDir = mockPath.MockDataDir
+	config.ConfigPath = mockPath.ConfigPath
+	config.DataIndex = []int64{}
 
 	resData = config
 

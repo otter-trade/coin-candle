@@ -14,6 +14,7 @@ import (
 )
 
 // 更新一次仓位状态
+// 这一次仓位的更新，相当于上一次仓位的全部平仓。这个记录本质上是一个指令记录。
 func UpdatePosition(opt global.UpdatePositionOpt) (resErr error) {
 	resErr = nil
 
@@ -86,7 +87,14 @@ func UpdatePosition(opt global.UpdatePositionOpt) (resErr error) {
 		UpdateTime, ".json",
 	)
 
-	m_file.WriteByte(NewPositionListJsonPath, m_json.ToJson(NewPositionList))
+	UpdatePositionInfo := global.UpdatePositionOpt{
+		StrategyID:  MockConfig.StrategyID,
+		MockName:    MockConfig.MockName,
+		UpdateTime:  UpdateTime,
+		NewPosition: NewPositionList,
+	}
+
+	m_file.WriteByte(NewPositionListJsonPath, m_json.ToJson(UpdatePositionInfo))
 	m_file.WriteByte(mockPath.ConfigFullPath, m_json.ToJson(MockConfig))
 
 	return

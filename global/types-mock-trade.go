@@ -166,3 +166,6 @@ type ReadPositionOpt struct {
 	MockName   string
 	Timestamp  int64 // 读取任意时间点的持仓情况(13位毫秒时间戳)，0 或 空 则为当前时间。
 }
+
+// 持仓结算
+type PositionClose struct{}

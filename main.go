@@ -45,50 +45,49 @@ func SysInit() {
 
 func MockServeFunc() {
 	//  ####### 创建一个 MockServe #######
-	mockServeInfo, err := mock_trade.CreateMockServe(global.CreateMockServeOpt{
+	_, err := mock_trade.CreateMockServe(global.CreateMockServeOpt{
 		StrategyID:   "mo7_StrategyID_001",
-		MockName:     "测试_MockName_4",
+		MockName:     "测试_MockName_3",
 		RunMode:      "1",
 		InitialAsset: "1000",
 	})
 	if err != nil {
 		fmt.Println("创建持仓失败", err)
 	}
-	m_json.Println(mockServeInfo)
 
-	// #######  查看 MockServe 列表 #######
-	mockServeList := mock_trade.GetMockServeList("mo7_StrategyID_002")
-	m_json.Println(mockServeList)
+	// // #######  查看 MockServe 列表 #######
+	// mockServeList := mock_trade.GetMockServeList("mo7_StrategyID_001")
+	// m_json.Println(mockServeList)
 
-	// #######  查看 MockServe 详情 #######
-	mockServeInfo, err = mock_trade.GetMockServeInfo(global.FindMockServeOpt{
-		StrategyID: "mo7_StrategyID_002",
-		MockName:   "测试_MockName_6",
-	})
-	if err != nil {
-		fmt.Println("获取MockServe信息失败", err)
-	}
-	m_json.Println(mockServeInfo)
+	// // #######  查看 MockServe 详情 #######
+	// mockServeInfo, err = mock_trade.GetMockServeInfo(global.FindMockServeOpt{
+	// 	StrategyID: "mo7_StrategyID_002",
+	// 	MockName:   "测试_MockName_6",
+	// })
+	// if err != nil {
+	// 	fmt.Println("获取MockServe信息失败", err)
+	// }
+	// m_json.Println(mockServeInfo)
 
 	// ####### 删除一个 MockServe #######
-	err = mock_trade.DeleteMockServe(global.FindMockServeOpt{
-		StrategyID: "mo7_StrategyID_002",
-		MockName:   "测试_MockName_6",
-	})
-	if err != nil {
-		fmt.Println("删除虚拟持仓失败", err)
-	}
+	// err := mock_trade.DeleteMockServe(global.FindMockServeOpt{
+	// 	StrategyID: "mo7_StrategyID_001",
+	// 	MockName:   "测试_MockName_4",
+	// })
+	// if err != nil {
+	// 	fmt.Println("删除虚拟持仓失败", err)
+	// }
 
 	// ####### 删除一个 策略 #######
-	err = mock_trade.ClearStrategy("mo7_StrategyID_002")
-	if err != nil {
-		fmt.Println("删除策略失败", err)
-	}
+	// err := mock_trade.ClearStrategy("mo7_StrategyID_001")
+	// if err != nil {
+	// 	fmt.Println("删除策略失败", err)
+	// }
 }
 
 // 更新持仓状态
 func PositionFunc() {
-	time := m_time.TimeParse(m_time.LaySP_ss, "2024-07-30 12:02:00")
+	time := m_time.TimeParse(m_time.LaySP_ss, "2024-07-30 11:00:00")
 	err := mock_trade.UpdatePosition(global.UpdatePositionOpt{
 		StrategyID: "mo7_StrategyID_001",
 		MockName:   "测试_MockName_1",
@@ -116,7 +115,7 @@ func PositionFunc() {
 		fmt.Println("更新持仓失败", err)
 	}
 
-	// 读取 MockServe 下的持仓记录列表
+	// 读取 任意时间点 的持仓结果
 }
 
 // 市场数据

@@ -10,6 +10,7 @@ import (
 	"github.com/handy-golang/go-tools/m_json"
 	"github.com/handy-golang/go-tools/m_path"
 	"github.com/handy-golang/go-tools/m_str"
+	"github.com/handy-golang/go-tools/m_time"
 	"github.com/otter-trade/coin-candle/global"
 )
 
@@ -93,7 +94,8 @@ func CreateMockServe(opt global.CreateMockServeOpt) (resData global.MockServeCon
 	config.RunMode = RunMode
 	config.MockDataDir = mockPath.MockDataDir
 	config.ConfigPath = mockPath.ConfigPath
-	config.DataIndex = []int64{}
+	config.PositionIndexPath = mockPath.PositionIndexPath
+	config.CreateTime = m_time.GetUnixInt64()
 
 	resData = config
 
@@ -117,6 +119,7 @@ func CreateMockServe(opt global.CreateMockServeOpt) (resData global.MockServeCon
 	}
 
 	m_file.WriteByte(mockPath.ConfigFullPath, m_json.ToJson(config))
+	m_file.WriteByte(mockPath.PositionIndexFullPath, m_json.ToJson(global.PositionIndexType{})) // 建立索引文件
 
 	return
 }

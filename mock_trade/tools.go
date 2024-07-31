@@ -10,10 +10,12 @@ import (
 )
 
 type MockPathType struct {
-	MockDataDir     string
-	MockDataFullDir string
-	ConfigPath      string
-	ConfigFullPath  string
+	MockDataDir           string
+	MockDataFullDir       string
+	ConfigPath            string
+	ConfigFullPath        string
+	PositionIndexPath     string
+	PositionIndexFullPath string
 }
 
 func CheckMockName(opt global.FindMockServeOpt) (resData MockPathType, resErr error) {
@@ -57,11 +59,22 @@ func CheckMockName(opt global.FindMockServeOpt) (resData MockPathType, resErr er
 		"config.json",
 	)
 
+	PositionIndexPath := m_str.Join(
+		MockDataDir,
+		"position_index.json",
+	)
+	PositionIndexFullPath := m_str.Join(
+		MockDataFullDir,
+		"position_index.json",
+	)
+
 	resData = MockPathType{
-		MockDataDir:     MockDataDir,
-		MockDataFullDir: MockDataFullDir,
-		ConfigPath:      ConfigPath,
-		ConfigFullPath:  ConfigFullPath,
+		MockDataDir:           MockDataDir,
+		MockDataFullDir:       MockDataFullDir,
+		ConfigPath:            ConfigPath,
+		ConfigFullPath:        ConfigFullPath,
+		PositionIndexPath:     PositionIndexPath,
+		PositionIndexFullPath: PositionIndexFullPath,
 	}
 
 	return

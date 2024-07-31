@@ -64,16 +64,20 @@ func GetRunMode(key string) (resData RunModeType, resErr error) {
 
 type MockServeConfigType struct {
 	CreateMockServeOpt
-	RunMode     RunModeType
-	MockDataDir string  // 数据存储路径
-	ConfigPath  string  // 配置文件存放路径
-	DataIndex   []int64 // 数据索引
+	RunMode                RunModeType
+	MockDataDir            string // 数据存储路径
+	ConfigPath             string // 配置文件存放路径
+	PositionIndexPath      string // 仓位索引存放路径
+	CreateTime             int64  // 创建时间
+	LastPositionUpdateTime int64  // 最后一次更新持仓的时间
 }
 
 type FindMockServeOpt struct {
 	StrategyID string
 	MockName   string
 }
+
+type PositionIndexType []int64
 
 var MaxMockServeCount = 60 // 每个策略允许的最大 MockServe 数量
 
@@ -150,3 +154,9 @@ type UpdatePositionOpt struct {
 }
 
 var MaxLeverage = "30" // 支持的最大杠杆倍率
+
+type ReadPositionOpt struct {
+	StrategyID string
+	MockName   string
+	Timestamp  int64 // 读取任意时间点的持仓情况(13位毫秒时间戳)，0 或 空 则为当前时间。
+}

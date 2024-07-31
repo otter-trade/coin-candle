@@ -9,6 +9,7 @@ import (
 	"github.com/handy-golang/go-tools/m_json"
 	"github.com/handy-golang/go-tools/m_str"
 	"github.com/handy-golang/go-tools/m_time"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/otter-trade/coin-candle/exchange_api"
 	"github.com/otter-trade/coin-candle/global"
 )
@@ -40,13 +41,11 @@ func UpdatePosition(opt global.UpdatePositionOpt) (resErr error) {
 		UpdateTime = nowTime
 	}
 
-	// 你不能跳回到过去下单， UpdateTime 必须大于上一次下单的时间
-	if len(MockConfig.DataIndex) > 0 {
-		lastUpdateTime := MockConfig.DataIndex[len(MockConfig.DataIndex)-1]
-		if UpdateTime-lastUpdateTime < m_time.UnixTimeInt64.Minute {
-			resErr = fmt.Errorf("两次下单间隔不得小于1分钟")
-			return
-		}
+	// 你不能跳回到过去下单， UpdateTime 必须大于上一次更新时间
+	lastUpdateTime := MockConfig.LastPositionUpdateTime
+	if UpdateTime-lastUpdateTime < m_time.UnixTimeInt64.Minute {
+		resErr = fmt.Errorf("UpdateTime必须大于上一次更新时间")
+		return
 	}
 
 	var NewPositionList []global.NewPositionType
@@ -79,7 +78,12 @@ func UpdatePosition(opt global.UpdatePositionOpt) (resErr error) {
 		MockName:   MockConfig.MockName,
 	})
 
-	MockConfig.DataIndex = append(MockConfig.DataIndex, UpdateTime)
+	MockConfig.LastPositionUpdateTime = UpdateTime
+
+	PositionIndexByte := m_file.ReadFile(mockPath.PositionIndexFullPath)
+	var PositionIndex global.PositionIndexType
+	jsoniter.Unmarshal(PositionIndexByte, &PositionIndex)
+	PositionIndex = append(PositionIndex, UpdateTime)
 
 	NewPositionListJsonPath := m_str.Join(
 		mockPath.MockDataFullDir,
@@ -96,6 +100,7 @@ func UpdatePosition(opt global.UpdatePositionOpt) (resErr error) {
 
 	m_file.WriteByte(NewPositionListJsonPath, m_json.ToJson(UpdatePositionInfo))
 	m_file.WriteByte(mockPath.ConfigFullPath, m_json.ToJson(MockConfig))
+	m_file.WriteByte(mockPath.PositionIndexFullPath, m_json.ToJson(PositionIndex))
 
 	return
 }

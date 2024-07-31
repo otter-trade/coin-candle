@@ -147,16 +147,16 @@ func DeleteMockServe(opt global.FindMockServeOpt) (resErr error) {
 }
 
 // 获取某个策略下所有的 MockServe
-func GetMockServeList(StrategyID string) (resData []global.MockServeConfigType) {
+func GetMockServeList(opt global.FindMockServeListOpt) (resData []global.MockServeConfigType) {
 	resData = []global.MockServeConfigType{}
-	if len(StrategyID) < 1 {
+	if len(opt.StrategyID) < 1 {
 		return
 	}
 
 	StrategyDir := m_str.Join(
 		global.Path.MockTradeDir,
 		os.PathSeparator,
-		StrategyID,
+		opt.StrategyID,
 	)
 
 	isExist := m_path.IsExist(StrategyDir)
@@ -191,9 +191,25 @@ func GetMockServeList(StrategyID string) (resData []global.MockServeConfigType) 
 			if err != nil {
 				continue
 			}
-			resData = append(resData, config)
+
+			// 创建时间的查询过滤
+			if opt.CreateTime[1] > opt.CreateTime[0] {
+				if (config.CreateTime >= opt.CreateTime[0]) && (config.CreateTime <= opt.CreateTime[1]) {
+					resData = append(resData, config)
+				}
+			}
+
+			// 最后一次持仓更新时间的查询与过滤
+			if opt.LastPositionUpdateTime[1] > opt.LastPositionUpdateTime[0] {
+				if (config.LastPositionUpdateTime >= opt.LastPositionUpdateTime[0]) && (config.LastPositionUpdateTime <= opt.LastPositionUpdateTime[1]) {
+					resData = append(resData, config)
+				}
+			}
+
 		}
 	}
+
+	m_json.Println(opt)
 
 	return
 }

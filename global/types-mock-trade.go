@@ -77,6 +77,12 @@ type FindMockServeOpt struct {
 	MockName   string
 }
 
+type FindMockServeListOpt struct {
+	StrategyID             string
+	CreateTime             [2]int64 // 查询 开始 - 结束时间的 13 位毫秒时间戳
+	LastPositionUpdateTime [2]int64 // 查询 最后一次更新持仓 的时间范围
+}
+
 type PositionIndexType []int64
 
 var MaxMockServeCount = 60 // 每个策略允许的最大 MockServe 数量

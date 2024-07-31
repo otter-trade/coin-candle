@@ -21,8 +21,8 @@ func main() {
 	// KlineActionTest()
 	// MarketFunc()    // 市场相关的数据
 	// KlineFunc()     // K线相关的数据
-	// MockServeFunc() // MockServe 的增删查
-	PositionFunc() // 持仓管理
+	MockServeFunc() // MockServe 的增删查
+	// PositionFunc() // 持仓管理
 }
 
 func SysInit() {
@@ -45,24 +45,26 @@ func SysInit() {
 
 func MockServeFunc() {
 	//  ####### 创建一个 MockServe #######
-	_, err := mock_trade.CreateMockServe(global.CreateMockServeOpt{
-		StrategyID:   "mo7_StrategyID_001",
-		MockName:     "测试_MockName_3",
-		RunMode:      "1",
-		InitialAsset: "1000",
+	// _, err := mock_trade.CreateMockServe(global.CreateMockServeOpt{
+	// 	StrategyID:   "mo7_StrategyID_001",
+	// 	MockName:     "测试_MockName_3",
+	// 	RunMode:      "1",
+	// 	InitialAsset: "1000",
+	// })
+	// if err != nil {
+	// 	fmt.Println("创建持仓失败", err)
+	// }
+
+	// #######  查看 MockServe 列表 #######
+	mockServeList := mock_trade.GetMockServeList(global.FindMockServeListOpt{
+		StrategyID: "mo7_StrategyID_001",
 	})
-	if err != nil {
-		fmt.Println("创建持仓失败", err)
-	}
+	m_json.Println(mockServeList)
 
-	// // #######  查看 MockServe 列表 #######
-	// mockServeList := mock_trade.GetMockServeList("mo7_StrategyID_001")
-	// m_json.Println(mockServeList)
-
-	// // #######  查看 MockServe 详情 #######
-	// mockServeInfo, err = mock_trade.GetMockServeInfo(global.FindMockServeOpt{
-	// 	StrategyID: "mo7_StrategyID_002",
-	// 	MockName:   "测试_MockName_6",
+	// #######  查看 MockServe 详情 #######
+	// mockServeInfo, err := mock_trade.GetMockServeInfo(global.FindMockServeOpt{
+	// 	StrategyID: "mo7_StrategyID_001",
+	// 	MockName:   "测试_MockName_1",
 	// })
 	// if err != nil {
 	// 	fmt.Println("获取MockServe信息失败", err)

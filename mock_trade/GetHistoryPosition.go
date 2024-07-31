@@ -8,6 +8,6 @@ type GetHistoryPositionOpt struct {
 	EndTime    int64 // 结束时间
 }
 
-func GetHistoryPosition(opt GetHistoryPositionOpt) {
+func GetPositionList(opt GetHistoryPositionOpt) {
 	// 读取持仓历史
 }

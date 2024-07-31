@@ -27,16 +27,23 @@ func UpdatePosition(opt global.UpdatePositionOpt) (resErr error) {
 		return
 	}
 
-	// UpdateTime
+	// UpdateTime 持仓的更新时间
 	nowTime := m_time.GetUnixInt64()
 	var UpdateTime int64
 	// 回测模式， UpdateTime 才有效
 	if MockConfig.RunMode.Value == 1 {
 		UpdateTime = opt.UpdateTime
 	}
-	// 小于系统最老时间 和 大于当前
+	// 小于系统最老时间 或者 大于当前 则重置为当前时间
 	if UpdateTime < global.TimeOldest || UpdateTime > nowTime {
 		UpdateTime = nowTime
+	}
+
+	ConfigLastUpdateTime := MockConfig.DataIndex[len(MockConfig.DataIndex)-1]
+
+	if UpdateTime-ConfigLastUpdateTime < m_time.UnixTimeInt64.Minute {
+		resErr = fmt.Errorf("两次下单间隔不得小于1分钟")
+		return
 	}
 
 	var NewPositionList []global.NewPositionType

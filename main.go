@@ -88,7 +88,7 @@ func MockServeFunc() {
 
 // 更新持仓状态
 func PositionFunc() {
-	time := m_time.TimeParse(m_time.LaySP_ss, "2024-07-24 12:00:00")
+	time := m_time.TimeParse(m_time.LaySP_ss, "2024-07-24 12:02:00")
 	err := mock_trade.UpdatePosition(global.UpdatePositionOpt{
 		StrategyID: "mo7_StrategyID_001",
 		MockName:   "测试_MockName_1",

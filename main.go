@@ -46,8 +46,8 @@ func SysInit() {
 func MockServeFunc() {
 	//  ####### 创建一个 MockServe #######
 	mockServeInfo, err := mock_trade.CreateMockServe(global.CreateMockServeOpt{
-		StrategyID:   "mo7_StrategyID_002",
-		MockName:     "测试_MockName_6",
+		StrategyID:   "mo7_StrategyID_001",
+		MockName:     "测试_MockName_4",
 		RunMode:      "1",
 		InitialAsset: "1000",
 	})
@@ -98,9 +98,9 @@ func PositionFunc() {
 				GoodsId:   "BTC-USDT",
 				TradeMode: "SWAP",
 				TradeType: "Coin",
-				Leverage:  "10",
+				Leverage:  "0.134",
 				Side:      "Buy",
-				Amount:    "10",
+				Amount:    "12",
 			},
 			{
 				GoodsId:   "ETH-USDT",

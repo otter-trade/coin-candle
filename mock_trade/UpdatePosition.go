@@ -40,15 +40,25 @@ func UpdatePosition(opt global.UpdatePositionOpt) (resErr error) {
 	}
 
 	var NewPositionList []global.NewPositionType
+	// 参数过滤和检错
 	for _, item := range opt.NewPosition {
 		if len(item.GoodsId) > 1 {
-			position, err := NewPositionFunc(item)
+			// 必须为有效的 GoodsId
+			GoodsDetail, err := exchange_api.GetGoodsDetail(exchange_api.GetGoodsDetailOpt{
+				GoodsId: item.GoodsId,
+			})
+			if err != nil {
+				resErr = err
+				return
+			}
+			// 参数检查
+			position, err := NewPositionFuncParamCheck(item)
 			if err != nil {
 				resErr = fmt.Errorf("%+v,%+v", item.GoodsId, err) // 只要有一个持仓有问题，则该次持仓判定为失效
 				return
 			}
-			// 下单金额大于 0 才有效
-			if m_count.Le(position.Amount, "0") > 0 {
+			// 下单金额大于 0 才有效 , 币种状态 live 才有效
+			if m_count.Le(position.Amount, "0") > 0 && GoodsDetail.State == "live" {
 				NewPositionList = append(NewPositionList, position)
 			}
 		}
@@ -73,17 +83,14 @@ func UpdatePosition(opt global.UpdatePositionOpt) (resErr error) {
 	return
 }
 
-func NewPositionFunc(opt global.NewPositionType) (resData global.NewPositionType, resErr error) {
+// 参数过滤与检查
+func NewPositionFuncParamCheck(opt global.NewPositionType) (resData global.NewPositionType, resErr error) {
 	resData = global.NewPositionType{}
 	resErr = nil
 
 	// 检查参数
-	_, err := global.GetTradeType(opt.TradeType)
-	if err != nil {
-		resErr = err
-		return
-	}
-	resData.TradeType = opt.TradeType
+
+	resData.GoodsId = opt.GoodsId
 
 	if opt.Side == "Buy" || opt.Side == "Sell" {
 		resData.Side = opt.Side
@@ -92,18 +99,12 @@ func NewPositionFunc(opt global.NewPositionType) (resData global.NewPositionType
 		return
 	}
 
-	GoodsDetail, err := exchange_api.GetGoodsDetail(exchange_api.GetGoodsDetailOpt{
-		GoodsId: opt.GoodsId,
-	})
+	_, err := global.GetTradeType(opt.TradeType)
 	if err != nil {
 		resErr = err
 		return
 	}
-	if GoodsDetail.State != "live" {
-		resErr = fmt.Errorf("%+v,%+v", GoodsDetail.GoodsId, GoodsDetail.State)
-		return
-	}
-	resData.GoodsId = GoodsDetail.GoodsId
+	resData.TradeType = opt.TradeType
 
 	TradeModeValue := opt.TradeMode
 	if len(TradeModeValue) > 1 {
@@ -120,6 +121,8 @@ func NewPositionFunc(opt global.NewPositionType) (resData global.NewPositionType
 	Leverage := "1"
 	if resData.TradeMode == "SWAP" {
 		Leverage = m_count.Sub(opt.Leverage, "0")
+		Leverage = m_count.Cent(Leverage, 0)
+
 		if m_count.Le(Leverage, "1") < 0 {
 			Leverage = "1" // 最小值为 1
 		}

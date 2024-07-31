@@ -192,18 +192,16 @@ func GetMockServeList(opt global.FindMockServeListOpt) (resData []global.MockSer
 				continue
 			}
 
-			// 创建时间的查询过滤
-			if opt.CreateTime[1] > opt.CreateTime[0] {
+			if opt.CreateTime[1] > opt.CreateTime[0] { // 创建时间的查询过滤
 				if (config.CreateTime >= opt.CreateTime[0]) && (config.CreateTime <= opt.CreateTime[1]) {
 					resData = append(resData, config)
 				}
-			}
-
-			// 最后一次持仓更新时间的查询与过滤
-			if opt.LastPositionUpdateTime[1] > opt.LastPositionUpdateTime[0] {
+			} else if opt.LastPositionUpdateTime[1] > opt.LastPositionUpdateTime[0] { // 最后一次持仓更新时间查询过滤
 				if (config.LastPositionUpdateTime >= opt.LastPositionUpdateTime[0]) && (config.LastPositionUpdateTime <= opt.LastPositionUpdateTime[1]) {
 					resData = append(resData, config)
 				}
+			} else { // 没有时间过滤条件
+				resData = append(resData, config)
 			}
 
 		}

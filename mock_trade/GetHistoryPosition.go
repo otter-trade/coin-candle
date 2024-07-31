@@ -11,3 +11,7 @@ type GetHistoryPositionOpt struct {
 func GetPositionList(opt GetHistoryPositionOpt) {
 	// 读取持仓历史
 }
+
+// 查询一个MockServe 下的持仓列表
+func GetMockServePosition() {
+}

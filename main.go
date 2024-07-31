@@ -21,8 +21,8 @@ func main() {
 	// KlineActionTest()
 	// MarketFunc()    // 市场相关的数据
 	// KlineFunc()     // K线相关的数据
-	MockServeFunc() // MockServe 的增删查
-	// PositionFunc() // 持仓管理
+	// MockServeFunc() // MockServe 的增删查
+	PositionFunc() // 持仓管理
 }
 
 func SysInit() {
@@ -90,34 +90,39 @@ func MockServeFunc() {
 // 更新持仓状态
 func PositionFunc() {
 	time := m_time.TimeParse(m_time.LaySP_ss, "2024-07-30 11:00:00")
-	err := mock_trade.UpdatePosition(global.UpdatePositionOpt{
-		StrategyID: "mo7_StrategyID_001",
-		MockName:   "测试_MockName_1",
-		UpdateTime: time,
-		NewPosition: []global.NewPositionType{
-			{
-				GoodsId:   "BTC-USDT",
-				TradeMode: "SWAP",
-				TradeType: "Coin",
-				Leverage:  "0.134",
-				Side:      "Buy",
-				Amount:    "12",
-			},
-			{
-				GoodsId:   "ETH-USDT",
-				TradeMode: "SPOT",
-				TradeType: "Coin",
-				Leverage:  "10",
-				Side:      "Sell",
-				Amount:    "10",
-			},
-		},
-	})
-	if err != nil {
-		fmt.Println("更新持仓失败", err)
-	}
+	// err := mock_trade.UpdatePosition(global.UpdatePositionOpt{
+	// 	StrategyID: "mo7_StrategyID_001",
+	// 	MockName:   "测试_MockName_1",
+	// 	UpdateTime: time,
+	// 	NewPosition: []global.NewPositionType{
+	// 		{
+	// 			GoodsId:   "BTC-USDT",
+	// 			TradeMode: "SWAP",
+	// 			TradeType: "Coin",
+	// 			Leverage:  "0.134",
+	// 			Side:      "Buy",
+	// 			Amount:    "12",
+	// 		},
+	// 		{
+	// 			GoodsId:   "ETH-USDT",
+	// 			TradeMode: "SPOT",
+	// 			TradeType: "Coin",
+	// 			Leverage:  "10",
+	// 			Side:      "Sell",
+	// 			Amount:    "10",
+	// 		},
+	// 	},
+	// })
+	// if err != nil {
+	// 	fmt.Println("更新持仓失败", err)
+	// }
 
 	// 读取 任意时间点 的持仓结果
+	mock_trade.ReadPosition(global.ReadPositionOpt{
+		StrategyID: "mo7_StrategyID_001",
+		MockName:   "测试_MockName_1",
+		Timestamp:  time,
+	})
 }
 
 // 市场数据

@@ -1,5 +1,10 @@
 package mock_trade
 
+/*
+仓位管理：
+
+*/
+
 import (
 	"fmt"
 	"os"
@@ -15,6 +20,7 @@ import (
 )
 
 /*
+
 更新一次仓位状态
 这个函数要做的事情：
 检查参数

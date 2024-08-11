@@ -12,11 +12,11 @@ import (
 // 新建一个持仓
 
 func NewPosition_demo() {
-	resData, err := mock_trade.NewPosition(global.NewPositionType{
+	resData, err := mock_trade.NewPosition(global.NewPositionOpt{
 		GoodsId:   "BTC-USDT",
 		TradeMode: "SWAP",
 		TradeType: "Coin",
-		Leverage:  "0.134",
+		Leverage:  "1",
 		Side:      "Buy",
 		Amount:    "12",
 	})
@@ -29,38 +29,38 @@ func NewPosition_demo() {
 
 // 更新持仓
 func UpdatePosition_demo() {
-	time := m_time.TimeParse(m_time.LaySP_ss, "2024-08-11 17:20:00")
+	// time := m_time.TimeParse(m_time.LaySP_ss, "2024-08-11 17:20:00")
 
-	BTC_position := global.NewPositionType{
-		GoodsId:   "BTC-USDT",
-		TradeMode: "SWAP",
-		TradeType: "Coin",
-		Leverage:  "0.134",
-		Side:      "Buy",
-		Amount:    "12",
-	}
+	// BTC_position := global.NewPositionType{
+	// 	GoodsId:   "BTC-USDT",
+	// 	TradeMode: "SWAP",
+	// 	TradeType: "Coin",
+	// 	Leverage:  "0.134",
+	// 	Side:      "Buy",
+	// 	Amount:    "12",
+	// }
 
-	ETH_position := global.NewPositionType{
-		GoodsId:   "ETH-USDT",
-		TradeMode: "SPOT",
-		TradeType: "Coin",
-		Leverage:  "10",
-		Side:      "Sell",
-		Amount:    "10",
-	}
+	// ETH_position := global.NewPositionType{
+	// 	GoodsId:   "ETH-USDT",
+	// 	TradeMode: "SPOT",
+	// 	TradeType: "Coin",
+	// 	Leverage:  "10",
+	// 	Side:      "Sell",
+	// 	Amount:    "10",
+	// }
 
-	err := mock_trade.UpdatePosition(global.UpdatePositionOpt{
-		StrategyID: "mo7_StrategyID_001",
-		MockName:   "测试_MockName_1",
-		UpdateTime: time,
-		NewPosition: []global.NewPositionType{
-			BTC_position,
-			ETH_position,
-		},
-	})
-	if err != nil {
-		fmt.Println("更新持仓失败", err)
-	}
+	// err := mock_trade.UpdatePosition(global.UpdatePositionOpt{
+	// 	StrategyID: "mo7_StrategyID_001",
+	// 	MockName:   "测试_MockName_1",
+	// 	UpdateTime: time,
+	// 	NewPosition: []global.NewPositionType{
+	// 		BTC_position,
+	// 		ETH_position,
+	// 	},
+	// })
+	// if err != nil {
+	// 	fmt.Println("更新持仓失败", err)
+	// }
 }
 
 // 读取 任意时间点 的持仓状态

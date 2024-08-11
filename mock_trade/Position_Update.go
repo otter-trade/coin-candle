@@ -6,6 +6,7 @@ package mock_trade
 简化持仓模型。
 每次更新当前需要的持仓的状态，然后系统会帮助下单并计算应得收入。
 更新仓位状态
+这种方式的好处在于，每次更新持仓时都可以动态的调整杠杆倍率，持仓比率等
 
 */
 
@@ -29,6 +30,19 @@ import (
 平掉上一次的仓位
 读取余额
 */
+
+type UpdatePositionType struct {
+	GoodsId   string // OtterTrade 的 商品 ID ，从 exchange_api.GetGoodsList 获取
+	TradeType string // 交易种类，可选值 global.TradeTypeList
+	TradeMode string // 交易模式，可选值 global.TradeModeList
+	Leverage  string // 杠杆倍率，缺省值 1 ，只有 TradeMode = SWAP 时有效
+	Side      string // 下单方向，global.SideList, 只有 TradeMode = SWAP 时有效
+	Amount    string // 下单金额，不可超过账户结余
+}
+
+func (_this UpdatePositionType) Update() {
+	fmt.Println(_this)
+}
 
 func UpdatePosition(opt global.UpdatePositionOpt) (resErr error) {
 	resErr = nil
@@ -62,7 +76,7 @@ func UpdatePosition(opt global.UpdatePositionOpt) (resErr error) {
 		return
 	}
 
-	var NewPositionList []global.NewPositionType
+	var NewPositionList []global.NewPositionOpt
 	// 参数过滤和检错
 	for _, item := range opt.NewPosition {
 		if len(item.GoodsId) > 1 {

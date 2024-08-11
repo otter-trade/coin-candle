@@ -8,12 +8,12 @@ import (
 	"github.com/otter-trade/coin-candle/global"
 )
 
-func NewPosition(opt global.NewPositionType) (resData global.NewPositionType, resErr error) {
+func NewPosition(opt global.NewPositionOpt) (resData UpdatePositionType, resErr error) {
 	resErr = nil
-	resData = global.NewPositionType{}
+	resData = UpdatePositionType{}
 
 	// 检查参数 TradeType
-	TradeType_obj, err := global.GetTradeType(opt.TradeType)
+	TradeType_obj, err := global.GetKeyDescObj(opt.TradeType, global.TradeTypeList)
 	if err != nil {
 		resErr = err
 		return
@@ -21,16 +21,17 @@ func NewPosition(opt global.NewPositionType) (resData global.NewPositionType, re
 	resData.TradeType = TradeType_obj.Value
 
 	// 检查 TradeMode
-	TradeMode_obj, err := global.GetTradeMode(opt.TradeMode)
+	TradeMode_obj, err := global.GetKeyDescObj(opt.TradeMode, global.TradeModeList)
 	if err != nil {
-		TradeMode_obj = global.TradeModeList[0]
+		resErr = err
+		return
 	}
 	resData.TradeMode = TradeMode_obj.Value
 
 	// 当 TradeMode 为 SWAP 时
 	if TradeMode_obj.Value == "SWAP" {
 		// 检查 Side
-		Side_obj, err := global.GetSide(opt.Side)
+		Side_obj, err := global.GetKeyDescObj(opt.Side, global.SideList)
 		if err != nil {
 			resErr = err
 			return
@@ -38,6 +39,7 @@ func NewPosition(opt global.NewPositionType) (resData global.NewPositionType, re
 		resData.Side = Side_obj.Value
 
 		// 检查 Leverage
+		// 将来每个币种都会有自己独立的最大持仓范围
 		Leverage := m_count.Sub(opt.Leverage, "0")
 		Leverage = m_count.Cent(Leverage, 0)
 		if m_count.Le(Leverage, "1") < 0 {
@@ -51,6 +53,7 @@ func NewPosition(opt global.NewPositionType) (resData global.NewPositionType, re
 		resData.Side = "Buy"
 		resData.Leverage = "1"
 	}
+
 	// 检查 GoodsId
 	GoodsDetail, err := exchange_api.GetGoodsDetail(exchange_api.GetGoodsDetailOpt{
 		GoodsId: opt.GoodsId,

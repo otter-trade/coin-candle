@@ -12,21 +12,11 @@ type KeyDescType struct {
 	Description string
 }
 
-var TradeModeList = []KeyDescType{
-	{
-		Value:       "SPOT",
-		Description: "现货买入，现货卖出赚取差价。",
-	},
-	{
-		Value:       "SWAP",
-		Description: "永续合约，杠杆借币，买入做多，卖出做空。",
-	},
-}
-
-func GetTradeMode(Value string) (resData KeyDescType, resErr error) {
+func GetKeyDescObj(value string, list []KeyDescType) (resData KeyDescType, resErr error) {
 	resErr = nil
-	for _, v := range TradeModeList {
-		if v.Value == Value {
+	resData = KeyDescType{}
+	for _, v := range list {
+		if v.Value == value {
 			resData = v
 			break
 		}
@@ -38,7 +28,19 @@ func GetTradeMode(Value string) (resData KeyDescType, resErr error) {
 	return
 }
 
-// 交易种类
+// 持仓模式
+var TradeModeList = []KeyDescType{
+	{
+		Value:       "SPOT",
+		Description: "现货买入，现货卖出赚取差价。",
+	},
+	{
+		Value:       "SWAP",
+		Description: "永续合约，杠杆借币，买入做多，卖出做空。",
+	},
+}
+
+// 持仓种类 将来会增加 股票、期货 等
 var TradeTypeList = []KeyDescType{
 	{
 		Value:       "Coin",
@@ -46,21 +48,7 @@ var TradeTypeList = []KeyDescType{
 	},
 }
 
-func GetTradeType(Value string) (resData KeyDescType, resErr error) {
-	resErr = nil
-	for _, v := range TradeTypeList {
-		if v.Value == Value {
-			resData = v
-			break
-		}
-	}
-	if len(resData.Value) < 1 {
-		resErr = fmt.Errorf("暂不支持该TradeType")
-		return
-	}
-	return
-}
-
+// 持仓方向
 var SideList = []KeyDescType{
 	{
 		Value:       "Buy",
@@ -72,23 +60,8 @@ var SideList = []KeyDescType{
 	},
 }
 
-func GetSide(Value string) (resData KeyDescType, resErr error) {
-	resErr = nil
-	for _, v := range SideList {
-		if v.Value == Value {
-			resData = v
-			break
-		}
-	}
-	if len(resData.Value) < 1 {
-		resErr = fmt.Errorf("Side不正确")
-		return
-	}
-	return
-}
-
-// 更新一次持仓状态
-type NewPositionType struct {
+// 新建一个持仓
+type NewPositionOpt struct {
 	GoodsId   string // OtterTrade 的 商品 ID ，从 exchange_api.GetGoodsList 获取
 	TradeType string // 交易种类，可选值 global.TradeTypeList
 	TradeMode string // 交易模式，可选值 global.TradeModeList
@@ -98,10 +71,10 @@ type NewPositionType struct {
 }
 
 type UpdatePositionOpt struct {
-	StrategyID  string            // 策略的Id
-	MockName    string            // 本次回测的名称
-	UpdateTime  int64             // 更新本次仓位的时间(13位毫秒时间戳)，只有在 RunType 为 1 时 才会读取。也就是只有在回测模式下才允许在任意时间更新仓位，否则只能在当前时间点更新仓位。
-	NewPosition []NewPositionType // 允许多个不同品类的仓位持仓，空代表清空所有仓位。
+	StrategyID  string           // 策略的Id
+	MockName    string           // 本次回测的名称
+	UpdateTime  int64            // 更新本次仓位的时间(13位毫秒时间戳)，只有在 RunType 为 1 时 才会读取。也就是只有在回测模式下才允许在任意时间更新仓位，否则只能在当前时间点更新仓位。
+	NewPosition []NewPositionOpt // 允许多个不同品类的仓位持仓，空代表清空所有仓位。
 }
 
 var MaxLeverage = "30" // 支持的最大杠杆倍率

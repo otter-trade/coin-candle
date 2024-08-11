@@ -15,11 +15,11 @@ type KeyDescType struct {
 var TradeModeList = []KeyDescType{
 	{
 		Value:       "SPOT",
-		Description: "现货，买入卖出赚取差价。",
+		Description: "现货买入，现货卖出赚取差价。",
 	},
 	{
 		Value:       "SWAP",
-		Description: "永续合约，杠杆做多，卖出做空。",
+		Description: "永续合约，杠杆借币，买入做多，卖出做空。",
 	},
 }
 
@@ -55,7 +55,33 @@ func GetTradeType(Value string) (resData KeyDescType, resErr error) {
 		}
 	}
 	if len(resData.Value) < 1 {
-		resErr = fmt.Errorf("TradeType不正确")
+		resErr = fmt.Errorf("暂不支持该TradeType")
+		return
+	}
+	return
+}
+
+var SideList = []KeyDescType{
+	{
+		Value:       "Buy",
+		Description: "现货中代表买入，合约中代表做多",
+	},
+	{
+		Value:       "Sell",
+		Description: "现货中代表卖出，合约中代表做空",
+	},
+}
+
+func GetSide(Value string) (resData KeyDescType, resErr error) {
+	resErr = nil
+	for _, v := range SideList {
+		if v.Value == Value {
+			resData = v
+			break
+		}
+	}
+	if len(resData.Value) < 1 {
+		resErr = fmt.Errorf("Side不正确")
 		return
 	}
 	return
@@ -64,10 +90,10 @@ func GetTradeType(Value string) (resData KeyDescType, resErr error) {
 // 更新一次持仓状态
 type NewPositionType struct {
 	GoodsId   string // OtterTrade 的 商品 ID ，从 exchange_api.GetGoodsList 获取
-	TradeMode string // 交易模式，缺省值 SPOT 可选值 TradeModeList
-	TradeType string // 交易种类，可选值 TradeTypeList
+	TradeType string // 交易种类，可选值 global.TradeTypeList
+	TradeMode string // 交易模式，可选值 global.TradeModeList
 	Leverage  string // 杠杆倍率，缺省值 1 ，只有 TradeMode = SWAP 时有效
-	Side      string // 下单方向 Buy , Sell , 只有 TradeMode = SWAP 时有效
+	Side      string // 下单方向，global.SideList, 只有 TradeMode = SWAP 时有效
 	Amount    string // 下单金额，不可超过账户结余
 }
 

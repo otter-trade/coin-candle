@@ -5,9 +5,7 @@ package mock_trade
 仓位管理 Position Manage
 简化持仓模型。
 每次更新当前需要的持仓的状态，然后系统会帮助下单并计算应得收入。
-
 更新仓位状态
-
 
 */
 
@@ -15,13 +13,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/handy-golang/go-tools/m_count"
 	"github.com/handy-golang/go-tools/m_file"
 	"github.com/handy-golang/go-tools/m_json"
 	"github.com/handy-golang/go-tools/m_str"
 	"github.com/handy-golang/go-tools/m_time"
 	jsoniter "github.com/json-iterator/go"
-	"github.com/otter-trade/coin-candle/exchange_api"
 	"github.com/otter-trade/coin-candle/global"
 )
 
@@ -71,23 +67,23 @@ func UpdatePosition(opt global.UpdatePositionOpt) (resErr error) {
 	for _, item := range opt.NewPosition {
 		if len(item.GoodsId) > 1 {
 			// 必须为有效的 GoodsId
-			GoodsDetail, err := exchange_api.GetGoodsDetail(exchange_api.GetGoodsDetailOpt{
-				GoodsId: item.GoodsId,
-			})
-			if err != nil {
-				resErr = err
-				return
-			}
-			// 参数检查
-			position, err := NewPositionFuncParamCheck(item)
-			if err != nil {
-				resErr = fmt.Errorf("%+v,%+v", item.GoodsId, err) // 只要有一个持仓有问题，则该次持仓判定为失效
-				return
-			}
+			// GoodsDetail, err := exchange_api.GetGoodsDetail(exchange_api.GetGoodsDetailOpt{
+			// 	GoodsId: item.GoodsId,
+			// })
+			// if err != nil {
+			// 	resErr = err
+			// 	return
+			// }
+			// // 参数检查
+			// position, err := NewPositionFuncParamCheck(item)
+			// if err != nil {
+			// 	resErr = fmt.Errorf("%+v,%+v", item.GoodsId, err) // 只要有一个持仓有问题，则该次持仓判定为失效
+			// 	return
+			// }
 			// 下单金额大于 0 才有效 , 币种状态 live 才有效
-			if m_count.Le(position.Amount, "0") > 0 && GoodsDetail.State == "live" {
-				NewPositionList = append(NewPositionList, position)
-			}
+			// if m_count.Le(position.Amount, "0") > 0 && GoodsDetail.State == "live" {
+			// 	NewPositionList = append(NewPositionList, position)
+			// }
 		}
 	}
 
@@ -119,65 +115,6 @@ func UpdatePosition(opt global.UpdatePositionOpt) (resErr error) {
 	m_file.WriteByte(NewPositionListJsonPath, m_json.ToJson(UpdatePositionInfo))
 	m_file.WriteByte(mockPath.ConfigFullPath, m_json.ToJson(MockConfig))
 	m_file.WriteByte(mockPath.PositionIndexFullPath, m_json.ToJson(PositionIndex))
-
-	return
-}
-
-// 参数过滤与检查
-func NewPositionFuncParamCheck(opt global.NewPositionType) (resData global.NewPositionType, resErr error) {
-	resData = global.NewPositionType{}
-	resErr = nil
-
-	// 检查参数
-
-	resData.GoodsId = opt.GoodsId
-
-	if opt.Side == "Buy" || opt.Side == "Sell" {
-		resData.Side = opt.Side
-	} else {
-		resErr = fmt.Errorf("Side不正确")
-		return
-	}
-
-	_, err := global.GetTradeType(opt.TradeType)
-	if err != nil {
-		resErr = err
-		return
-	}
-	resData.TradeType = opt.TradeType
-
-	TradeModeValue := opt.TradeMode
-	if len(TradeModeValue) > 1 {
-		_, err := global.GetTradeMode(TradeModeValue)
-		if err != nil {
-			resErr = err
-			return
-		}
-	} else {
-		TradeModeValue = global.TradeModeList[0].Value
-	}
-	resData.TradeMode = TradeModeValue
-
-	Leverage := "1"
-	if resData.TradeMode == "SWAP" {
-		Leverage = m_count.Sub(opt.Leverage, "0")
-		Leverage = m_count.Cent(Leverage, 0)
-
-		if m_count.Le(Leverage, "1") < 0 {
-			Leverage = "1" // 最小值为 1
-		}
-		if m_count.Le(Leverage, global.MaxLeverage) > 0 {
-			Leverage = global.MaxLeverage // 最大值
-		}
-	}
-	resData.Leverage = Leverage
-
-	// 买入金额
-	Amount := m_count.Sub(opt.Amount, "0")
-	if m_count.Le(Amount, "0") < 0 {
-		Amount = "0" // 最小值为 0
-	}
-	resData.Amount = Amount
 
 	return
 }

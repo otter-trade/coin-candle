@@ -88,7 +88,7 @@ type KlineSimpType [7]string // TimeUnix,O,H,L,C,V,Q
 
 type KlineExchangeMap map[string][]KlineSimpType
 
-const SendEndTimeFix = 30 // 请求 K线 时的时间戳修订 30 毫秒，考虑到网络延迟以及交易所不同标准的修订问题，不影响实盘实时数据的正常值
+const SendEndTimeFix = 10 // 发出 请求时 K线 时间戳修订 10 毫秒，考虑到网络延迟以及交易所不同标准的修订问题，不影响实盘实时数据的正常值
 
 // 如果小于  2018-01-11 22:00:00 这个时间，则交易所数据就不全了， 这里将合法的最小时间定为 2018-03-01
 var TimeOldest = m_time.TimeParse(m_time.LaySP_ss, "2018-03-01 00:00:00")
@@ -99,7 +99,8 @@ const KlineLimitDefault = 10 // 请求 K线时 缺省的 Limit
 
 const ExchangeKlineLimit = 100 // 交易所拿取K线的最大值
 
-var KlineRequestInterval = m_time.UnixTimeInt64.Seconds * 40 // 在 40 秒内，不重复请求，意思就是说价格允许 30 秒的延迟，可修改为 0 但是请求频率会很高
+// 在 20 秒内，不重复请求，意思就是说价格允许 20 秒的延迟。可修改为 0 但是请求交易所的频率会很高
+var KlineRequestInterval = m_time.UnixTimeInt64.Seconds * 20
 
 // 文件名计算基准时间
 var FileNameBaseTime = m_time.TimeParse(m_time.LaySP_ss, "2024-05-20 00:00:00")

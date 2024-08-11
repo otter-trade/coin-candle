@@ -19,7 +19,7 @@ type CreateMockServeOpt struct {
 	MockName     string // 模拟交易的名称，策略开发者自定义，不可为空，1-12位中文，字母或数字。
 	RunMode      string // 运行模式，缺省值 1 ，可选值 RunTypeList
 	InitialAsset string // 初始资产(USDT)  最小值/缺省值 1000
-	FeeRate      string // 手续费率 缺省值 0.001 参考 https://www.okx.com/zh-hans/fees
+	FeeRate      string // 手续费率 缺省值 0.001(0.1%)  参考 https://www.okx.com/zh-hans/fees
 	Description  string // 用户对本次 Mock 的描述，缺省值 空
 }
 
@@ -74,6 +74,7 @@ type MockServeConfigType struct {
 	PositionIndexPath      string // 仓位索引存放路径
 	CreateTime             int64  // 创建时间
 	LastPositionUpdateTime int64  // 最后一次更新持仓的时间
+	SysWarn                string // 系统提示
 }
 
 type FindMockServeOpt struct {
@@ -83,13 +84,13 @@ type FindMockServeOpt struct {
 
 type FindMockServeListOpt struct {
 	StrategyID             string
-	CreateTime             [2]int64 // 查询 开始 - 结束时间的 13 位毫秒时间戳
-	LastPositionUpdateTime [2]int64 // 查询 最后一次更新持仓 的时间范围
+	CreateTime             [2]int64 // 依据创建时间范围查询 开始-结束时间的 13 位毫秒时间戳
+	LastPositionUpdateTime [2]int64 // 依据 最后一次更新持仓 的时间范围查询
 }
 
 type PositionIndexType []int64
 
-var MaxMockServeCount = 60 // 每个策略允许的最大 MockServe 数量
+var MaxMockServeCount = 60 // 每个策略允许的最大 MockServe 数量，将来可以适当增加。
 
 // 交易模式
 type KeyDescType struct {

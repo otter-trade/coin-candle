@@ -46,6 +46,22 @@ func CreateMockServe(opt global.CreateMockServeOpt) (resData global.MockServeCon
 		return
 	}
 
+	// 检查配置文件是否存在
+	var config global.MockServeConfigType
+	isExist := m_path.IsExist(mockPath.ConfigFullPath)
+	if isExist {
+		resErr = fmt.Errorf("该MockServe已存在")
+		fileCont := m_file.ReadFile(mockPath.ConfigFullPath)
+		err := json.Unmarshal(fileCont, &config)
+		if err != nil {
+			resErr = err // 存在但是解析有问题
+			return
+		}
+		resData = config // 依然返回配置文件内容
+		return
+	}
+
+	// 描述 不允许包含特殊字符串
 	isDesc := IsDescReg(opt.Description)
 	if !isDesc {
 		resErr = fmt.Errorf("Description禁止包含特殊符号")
@@ -65,25 +81,26 @@ func CreateMockServe(opt global.CreateMockServeOpt) (resData global.MockServeCon
 		InitialAsset = global.DefaultInitialAsset
 	}
 
-	// 检查手续费率 大于 0.5 的活阎王 和 0 都重置为 初始值
-	FeeRate := m_count.Sub(opt.FeeRate, "0")
-	if m_count.Le(FeeRate, "0.9") >= 0 || m_count.Le(FeeRate, "0") == 0 {
-		FeeRate = global.DefaultFeeRate
+	if m_count.Le(InitialAsset, "1001") < 0 {
+		config.SysWarn += m_str.Join(
+			"初始资产支持任何正数，但尽量使用 一千、一万、一万、十万这样的大整数;",
+		)
 	}
 
-	// 检查是否存在
-	var config global.MockServeConfigType
-	isExist := m_path.IsExist(mockPath.ConfigFullPath)
-	if isExist {
-		resErr = fmt.Errorf("该MockServe已存在")
-		fileCont := m_file.ReadFile(mockPath.ConfigFullPath)
-		err := json.Unmarshal(fileCont, &config)
-		if err != nil {
-			resErr = err
-			return
+	FeeRate := global.DefaultFeeRate // 设置默认手续费
+	// 当用户传递了手续费，则使用用户的手续费，但是要使用 m_count 过滤一下
+	if len(opt.FeeRate) > 0 {
+		FeeRate = m_count.Sub(opt.FeeRate, "0")
+		// 思考了一下，虚拟持仓手续费允许为 0 和 负数，所以无需判断，但是应当给出提醒
+		if m_count.Le(FeeRate, "0.1") > 0 || m_count.Le(FeeRate, "0") < 0 {
+			config.SysWarn += m_str.Join(
+				"手续费允许为0和负数,默认值为",
+				global.DefaultFeeRate,
+				"(也就是",
+				m_count.Mul(global.DefaultFeeRate, "100"),
+				"%) ,您的手续费超过了正常范围，请注意;",
+			)
 		}
-		resData = config
-		return
 	}
 
 	config.StrategyID = opt.StrategyID
@@ -112,6 +129,7 @@ func CreateMockServe(opt global.CreateMockServeOpt) (resData global.MockServeCon
 			resErr = err
 			return
 		}
+
 		if len(files) > global.MaxMockServeCount {
 			resErr = fmt.Errorf("超出最大条目,该条 MockServe 将不会写入磁盘。")
 			return
@@ -180,14 +198,8 @@ func GetMockServeList(opt global.FindMockServeListOpt) (resData []global.MockSer
 				os.PathSeparator,
 				"config.json",
 			)
-			isExist := m_path.IsExist(StrategyDir)
-			if !isExist {
-				continue
-			}
 
-			var config global.MockServeConfigType
-			fileCont := m_file.ReadFile(configPath)
-			err = json.Unmarshal(fileCont, &config)
+			config, err := ReadMockServeInfo(configPath)
 			if err != nil {
 				continue
 			}
@@ -207,8 +219,6 @@ func GetMockServeList(opt global.FindMockServeListOpt) (resData []global.MockSer
 		}
 	}
 
-	m_json.Println(opt)
-
 	return
 }
 
@@ -226,15 +236,7 @@ func GetMockServeInfo(opt global.FindMockServeOpt) (resData global.MockServeConf
 		return
 	}
 
-	isExist := m_path.IsExist(mockPath.ConfigFullPath)
-	if !isExist {
-		resErr = fmt.Errorf("该MockServe不存在")
-		return
-	}
-
-	var config global.MockServeConfigType
-	fileCont := m_file.ReadFile(mockPath.ConfigFullPath)
-	err = json.Unmarshal(fileCont, &config)
+	config, err := ReadMockServeInfo(mockPath.ConfigFullPath)
 	if err != nil {
 		resErr = err
 		return

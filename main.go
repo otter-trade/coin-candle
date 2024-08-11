@@ -19,8 +19,8 @@ func SysInit() {
 	// 全局的定时任务
 	m_cycle.New(m_cycle.Opt{
 		Func: func() {
-			// exchange_api.UpdateLocalGoodsList()  // 更新本地的商品列表
-			// exchange_api.UpdateLocalTicker()  // 更新本地的榜单
+			// exchange_api.UpdateLocalGoodsList() // 更新本地的商品列表
+			// exchange_api.UpdateLocalTicker()    // 更新本地的榜单
 			exchange_api.GetGoodsList() // 读取获取商品列表 并存入内存中
 		},
 		SleepTime: time.Hour * 4, // 执行一次后 每隔 4h 再执行一次
@@ -29,4 +29,11 @@ func SysInit() {
 
 func main() {
 	SysInit() //  系统的初始化
+
+	// demo.CreateMockServe_demo() // 测试 创建 MockServe
+	// demo.DeleteMockServe_demo() // 测试 删除 MockServe
+	// demo.ClearStrategy_demo() // 测试 删除策略
+
+	// demo.GetMockServeList_demo() // 测试 查看 MockServe 列表
+	// demo.GetMockServeInfo_demo() // 读取一个 MockServe 的详情
 }

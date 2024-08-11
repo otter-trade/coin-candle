@@ -1,5 +1,9 @@
 package demo
 
+/*
+操作 MockServe 的 相关 api 演示
+*/
+
 import (
 	"fmt"
 
@@ -13,13 +17,14 @@ import (
 */
 func CreateMockServe_demo() {
 	resData, err := mock_trade.CreateMockServe(global.CreateMockServeOpt{
-		StrategyID:   "mo7_StrategyID_001",
+		StrategyID:   "mo7_StrategyID_002",
 		MockName:     "测试_MockName_3",
 		RunMode:      "1",
 		InitialAsset: "1000",
 	})
 	if err != nil {
 		fmt.Println("创建持仓失败", err)
+		return
 	}
 	m_json.Println(resData)
 }
@@ -66,7 +71,7 @@ func DeleteMockServe_demo() {
 该策略下的 MockServeList 为空时才可以删除
 */
 func ClearStrategy_demo() {
-	err := mock_trade.ClearStrategy("mo7_StrategyID_001")
+	err := mock_trade.ClearStrategy("mo7_StrategyID_002")
 	if err != nil {
 		fmt.Println("删除策略失败", err)
 	}

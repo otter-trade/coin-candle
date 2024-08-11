@@ -1,10 +1,13 @@
 package mock_trade
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"regexp"
 
+	"github.com/handy-golang/go-tools/m_file"
+	"github.com/handy-golang/go-tools/m_path"
 	"github.com/handy-golang/go-tools/m_str"
 	"github.com/otter-trade/coin-candle/global"
 )
@@ -18,6 +21,7 @@ type MockPathType struct {
 	PositionIndexFullPath string
 }
 
+// 检查 MockName 和 StrategyID 并计算对应的路径
 func CheckMockName(opt global.FindMockServeOpt) (resData MockPathType, resErr error) {
 	resData = MockPathType{}
 	resErr = nil
@@ -33,14 +37,14 @@ func CheckMockName(opt global.FindMockServeOpt) (resData MockPathType, resErr er
 		resErr = fmt.Errorf("MockName必须为2-24位字母数字下划线和中文")
 		return
 	}
-
+	// 相对位置，用于数据存储
 	MockDataDir := m_str.Join(
 		opt.StrategyID,
 		os.PathSeparator,
 		opt.MockName,
 		os.PathSeparator,
 	)
-
+	// 绝对路径，用于数据读写
 	MockDataFullDir := m_str.Join(
 		global.Path.MockTradeDir,
 		os.PathSeparator,
@@ -92,4 +96,26 @@ func IsMockNameReg(str string) bool {
 	pattern := "^[a-zA-Z0-9_\u4e00-\u9fa5]{2,24}$"
 	reg := regexp.MustCompile(pattern)
 	return reg.MatchString(str)
+}
+
+// 根据路径 读取详情
+func ReadMockServeInfo(configPath string) (resData global.MockServeConfigType, resErr error) {
+	resData = global.MockServeConfigType{}
+	resErr = nil
+
+	isExist := m_path.IsExist(configPath)
+	if !isExist {
+		resErr = fmt.Errorf("该 MockServe 不存在")
+		return
+	}
+	var config global.MockServeConfigType
+	fileCont := m_file.ReadFile(configPath)
+	err := json.Unmarshal(fileCont, &config)
+	if err != nil {
+		resErr = err
+		return
+	}
+
+	resData = config
+	return
 }

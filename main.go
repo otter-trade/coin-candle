@@ -37,5 +37,6 @@ func main() {
 	// demo.GetMockServeList_demo() // 测试运行 查看 MockServe 列表
 	// demo.GetMockServeInfo_demo() // 测试运行 读取一个 MockServe 的详情
 
-	demo.NewPosition_demo() // 新建一个持仓
+	// demo.NewPosition_demo()   // 新建一个持仓
+	demo.NewMockAction_demo() // 新建一个 MockAction
 }

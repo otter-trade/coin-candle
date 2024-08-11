@@ -27,6 +27,20 @@ func NewPosition_demo() {
 	m_json.Println(resData)
 }
 
+func NewMockAction_demo() {
+	time := m_time.TimeParse(m_time.LaySP_ss, "2024-08-11 17:20:00")
+	resData, err := mock_trade.NewMockAction(global.NewMockActionOpt{
+		StrategyID: "mo7_StrategyID_001",
+		MockName:   "测试_MockName_1",
+		Time:       time,
+	})
+	if err != nil {
+		fmt.Println("新建持仓失败", err)
+		return
+	}
+	m_json.Println(resData)
+}
+
 // 更新持仓
 func UpdatePosition_demo() {
 	// time := m_time.TimeParse(m_time.LaySP_ss, "2024-08-11 17:20:00")

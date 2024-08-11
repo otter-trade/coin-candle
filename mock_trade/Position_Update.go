@@ -31,18 +31,9 @@ import (
 读取余额
 */
 
-type UpdatePositionType struct {
-	GoodsId   string // OtterTrade 的 商品 ID ，从 exchange_api.GetGoodsList 获取
-	TradeType string // 交易种类，可选值 global.TradeTypeList
-	TradeMode string // 交易模式，可选值 global.TradeModeList
-	Leverage  string // 杠杆倍率，缺省值 1 ，只有 TradeMode = SWAP 时有效
-	Side      string // 下单方向，global.SideList, 只有 TradeMode = SWAP 时有效
-	Amount    string // 下单金额，不可超过账户结余
-}
-
-func (_this UpdatePositionType) Update() {
-	fmt.Println(_this)
-}
+// func (_this UpdatePositionType) Update() {
+// 	fmt.Println(_this)
+// }
 
 func UpdatePosition(opt global.UpdatePositionOpt) (resErr error) {
 	resErr = nil

@@ -1,5 +1,9 @@
 package global
 
+/*
+所有和 商品 相关的 type 定义都放在这里
+*/
+
 var BinanceBaseUrls = []string{
 	"https://api.binance.com",         // 0
 	"https://api1.binance.com",        // 1
@@ -49,7 +53,7 @@ type BinanceSymbolType struct {
 	Symbol                     string   `json:"symbol"`             // 交易品Id  BTCUSDT
 	Status                     string   `json:"status"`             // status  TRADING
 	BaseAsset                  string   `json:"baseAsset"`          // 基础货币如 BTC
-	BaseAssetPrecision         int      `json:"baseAssetPrecision"` //资产精度
+	BaseAssetPrecision         int      `json:"baseAssetPrecision"` // 资产精度
 	QuoteAsset                 string   `json:"quoteAsset"`         // 交易货币 USDT
 	QuotePrecision             int      `json:"quotePrecision"`
 	QuoteAssetPrecision        int      `json:"quoteAssetPrecision"`

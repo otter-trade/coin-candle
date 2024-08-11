@@ -29,7 +29,7 @@ func init_Log() {
 	})
 }
 
-// 删除10天之前的日志文件
+// 删除 7 天之前的日志文件
 func ClearLog() {
 	m_log.Clear(m_log.ClearParam{
 		Path:      Path.LogPath,
@@ -42,5 +42,4 @@ func LogErr(sum ...any) {
 	Log.Println(str)
 
 	// 这里可以设置邮件系统用于提醒错误
-
 }

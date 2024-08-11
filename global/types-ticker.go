@@ -1,5 +1,9 @@
 package global
 
+/*
+所有和 市场相关定义 相关的 type 定义都放在这里
+*/
+
 type BinanceTickerType struct {
 	Symbol             string `json:"symbol"`
 	PriceChange        string `json:"priceChange"`        // 价格变化

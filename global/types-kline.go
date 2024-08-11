@@ -1,5 +1,9 @@
 package global
 
+/*
+所有和 Kline 相关的 type 定义都放在这里
+*/
+
 import (
 	"strings"
 

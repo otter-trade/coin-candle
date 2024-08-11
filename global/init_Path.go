@@ -1,5 +1,9 @@
 package global
 
+/*
+初始化目录
+*/
+
 import (
 	"os"
 
@@ -92,12 +96,12 @@ func init_Path(opt SysInitOpt) {
 	)
 
 	// 初始化虚拟持仓数据目录
-
 	Path.MockTradeDir = m_str.Join(
 		Path.DataPath,
 		os.PathSeparator,
 		"mock-trade",
 	)
+
 	if !m_path.IsExist(Path.MockTradeDir) {
 		os.MkdirAll(Path.MockTradeDir, os.ModePerm)
 	}

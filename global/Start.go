@@ -16,12 +16,12 @@ type SysInitOpt struct {
 func SysInit(opt SysInitOpt) {
 	// 初始化项 准备好运行所需要的各种 目录
 	init_Path(opt)
-
 	// 初始化日志系统
 	init_Log()
+
 	// 设定日志文件的定时清理
 	m_cycle.New(m_cycle.Opt{
-		Func:      ClearLog,
+		Func:      ClearLog, // 清理日志文件
 		SleepTime: time.Hour * 24,
 	}).Start()
 

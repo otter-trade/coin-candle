@@ -17,7 +17,7 @@ func main() {
 	// PositionFunc() // 持仓管理
 }
 
-// 系统初始化
+// ####### 系统初始化，必须在所有函数之前执行完毕 #######
 func SysInit() {
 	global.SysInit(global.SysInitOpt{
 		ProxyURLs: []string{"http://127.0.0.1:10809"},

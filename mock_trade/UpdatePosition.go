@@ -14,8 +14,14 @@ import (
 	"github.com/otter-trade/coin-candle/global"
 )
 
-// 更新一次仓位状态
-// 这一次仓位的更新，相当于上一次仓位的全部平仓。这个记录本质上是一个指令记录。
+/*
+更新一次仓位状态
+这个函数要做的事情：
+检查参数
+平掉上一次的仓位
+读取余额
+*/
+
 func UpdatePosition(opt global.UpdatePositionOpt) (resErr error) {
 	resErr = nil
 

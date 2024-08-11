@@ -5,6 +5,7 @@ import (
 
 	"github.com/otter-trade/coin-candle/exchange_api"
 	"github.com/otter-trade/coin-candle/global"
+	"github.com/otter-trade/coin-candle/internal/demo"
 
 	"github.com/handy-golang/go-tools/m_cycle"
 )
@@ -30,10 +31,11 @@ func SysInit() {
 func main() {
 	SysInit() //  系统的初始化
 
-	// demo.CreateMockServe_demo() // 测试 创建 MockServe
-	// demo.DeleteMockServe_demo() // 测试 删除 MockServe
-	// demo.ClearStrategy_demo() // 测试 删除策略
+	// demo.CreateMockServe_demo() // 测试运行 创建 MockServe
+	// demo.DeleteMockServe_demo() // 测试运行 删除 MockServe
+	// demo.ClearStrategy_demo() // 测试运行 删除策略
+	// demo.GetMockServeList_demo() // 测试运行 查看 MockServe 列表
+	// demo.GetMockServeInfo_demo() // 测试运行 读取一个 MockServe 的详情
 
-	// demo.GetMockServeList_demo() // 测试 查看 MockServe 列表
-	// demo.GetMockServeInfo_demo() // 读取一个 MockServe 的详情
+	demo.UpdatePosition_demo() // 测试运行  更新持仓
 }

@@ -8,9 +8,9 @@ import (
 	"github.com/otter-trade/coin-candle/mock_trade"
 )
 
-// 更新一个持仓
-func UpdatePosition_testFunc() {
-	time := m_time.TimeParse(m_time.LaySP_ss, "2024-07-30 11:00:00")
+// 更新持仓
+func UpdatePosition_demo() {
+	time := m_time.TimeParse(m_time.LaySP_ss, "2024-08-11 17:20:00")
 	err := mock_trade.UpdatePosition(global.UpdatePositionOpt{
 		StrategyID: "mo7_StrategyID_001",
 		MockName:   "测试_MockName_1",
@@ -40,7 +40,7 @@ func UpdatePosition_testFunc() {
 }
 
 // 读取 任意时间点 的持仓状态
-func ReadPosition_testFunc() {
+func ReadPosition_demo() {
 	time := m_time.TimeParse(m_time.LaySP_ss, "2024-07-30 11:00:00")
 	mock_trade.ReadPosition(global.ReadPositionOpt{
 		StrategyID: "mo7_StrategyID_001",

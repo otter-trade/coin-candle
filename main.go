@@ -39,5 +39,5 @@ func main() {
 
 	// demo.NewPosition_demo()   // 新建一个持仓
 	// demo.NewMockAction_demo() // 新建一个 MockAction
-	demo.UpdatePosition_demo() // 新建一个 MockAction
+	demo.UpdatePosition_demo() // 更新一次持仓
 }

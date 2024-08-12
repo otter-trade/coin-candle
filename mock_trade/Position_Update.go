@@ -70,7 +70,7 @@ func UpdatePosition(opt global.UpdatePositionOpt) (resWarn []string, resErr erro
 		resWarn = append(resWarn, "本次持仓列表为空，代表系统会平掉所有持仓。")
 	}
 
-	Action, err := NewMockAction(global.NewMockActionOpt{
+	Action, err := NewMockAction(NewMockActionOpt{
 		StrategyID: opt.StrategyID,
 		MockName:   opt.MockName,
 		Time:       opt.UpdateTime,

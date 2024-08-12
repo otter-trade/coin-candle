@@ -86,6 +86,12 @@ func NewPositionParam(opt global.NewPositionType) (resData NewPositionType, resE
 }
 
 // 新建一个活动
+type NewMockActionOpt struct {
+	StrategyID string // 策略的Id
+	MockName   string // 本次模拟交易的名称
+	Time       int64  // 本次活动的时间点(13位毫秒时间戳)，只有在 RunType 为 1 时 才会读取。也就是只有在回测模式下才允许在任意时间更新仓位，否则只能在当前时间点更新仓位。
+}
+
 type MockActionType struct {
 	MockPath   MockPathType
 	MockConfig global.MockServeConfigType
@@ -93,7 +99,7 @@ type MockActionType struct {
 }
 
 // New 一个新的 Action
-func NewMockAction(opt global.NewMockActionOpt) (resData MockActionType, resErr error) {
+func NewMockAction(opt NewMockActionOpt) (resData MockActionType, resErr error) {
 	resErr = nil
 	resData = MockActionType{}
 	// 读取 Config 相关的目录信息

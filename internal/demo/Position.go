@@ -29,7 +29,7 @@ func NewPosition_demo() {
 // 新建一个 MockAction
 func NewMockAction_demo() {
 	time := m_time.TimeParse(m_time.LaySP_ss, "2024-08-11 17:20:00")
-	resData, err := mock_trade.NewMockAction(global.NewMockActionOpt{
+	resData, err := mock_trade.NewMockAction(mock_trade.NewMockActionOpt{
 		StrategyID: "mo7_StrategyID_001",
 		MockName:   "测试_MockName_1",
 		Time:       time,

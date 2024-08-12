@@ -30,7 +30,6 @@ import (
 平掉上一次的仓位
 读取余额
 
-
 */
 
 func UpdatePosition(opt global.UpdatePositionOpt) (resWarn []string, resErr error) {

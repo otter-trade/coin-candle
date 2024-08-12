@@ -61,7 +61,7 @@ var SideList = []KeyDescType{
 }
 
 // 新建一个持仓
-type NewPositionOpt struct {
+type NewPositionType struct {
 	GoodsId   string // OtterTrade 的 商品 ID ，从 exchange_api.GetGoodsList 获取
 	TradeType string // 交易种类，可选值 global.TradeTypeList
 	TradeMode string // 交易模式，可选值 global.TradeModeList
@@ -78,10 +78,10 @@ type NewMockActionOpt struct {
 }
 
 type UpdatePositionOpt struct {
-	StrategyID  string           // 策略的Id
-	MockName    string           // 本次回测的名称
-	UpdateTime  int64            // 更新本次仓位的时间(13位毫秒时间戳)，只有在 RunType 为 1 时 才会读取。也就是只有在回测模式下才允许在任意时间更新仓位，否则只能在当前时间点更新仓位。
-	NewPosition []NewPositionOpt // 允许多个不同品类的仓位持仓，空代表清空所有仓位。
+	StrategyID  string            // 策略的Id
+	MockName    string            // 本次回测的名称
+	UpdateTime  int64             // 更新本次仓位的时间(13位毫秒时间戳)，只有在 RunType 为 1 时 才会读取。也就是只有在回测模式下才允许在任意时间更新仓位，否则只能在当前时间点更新仓位。
+	NewPosition []NewPositionType // 允许多个不同品类的仓位持仓，空代表清空所有仓位。
 }
 
 var MaxLeverage = "30" // 支持的最大杠杆倍率

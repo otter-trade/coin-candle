@@ -12,7 +12,7 @@ import (
 // 新建一个持仓
 
 func NewPosition_demo() {
-	resData, err := mock_trade.NewPosition(global.NewPositionOpt{
+	resData, err := mock_trade.NewPositionParam(global.NewPositionType{
 		GoodsId:   "BTC-USDT",
 		TradeMode: "SWAP",
 		TradeType: "Coin",

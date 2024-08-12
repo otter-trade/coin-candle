@@ -40,6 +40,5 @@ func ClearLog() {
 func LogErr(sum ...any) {
 	str := fmt.Sprintf("系统错误: %+v", sum)
 	Log.Println(str)
-
 	// 这里可以设置邮件系统用于提醒错误
 }

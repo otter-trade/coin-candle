@@ -9,19 +9,19 @@ import (
 	"github.com/otter-trade/coin-candle/global"
 )
 
-type PositionType struct {
-	GoodsId   string // OtterTrade 的 商品 ID ，从 exchange_api.GetGoodsList 获取
-	TradeType string // 交易种类，可选值 global.TradeTypeList
-	TradeMode string // 交易模式，可选值 global.TradeModeList
-	Leverage  string // 杠杆倍率，缺省值 1 ，只有 TradeMode = SWAP 时有效
-	Side      string // 下单方向，global.SideList, 只有 TradeMode = SWAP 时有效
-	Amount    string // 下单金额，不可超过账户结余
+type NewPositionType struct {
+	GoodsDetail global.GoodsType // OtterTrade 的 商品 详情
+	TradeType   string           // 交易种类，Coin
+	TradeMode   string           // 持仓模式，SPOT  SWAP
+	Leverage    string           // 杠杆倍率，1-30
+	Side        string           // 下单方向，Buy 和 Sell
+	Amount      string           // 下单金额，
 }
 
 // New 一个 Position
-func NewPosition(opt global.NewPositionOpt) (resData PositionType, resErr error) {
+func NewPositionParam(opt global.NewPositionType) (resData NewPositionType, resErr error) {
 	resErr = nil
-	resData = PositionType{}
+	resData = NewPositionType{}
 
 	// 检查参数 TradeType
 	TradeType_obj, err := global.GetKeyDescObj(opt.TradeType, global.TradeTypeList)
@@ -73,12 +73,7 @@ func NewPosition(opt global.NewPositionOpt) (resData PositionType, resErr error)
 		resErr = err
 		return
 	}
-	if GoodsDetail.State != "live" {
-		resErr = fmt.Errorf("该商品交易状态存在问题")
-		return
-	}
-
-	resData.GoodsId = GoodsDetail.GoodsId
+	resData.GoodsDetail = GoodsDetail
 
 	// 买入金额
 	Amount := m_count.Sub(opt.Amount, "0")
@@ -92,9 +87,9 @@ func NewPosition(opt global.NewPositionOpt) (resData PositionType, resErr error)
 
 // 新建一个活动
 type MockActionType struct {
-	MockConfigFullPath string
-	MockConfig         global.MockServeConfigType
-	ActionTime         int64
+	MockPath   MockPathType
+	MockConfig global.MockServeConfigType
+	UpdateTime int64
 }
 
 // New 一个新的 Action
@@ -110,7 +105,7 @@ func NewMockAction(opt global.NewMockActionOpt) (resData MockActionType, resErr 
 		resErr = err
 		return
 	}
-	resData.MockConfigFullPath = mockPath.ConfigFullPath
+	resData.MockPath = mockPath
 
 	MockConfig, err := ReadMockServeInfo(mockPath.ConfigFullPath)
 	if err != nil {
@@ -120,24 +115,37 @@ func NewMockAction(opt global.NewMockActionOpt) (resData MockActionType, resErr 
 	resData.MockConfig = MockConfig
 
 	// 获取活动进行的时间
-	nowTime := m_time.GetUnixInt64()
 	var UpdateTime int64
+	nowTime := m_time.GetUnixInt64()
 	// 只有 回测模式， UpdateTime 才有效
 	if MockConfig.RunMode.Value == 1 {
 		UpdateTime = opt.Time
 	}
-	// 小于系统最老时间 或者 大于当前 则重置为当前时间
-	if UpdateTime < global.TimeOldest || UpdateTime > nowTime {
+
+	if UpdateTime == 0 {
+		// 如果时间为 0 , 则为当前时间
+		UpdateTime = nowTime
+	} else {
+		//  小于系统最老时间
+		if UpdateTime < global.TimeOldest {
+			UpdateTime = global.TimeOldest
+		}
+	}
+	// 或者 大于当前 则重置为当前时间
+	if UpdateTime > nowTime {
 		UpdateTime = nowTime
 	}
-	// 你不能跳回到过去下单， UpdateTime 必须大于上一次更新时间 30 秒
+
 	lastUpdateTime := MockConfig.LastPositionUpdateTime
-	if UpdateTime-lastUpdateTime < m_time.UnixTimeInt64.Seconds*30 {
+	if UpdateTime-lastUpdateTime > m_time.UnixTimeInt64.Seconds*30 {
+		// 本次更新时间 - 上次更新时间 必须 大于 30 秒
+		// UpdateTime - lastUpdateTime > 30s
+	} else {
 		resErr = fmt.Errorf("UpdateTime必须大于上一次更新时间")
 		return
 	}
 
-	resData.ActionTime = UpdateTime
+	resData.UpdateTime = UpdateTime
 
 	return
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/otter-trade/coin-candle/global"
 )
 
-type NewPositionType struct {
+type NewPositionParamType struct {
 	GoodsDetail global.GoodsType // OtterTrade 的 商品 详情
 	TradeType   string           // 交易种类，Coin
 	TradeMode   string           // 持仓模式，SPOT  SWAP
@@ -19,9 +19,9 @@ type NewPositionType struct {
 }
 
 // New 一个 Position
-func NewPositionParam(opt global.NewPositionType) (resData NewPositionType, resErr error) {
+func NewPositionParam(opt global.NewPositionType) (resData NewPositionParamType, resErr error) {
 	resErr = nil
-	resData = NewPositionType{}
+	resData = NewPositionParamType{}
 
 	// 检查参数 TradeType
 	TradeType_obj, err := global.GetKeyDescObj(opt.TradeType, global.TradeTypeList)

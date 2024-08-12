@@ -1,4 +1,4 @@
-package mock_trade
+package lib_x
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 	"github.com/handy-golang/go-tools/m_time"
 	"github.com/otter-trade/coin-candle/exchange_api"
 	"github.com/otter-trade/coin-candle/global"
+	"github.com/otter-trade/coin-candle/mock_trade"
 )
 
 type NewPositionParamType struct {
@@ -93,7 +94,7 @@ type NewMockActionOpt struct {
 }
 
 type MockActionType struct {
-	MockPath   MockPathType
+	MockPath   mock_trade.MockPathType
 	MockConfig global.MockServeConfigType
 	UpdateTime int64
 }
@@ -103,7 +104,7 @@ func NewMockAction(opt NewMockActionOpt) (resData MockActionType, resErr error) 
 	resErr = nil
 	resData = MockActionType{}
 	// 读取 Config 相关的目录信息
-	mockPath, err := CheckMockName(global.FindMockServeOpt{
+	mockPath, err := mock_trade.CheckMockName(global.FindMockServeOpt{
 		StrategyID: opt.StrategyID,
 		MockName:   opt.MockName,
 	})
@@ -113,7 +114,7 @@ func NewMockAction(opt NewMockActionOpt) (resData MockActionType, resErr error) 
 	}
 	resData.MockPath = mockPath
 
-	MockConfig, err := ReadMockServeInfo(mockPath.ConfigFullPath)
+	MockConfig, err := mock_trade.ReadMockServeInfo(mockPath.ConfigFullPath)
 	if err != nil {
 		resErr = err
 		return

@@ -1,16 +1,17 @@
-package mock_trade
+package lib_x
 
 import (
 	"fmt"
 
 	"github.com/handy-golang/go-tools/m_time"
 	"github.com/otter-trade/coin-candle/global"
+	"github.com/otter-trade/coin-candle/mock_trade"
 )
 
 // 读取当前时间持仓情况，包括收益，策略情况评估等。
 func ReadPosition(opt global.ReadPositionOpt) (resData any, resErr error) {
 	// 读取 Config 信息
-	MockConfig, err := GetMockServeInfo(global.FindMockServeOpt{
+	MockConfig, err := mock_trade.GetMockServeInfo(global.FindMockServeOpt{
 		StrategyID: opt.StrategyID,
 		MockName:   opt.MockName,
 	})

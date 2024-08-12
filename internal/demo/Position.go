@@ -10,7 +10,6 @@ import (
 )
 
 // 新建一个持仓
-
 func NewPosition_demo() {
 	resData, err := mock_trade.NewPositionParam(global.NewPositionType{
 		GoodsId:   "BTC-USDT",
@@ -27,6 +26,7 @@ func NewPosition_demo() {
 	m_json.Println(resData)
 }
 
+// 新建一个 MockAction
 func NewMockAction_demo() {
 	time := m_time.TimeParse(m_time.LaySP_ss, "2024-08-11 17:20:00")
 	resData, err := mock_trade.NewMockAction(global.NewMockActionOpt{
@@ -41,40 +41,37 @@ func NewMockAction_demo() {
 	m_json.Println(resData)
 }
 
-// 更新持仓
+// 更新一个持仓
 func UpdatePosition_demo() {
-	// time := m_time.TimeParse(m_time.LaySP_ss, "2024-08-11 17:20:00")
-
-	// BTC_position := global.NewPositionType{
-	// 	GoodsId:   "BTC-USDT",
-	// 	TradeMode: "SWAP",
-	// 	TradeType: "Coin",
-	// 	Leverage:  "0.134",
-	// 	Side:      "Buy",
-	// 	Amount:    "12",
-	// }
-
-	// ETH_position := global.NewPositionType{
-	// 	GoodsId:   "ETH-USDT",
-	// 	TradeMode: "SPOT",
-	// 	TradeType: "Coin",
-	// 	Leverage:  "10",
-	// 	Side:      "Sell",
-	// 	Amount:    "10",
-	// }
-
-	// err := mock_trade.UpdatePosition(global.UpdatePositionOpt{
-	// 	StrategyID: "mo7_StrategyID_001",
-	// 	MockName:   "测试_MockName_1",
-	// 	UpdateTime: time,
-	// 	NewPosition: []global.NewPositionType{
-	// 		BTC_position,
-	// 		ETH_position,
-	// 	},
-	// })
-	// if err != nil {
-	// 	fmt.Println("更新持仓失败", err)
-	// }
+	time := m_time.TimeParse(m_time.LaySP_ss, "2024-08-12 09:20:00")
+	warn, err := mock_trade.UpdatePosition(global.UpdatePositionOpt{
+		StrategyID: "mo7_StrategyID_001",
+		MockName:   "测试_MockName_1",
+		UpdateTime: time,
+		NewPosition: []global.NewPositionType{
+			{
+				GoodsId:   "BTC-USDT",
+				TradeMode: "SWAP",
+				TradeType: "Coin",
+				Leverage:  "0.134",
+				Side:      "Buy",
+				Amount:    "12",
+			},
+			{
+				GoodsId:   "ETH-USDT",
+				TradeMode: "SPOT",
+				TradeType: "Coin",
+				Leverage:  "10",
+				Side:      "Sell",
+				Amount:    "10",
+			},
+		},
+	})
+	if err != nil {
+		fmt.Println("更新持仓失败", err)
+		return
+	}
+	fmt.Println("更新持仓成功", warn)
 }
 
 // 读取 任意时间点 的持仓状态

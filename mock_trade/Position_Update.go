@@ -52,7 +52,7 @@ func UpdatePosition(opt global.UpdatePositionOpt) (resWarn []string, resErr erro
 			}
 
 			// 下单金额大于 0 且 币种状态 live 才有效
-			if m_count.Le(position.Amount, "0") > 0 && position.GoodsDetail.State != "live" {
+			if m_count.Le(position.Amount, "0") > 0 && position.GoodsDetail.State == "live" {
 				effPosition := global.NewPositionType{
 					GoodsId:   position.GoodsDetail.GoodsId,
 					TradeType: position.TradeType,

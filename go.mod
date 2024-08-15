@@ -1,6 +1,6 @@
 module github.com/otter-trade/coin-candle
 
-go 1.22.5
+go 1.23
 
 require (
 	github.com/handy-golang/go-tools v1.0.6

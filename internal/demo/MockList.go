@@ -1,7 +1,7 @@
 package demo
 
 /*
-操作 MockServe 的 相关 api 演示
+操作 MockServe 列表 的 相关 api
 */
 
 import (

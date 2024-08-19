@@ -1,11 +1,16 @@
 package demo
 
+/*
+MockServe 相关的 行为 api
+
+
+*/
+
 import (
 	"github.com/otter-trade/coin-candle/mock_trade"
 )
 
 // MockAction
-
 func MockAction_demo() {
 	mock_trade.NewMockAction(mock_trade.NewMockActionOpt{
 		StrategyID: "mo7_StrategyID_001",

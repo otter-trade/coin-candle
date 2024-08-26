@@ -7,15 +7,35 @@ MockServe 相关的 行为 api
 */
 
 import (
+	"fmt"
+
 	"github.com/otter-trade/coin-candle/mock_trade"
 )
 
 // MockAction
 func MockAction_demo() {
-	mock_trade.NewMockAction(mock_trade.NewMockActionOpt{
+	ActionObj, err := mock_trade.NewMockAction(mock_trade.NewMockActionOpt{
 		StrategyID: "mo7_StrategyID_001",
 		MockName:   "测试_MockName_1",
 	})
+	if err != nil {
+		fmt.Println("新建 MockAction 失败", err)
+		return
+	}
+
+	err = ActionObj.SetMockServeConfig()
+	if err != nil {
+		fmt.Println("读取 MockServeConfig 失败", err)
+		return
+	}
+
+	err = ActionObj.WriteMockServeConfig()
+	if err != nil {
+		fmt.Println("写入保存 MockServeConfig 失败", err)
+		return
+	}
+
+	// m_json.Println(ActionObj)
 }
 
 // // 新建一个持仓

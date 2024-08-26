@@ -1,8 +1,11 @@
 package mock_trade
 
 import (
+	"fmt"
+
 	"github.com/handy-golang/go-tools/m_file"
 	"github.com/handy-golang/go-tools/m_json"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/otter-trade/coin-candle/global"
 )
 
@@ -16,8 +19,10 @@ type MockActionObj struct {
 	MockName        string // 本次回测的名称
 	MockPath        MockPathType
 	MockServeConfig global.MockServeConfigType
+	PositionIndex   global.PositionIndexType
 }
 
+// #### New 一个 Action 对象  ####
 func NewMockAction(opt NewMockActionOpt) (action *MockActionObj, resErr error) {
 	action = nil
 	resErr = nil
@@ -43,7 +48,7 @@ func NewMockAction(opt NewMockActionOpt) (action *MockActionObj, resErr error) {
 	return
 }
 
-// 读取并更新 MockServeConfig
+// #### 读取并更新 MockServeConfig ####
 func (obj *MockActionObj) SetMockServeConfig() (resErr error) {
 	resErr = nil
 
@@ -57,10 +62,49 @@ func (obj *MockActionObj) SetMockServeConfig() (resErr error) {
 	return
 }
 
-// 存储 MockServeConfig
-func (obj *MockActionObj) WriteMockServeConfig() (resErr error) {
+// #### 本地存储一下 MockServeConfig ####
+func (obj *MockActionObj) StoreMockServeConfig() (resErr error) {
 	resErr = nil
 	config := m_json.ToJson(obj.MockServeConfig)
-	m_file.WriteByte(obj.MockPath.ConfigFullPath, config)
+	err := m_file.WriteByte(obj.MockPath.ConfigFullPath, config)
+	if err != nil {
+		resErr = err
+		return
+	}
+	return
+}
+
+// #### 读取最新的 PositionIndex ####
+func (obj *MockActionObj) SetPositionIndex() (resErr error) {
+	resErr = nil
+
+	if len(obj.MockPath.PositionIndexFullPath) < 20 {
+		resErr = fmt.Errorf("该 PositionIndex 目录不正确")
+		return
+	}
+	PositionIndexByte := m_file.ReadFile(obj.MockPath.PositionIndexFullPath)
+	var PositionIndex global.PositionIndexType
+	err := jsoniter.Unmarshal(PositionIndexByte, &PositionIndex)
+	if err != nil {
+		resErr = err
+		return
+	}
+
+	obj.PositionIndex = PositionIndex
+	return
+}
+
+// #### 把当前的 PositionIndex 进行一次本地存储 ####
+func (obj *MockActionObj) StorePositionIndex() (resErr error) {
+	if len(obj.MockPath.PositionIndexFullPath) < 20 {
+		resErr = fmt.Errorf("该 PositionIndex 目录不正确")
+		return
+	}
+	config := m_json.ToJson(obj.MockServeConfig)
+	err := m_file.WriteByte(obj.MockPath.ConfigFullPath, config)
+	if err != nil {
+		resErr = err
+		return
+	}
 	return
 }

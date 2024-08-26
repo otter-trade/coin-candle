@@ -1,15 +1,15 @@
 # 持仓管理
 
-持仓的计算比较复杂，只能以面向对象的方式去进行管理：
+持仓的计算比较复杂，平仓，计算收益等有大量的公共方法和函数。
+最好以面向对象的方式去进行管理：
 
 写一下伪代码
 
 ```go
 // 建立一个 action
 action,err := NewPositionAction({
-StrategyID string
-MockName string
-Time int64
+  StrategyID string
+  MockName string
 })
 action 包含交易需要 的各种信息，包括手续费率，余额等。
 

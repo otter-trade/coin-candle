@@ -30,7 +30,13 @@ func MockAction_demo() {
 		return
 	}
 
-	err = ActionObj.WriteMockServeConfig()
+	err = ActionObj.SetMockServeConfig()
+	if err != nil {
+		fmt.Println("写入保存 MockServeConfig 失败", err)
+		return
+	}
+
+	err = ActionObj.SetPositionIndex()
 	if err != nil {
 		fmt.Println("写入保存 MockServeConfig 失败", err)
 		return

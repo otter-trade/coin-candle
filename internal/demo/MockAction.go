@@ -42,6 +42,14 @@ func MockAction_demo() {
 		return
 	}
 
+	err = ActionObj.AddPosition(mock_trade.AddPositionOpt{
+		GoodsId: "BTC-USDT",
+	})
+	if err != nil {
+		fmt.Println("添加仓位失败", err)
+		return
+	}
+
 	m_json.Println(ActionObj)
 }
 

@@ -9,6 +9,7 @@ MockServe 相关的 行为 api
 import (
 	"fmt"
 
+	"github.com/handy-golang/go-tools/m_json"
 	"github.com/otter-trade/coin-candle/mock_trade"
 )
 
@@ -35,7 +36,7 @@ func MockAction_demo() {
 		return
 	}
 
-	// m_json.Println(ActionObj)
+	m_json.Println(ActionObj)
 }
 
 // // 新建一个持仓

@@ -36,21 +36,14 @@ func NewMockAction(opt NewMockActionOpt) (action *MockActionObj, resErr error) {
 		return
 	}
 	obj.MockPath = mockPath
-
-	// 读取 config 文件
-	config, err := ReadMockServeInfo(obj.MockPath.ConfigFullPath)
-	if err != nil {
-		resErr = err
-		return
-	}
-
-	obj.MockServeConfig = config
-
 	action = &obj
+	// 读取并加载 config 文件
+	action.SetMockServeConfig()
+
 	return
 }
 
-// 读取更新 MockServeConfig
+// 读取并更新 MockServeConfig
 func (obj *MockActionObj) SetMockServeConfig() (resErr error) {
 	resErr = nil
 

@@ -10,6 +10,7 @@ import (
 	"fmt"
 
 	"github.com/handy-golang/go-tools/m_json"
+	"github.com/otter-trade/coin-candle/global"
 	"github.com/otter-trade/coin-candle/mock_trade"
 )
 
@@ -42,15 +43,20 @@ func MockAction_demo() {
 		return
 	}
 
-	err = ActionObj.AddPosition(mock_trade.AddPositionOpt{
-		GoodsId: "BTC-USDT",
+	err = ActionObj.AddPosition(global.AddPositionType{
+		GoodsId:   "BTC-USDT",
+		TradeMode: "SWAP",
+		TradeType: "Coin1",
+		Leverage:  "1",
+		Side:      "Buy",
+		Amount:    "12",
 	})
 	if err != nil {
 		fmt.Println("添加仓位失败", err)
 		return
 	}
 
-	m_json.Println(ActionObj)
+	m_json.Println(ActionObj.NewPosition)
 }
 
 // // 新建一个持仓

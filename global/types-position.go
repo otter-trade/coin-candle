@@ -22,7 +22,7 @@ func GetKeyDescObj(value string, list []KeyDescType) (resData KeyDescType, resEr
 		}
 	}
 	if len(resData.Value) < 1 {
-		resErr = fmt.Errorf("TradeMode不正确")
+		resErr = fmt.Errorf("参数错误 %+v 不存在", value)
 		return
 	}
 	return

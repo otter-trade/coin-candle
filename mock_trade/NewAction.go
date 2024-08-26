@@ -9,17 +9,18 @@ import (
 	"github.com/otter-trade/coin-candle/global"
 )
 
-type NewMockActionOpt struct {
-	StrategyID string // 策略的Id
-	MockName   string // 本次回测的名称
-}
-
 type MockActionObj struct {
 	StrategyID      string // 策略的Id
 	MockName        string // 本次回测的名称
 	MockPath        MockPathType
 	MockServeConfig global.MockServeConfigType
 	PositionIndex   global.PositionIndexType
+	NewPosition     []NewPositionType
+}
+
+type NewMockActionOpt struct {
+	StrategyID string // 策略的Id
+	MockName   string // 本次回测的名称
 }
 
 // #### New 一个 Action 对象  ####

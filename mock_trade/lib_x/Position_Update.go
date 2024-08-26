@@ -37,7 +37,7 @@ func UpdatePosition(opt global.UpdatePositionOpt) (resWarn []string, resErr erro
 	resWarn = []string{}
 	// 要在这里读取上一次的结余
 
-	var NewPositionList []global.NewPositionType
+	var NewPositionList []global.AddPositionType
 	// 持仓数据的过滤和检查
 	for _, item := range opt.NewPosition {
 		if len(item.GoodsId) > 1 {
@@ -53,7 +53,7 @@ func UpdatePosition(opt global.UpdatePositionOpt) (resWarn []string, resErr erro
 
 			// 下单金额大于 0 且 币种状态 live 才有效
 			if m_count.Le(position.Amount, "0") > 0 && position.GoodsDetail.State == "live" {
-				effPosition := global.NewPositionType{
+				effPosition := global.AddPositionType{
 					GoodsId:   position.GoodsDetail.GoodsId,
 					TradeType: position.TradeType,
 					TradeMode: position.TradeMode,

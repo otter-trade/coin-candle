@@ -46,13 +46,25 @@ func MockAction_demo() {
 	err = ActionObj.AddPosition(global.AddPositionType{
 		GoodsId:   "BTC-USDT",
 		TradeMode: "SWAP",
-		TradeType: "Coin1",
+		TradeType: "Coin",
 		Leverage:  "1",
 		Side:      "Buy",
 		Amount:    "12",
 	})
 	if err != nil {
-		fmt.Println("添加仓位失败", err)
+		fmt.Println("添加仓位失败1", err)
+		return
+	}
+	err = ActionObj.AddPosition(global.AddPositionType{
+		GoodsId:   "ETH-USDT",
+		TradeMode: "SWAP",
+		TradeType: "Coin",
+		Leverage:  "1",
+		Side:      "Sell",
+		Amount:    "24",
+	})
+	if err != nil {
+		fmt.Println("添加仓位失败2", err)
 		return
 	}
 

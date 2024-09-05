@@ -68,7 +68,7 @@ func MockAction_demo() {
 		return
 	}
 
-	m_json.Println(ActionObj.MockServeConfig)
+	m_json.Println(ActionObj.NewPosition)
 }
 
 // // 新建一个持仓

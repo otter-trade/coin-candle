@@ -25,19 +25,19 @@ func MockAction_demo() {
 		return
 	}
 
-	err = ActionObj.SetMockServeConfig()
+	err = ActionObj.ReadMockServeConfig()
 	if err != nil {
 		fmt.Println("读取 MockServeConfig 失败", err)
 		return
 	}
 
-	err = ActionObj.SetMockServeConfig()
+	err = ActionObj.StoreMockServeConfig()
 	if err != nil {
 		fmt.Println("写入保存 MockServeConfig 失败", err)
 		return
 	}
 
-	err = ActionObj.SetPositionIndex()
+	err = ActionObj.ReadPositionIndex()
 	if err != nil {
 		fmt.Println("写入保存 MockServeConfig 失败", err)
 		return
@@ -68,7 +68,7 @@ func MockAction_demo() {
 		return
 	}
 
-	m_json.Println(ActionObj.NewPosition)
+	m_json.Println(ActionObj.MockServeConfig)
 }
 
 // // 新建一个持仓

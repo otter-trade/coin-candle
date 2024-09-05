@@ -19,13 +19,13 @@ Amount    string // 下单金额，不可超过账户结余
 */
 
 type NewPositionType struct {
-	// GoodsDetail global.GoodsType // OtterTrade 的 商品 详情
-	GoodsId   string // OtterTrade 的交易品ID 以 OKX 为准 如 BTC-USDT
-	TradeType string // 交易种类，Coin
-	TradeMode string // 持仓模式，SPOT  SWAP
-	Leverage  string // 杠杆倍率，1-30
-	Side      string // 下单方向，Buy 和 Sell
-	Amount    string // 下单金额，
+	GoodsDetail global.GoodsType // OtterTrade 的 商品 详情
+	GoodsId     string           // OtterTrade 的交易品ID 以 OKX 为准 如 BTC-USDT
+	TradeType   string           // 交易种类，Coin
+	TradeMode   string           // 持仓模式，SPOT  SWAP
+	Leverage    string           // 杠杆倍率，1-30
+	Side        string           // 下单方向，Buy 和 Sell
+	Amount      string           // 下单金额，
 }
 
 func (obj *MockActionObj) AddPosition(opt global.AddPositionType) (resErr error) {
@@ -79,7 +79,7 @@ func (obj *MockActionObj) AddPosition(opt global.AddPositionType) (resErr error)
 		resErr = err
 		return
 	}
-	// position.GoodsDetail = GoodsDetail
+	position.GoodsDetail = GoodsDetail
 	position.GoodsId = GoodsDetail.GoodsId
 
 	Amount := m_count.Sub(opt.Amount, "0")

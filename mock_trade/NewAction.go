@@ -10,12 +10,12 @@ import (
 )
 
 type MockActionObj struct {
-	StrategyID      string // 策略的Id
-	MockName        string // 本次回测的名称
-	MockPath        MockPathType
-	MockServeConfig global.MockServeConfigType
-	PositionIndex   global.PositionIndexType
-	NewPosition     []NewPositionType
+	StrategyID      string                     // 策略的Id
+	MockName        string                     // 本次回测的名称
+	MockPath        MockPathType               // 相关数据存储的路径
+	MockServeConfig global.MockServeConfigType // MockServe 的配置文件内容
+	PositionIndex   global.PositionIndexType   // 每次变更持仓的时间戳列表
+	NewPosition     []NewPositionType          // 新的持仓列表
 }
 
 type NewMockActionOpt struct {
@@ -44,13 +44,13 @@ func NewMockAction(opt NewMockActionOpt) (action *MockActionObj, resErr error) {
 	obj.MockPath = mockPath
 	action = &obj
 	// 读取并加载 config 文件
-	action.SetMockServeConfig()
+	action.ReadMockServeConfig()
 
 	return
 }
 
-// #### 读取并更新 MockServeConfig ####
-func (obj *MockActionObj) SetMockServeConfig() (resErr error) {
+// #### 读取 MockServeConfig ####
+func (obj *MockActionObj) ReadMockServeConfig() (resErr error) {
 	resErr = nil
 
 	config, err := ReadMockServeInfo(obj.MockPath.ConfigFullPath)
@@ -63,7 +63,7 @@ func (obj *MockActionObj) SetMockServeConfig() (resErr error) {
 	return
 }
 
-// #### 本地存储一下 MockServeConfig ####
+// #### 存储 MockServeConfig ####
 func (obj *MockActionObj) StoreMockServeConfig() (resErr error) {
 	resErr = nil
 	config := m_json.ToJson(obj.MockServeConfig)
@@ -75,8 +75,8 @@ func (obj *MockActionObj) StoreMockServeConfig() (resErr error) {
 	return
 }
 
-// #### 读取最新的 PositionIndex ####
-func (obj *MockActionObj) SetPositionIndex() (resErr error) {
+// #### 读取 PositionIndex ####
+func (obj *MockActionObj) ReadPositionIndex() (resErr error) {
 	resErr = nil
 
 	if len(obj.MockPath.PositionIndexFullPath) < 20 {
@@ -95,7 +95,7 @@ func (obj *MockActionObj) SetPositionIndex() (resErr error) {
 	return
 }
 
-// #### 把当前的 PositionIndex 进行一次本地存储 ####
+// #### 存储 PositionIndex ####
 func (obj *MockActionObj) StorePositionIndex() (resErr error) {
 	if len(obj.MockPath.PositionIndexFullPath) < 20 {
 		resErr = fmt.Errorf("该 PositionIndex 目录不正确")

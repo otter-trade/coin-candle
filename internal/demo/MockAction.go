@@ -68,6 +68,8 @@ func MockAction_demo() {
 		return
 	}
 
+	// 这里应该是计算平仓后收益
+
 	m_json.Println(ActionObj.NewPosition)
 }
 

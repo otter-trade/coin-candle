@@ -12,7 +12,7 @@ import (
 type MockActionObj struct {
 	StrategyID      string                     // 策略的Id
 	MockName        string                     // 本次回测的名称
-	MockPath        MockPathType               // 相关数据存储的路径
+	Path            MockPathType               // 相关数据存储的路径
 	MockServeConfig global.MockServeConfigType // MockServe 的配置文件内容
 	PositionIndex   global.PositionIndexType   // 每次变更持仓的时间戳列表
 	NewPosition     []NewPositionType          // 新的持仓列表
@@ -41,7 +41,7 @@ func NewMockAction(opt NewMockActionOpt) (action *MockActionObj, resErr error) {
 		resErr = err
 		return
 	}
-	obj.MockPath = mockPath
+	obj.Path = mockPath
 	action = &obj
 	// 读取并加载 config 文件
 	action.ReadMockServeConfig()
@@ -53,7 +53,7 @@ func NewMockAction(opt NewMockActionOpt) (action *MockActionObj, resErr error) {
 func (obj *MockActionObj) ReadMockServeConfig() (resErr error) {
 	resErr = nil
 
-	config, err := ReadMockServeInfo(obj.MockPath.ConfigFullPath)
+	config, err := ReadMockServeInfo(obj.Path.ConfigFullPath)
 	if err != nil {
 		resErr = err
 		return
@@ -67,7 +67,7 @@ func (obj *MockActionObj) ReadMockServeConfig() (resErr error) {
 func (obj *MockActionObj) StoreMockServeConfig() (resErr error) {
 	resErr = nil
 	config := m_json.ToJson(obj.MockServeConfig)
-	err := m_file.WriteByte(obj.MockPath.ConfigFullPath, config)
+	err := m_file.WriteByte(obj.Path.ConfigFullPath, config)
 	if err != nil {
 		resErr = err
 		return
@@ -79,11 +79,11 @@ func (obj *MockActionObj) StoreMockServeConfig() (resErr error) {
 func (obj *MockActionObj) ReadPositionIndex() (resErr error) {
 	resErr = nil
 
-	if len(obj.MockPath.PositionIndexFullPath) < 20 {
+	if len(obj.Path.PositionIndexFullPath) < 20 {
 		resErr = fmt.Errorf("该 PositionIndex 目录不正确")
 		return
 	}
-	PositionIndexByte := m_file.ReadFile(obj.MockPath.PositionIndexFullPath)
+	PositionIndexByte := m_file.ReadFile(obj.Path.PositionIndexFullPath)
 	var PositionIndex global.PositionIndexType
 	err := jsoniter.Unmarshal(PositionIndexByte, &PositionIndex)
 	if err != nil {
@@ -97,12 +97,12 @@ func (obj *MockActionObj) ReadPositionIndex() (resErr error) {
 
 // #### 存储 PositionIndex ####
 func (obj *MockActionObj) StorePositionIndex() (resErr error) {
-	if len(obj.MockPath.PositionIndexFullPath) < 20 {
+	if len(obj.Path.PositionIndexFullPath) < 20 {
 		resErr = fmt.Errorf("该 PositionIndex 目录不正确")
 		return
 	}
 	config := m_json.ToJson(obj.MockServeConfig)
-	err := m_file.WriteByte(obj.MockPath.ConfigFullPath, config)
+	err := m_file.WriteByte(obj.Path.ConfigFullPath, config)
 	if err != nil {
 		resErr = err
 		return

@@ -9,6 +9,8 @@ MockServe 相关的 行为 api
 import (
 	"fmt"
 
+	"github.com/handy-golang/go-tools/m_file"
+	"github.com/handy-golang/go-tools/m_json"
 	"github.com/otter-trade/coin-candle/global"
 	"github.com/otter-trade/coin-candle/mock_trade"
 )
@@ -72,6 +74,8 @@ func MockAction_demo() {
 		fmt.Println("添加仓位失败2", err)
 		return
 	}
+
+	m_file.Write(global.Path.LogPath+"/ActionObj.json", m_json.ToStr(ActionObj))
 
 	// 下单
 }

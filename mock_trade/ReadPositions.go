@@ -5,3 +5,10 @@ func (obj *MockActionObj) ReadPositions() (resErr error) {
 	// 读取仓位
 	return
 }
+
+// 读取余额
+func (obj *MockActionObj) ReadBalance() (resErr error) {
+	resErr = nil
+
+	return
+}

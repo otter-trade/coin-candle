@@ -72,8 +72,8 @@ type MockServeConfigType struct {
 	MockDataDir            string // 数据存储路径
 	ConfigPath             string // 配置文件存放路径
 	PositionIndexPath      string // 仓位索引存放路径
-	CreateTime             int64  // 创建时间
-	LastPositionUpdateTime int64  // 最后一次更新持仓的时间
+	CreateTime             int64  // 创建时间，方便查询
+	LastPositionUpdateTime int64  // 最后一次更新持仓的时间，方便查询
 	SysWarn                string // 系统提示
 }
 

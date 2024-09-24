@@ -75,6 +75,12 @@ func MockAction_demo() {
 		return
 	}
 
+	err = ActionObj.OpenPosition()
+	if err != nil {
+		fmt.Println("开仓失败", err)
+		return
+	}
+
 	m_file.Write(global.Path.LogPath+"/ActionObj.json", m_json.ToStr(ActionObj))
 
 	// 下单

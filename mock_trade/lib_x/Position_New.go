@@ -20,7 +20,7 @@ type NewPositionParamType struct {
 }
 
 // New 一个 Position
-func NewPositionParam(opt global.AddPositionType) (resData NewPositionParamType, resErr error) {
+func NewPositionParam(opt global.NewPositionType) (resData NewPositionParamType, resErr error) {
 	resErr = nil
 	resData = NewPositionParamType{}
 

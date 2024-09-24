@@ -28,7 +28,8 @@ type NewPositionType struct {
 	Amount      string           // 下单金额，
 }
 
-func (obj *MockActionObj) AddPosition(opt global.AddPositionType) (resErr error) {
+// 添加一个新的持仓
+func (obj *MockActionObj) NewPositionAdd(opt global.NewPositionType) (resErr error) {
 	resErr = nil
 	position := NewPositionType{}
 

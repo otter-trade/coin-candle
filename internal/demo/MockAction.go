@@ -47,7 +47,7 @@ func MockAction_demo() {
 	}
 
 	// 新添加一个持仓
-	err = ActionObj.AddPosition(global.AddPositionType{
+	err = ActionObj.NewPositionAdd(global.NewPositionType{
 		GoodsId:   "BTC-USDT", // GoodsId
 		TradeMode: "SWAP",     //  交易方式  SWAP  永续合约
 		TradeType: "Coin",     //  交易类型  Coin  币币
@@ -60,7 +60,7 @@ func MockAction_demo() {
 		return
 	}
 	// 再添加另一个持仓 , (可以无限之的添加)
-	err = ActionObj.AddPosition(global.AddPositionType{
+	err = ActionObj.NewPositionAdd(global.NewPositionType{
 		GoodsId:   "ETH-USDT",
 		TradeMode: "SWAP",
 		TradeType: "Coin",

@@ -75,7 +75,7 @@ func (obj *MockActionObj) StoreMockServeConfig() (resErr error) {
 	return
 }
 
-// #### 读取 PositionIndex ####
+// #### 读取 PositionIndex : 也就是持仓列表的索引 ####
 func (obj *MockActionObj) ReadPositionIndex() (resErr error) {
 	resErr = nil
 

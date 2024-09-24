@@ -1,36 +1,12 @@
-# 持仓管理
+# 模拟持仓模块(mock_trade)
 
-持仓的计算比较复杂，平仓，计算收益等有大量的公共方法和函数。
-最好以面向对象的方式去进行管理：
+简化持仓模型。
+每次更新当前需要的持仓的状态，然后系统会帮助下单并计算应得收入。
 
-写一下伪代码
+更新仓位状态
+这种方式的好处在于，每次更新持仓时都可以动态的调整杠杆倍率，持仓比率等。
 
-```go
-// 建立一个 action
-action,err := NewPositionAction({
-  StrategyID string
-  MockName string
-})
-// action 包含交易需要 的各种信息，包括手续费率，余额等。
-
-action.SetNewPositionList
-// SetNewPositionList 仓位相关的信息，需要判断参数，需要根据币种状态进行过滤，需要计算单项手续费。
-
-action.UpdatePosition
-// 将 NewPositionList 更新到 PositionAction 里面去。
-
-action.ReadPosition
-// 计算和读取 Position 的相关状态
-
-action.ClosePosition
-// 平仓计算，落地收益
-
-action.SavePosition
-// 将 Position 保存到本地
-
-action.ReadPositionHistory
-// 读取 持仓历史
-```
+然后持仓结果可以同步给交易所完成实盘，若不同步给交易所，则可以当做回测模拟。
 
 ## 收益和收益率计算
 
@@ -117,3 +93,44 @@ BTC 为商品，但是价格是随着时间变动的
 手续费 = 买入/卖出总金额 * 手续费率
 
 ```
+
+## 需要实现的一些交易概念
+
+开仓(OpenPosition)：
+开仓也叫建仓，是指投资者新买入或新卖出一定数量的股指期货合约。如果投资者将这份股指期货合约保留到最后交易日，他就必须通过现金交割来了结这笔期货交易。
+
+平仓(ClosePosition)：
+平仓是指期货投资者买入或者卖出与其所持股指期货合约的品种、数量及交割月份相同但交易方向相反的股指期货合约，了结股指期货交易的行为。可以理解为落袋为安，现金结算。
+
+持仓(Positions)：
+开仓之后尚没有平仓的合约，叫做未平仓合约，也叫持仓。
+
+## 伪代码
+
+持仓的计算比较复杂，平仓，计算收益等有大量的公共方法和函数。
+最好以面向对象的方式去进行管理：
+
+```go
+// 建立一个 action
+action,err := NewPositionAction({
+  StrategyID string
+  MockName string
+})
+// action 包含交易需要 的各种信息，包括手续费率，余额等。
+
+action.AddNewPosition
+// 添加一个新的需要下单的持仓
+
+action.OpenPosition
+// 下单，开仓 , 需要参数，下单的 13 位 毫秒 时间戳。如果是实盘策略，将会忽略该时间。
+
+
+action.ClosePosition
+// 平仓，落袋，平仓了，计算余下金额 并 写入本地数据，做好记录。
+
+action.ReadPositions
+// 读取当前持仓状态，加上时间戳参数，可以读取任意时刻的持仓状态。
+
+```
+
+> 开始实现吧 ~

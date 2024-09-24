@@ -75,7 +75,9 @@ func MockAction_demo() {
 		return
 	}
 
-	err = ActionObj.OpenPosition()
+	err = ActionObj.OpenPosition(mock_trade.OpenPositionOpt{
+		OrderTime: 0,
+	})
 	if err != nil {
 		fmt.Println("开仓失败", err)
 		return

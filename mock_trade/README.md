@@ -119,7 +119,7 @@ action,err := NewPositionAction({
 // action 包含交易需要 的各种信息，包括手续费率，余额等。
 
 action.AddPosition
-// 添加一个新的需要下单的持仓
+// 添加一个新的需要下单的持仓，顺带检查持仓参数
 
 action.OpenPosition
 // 下单，开仓 , 需要参数，下单的 13 位 毫秒 时间戳。如果是实盘策略，将会忽略该时间。

@@ -19,7 +19,7 @@ import (
 func MockAction_demo() {
 	// New 一个 Action 对象
 	ActionObj, err := mock_trade.NewMockAction(mock_trade.NewMockActionOpt{
-		StrategyID: "mo7_StrategyID_001",
+		StrategyID: "mo7_StrategyID_002",
 		MockName:   "测试_MockName_1",
 	})
 	if err != nil {

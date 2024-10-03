@@ -18,7 +18,7 @@ import (
 func CreateMockServe_demo() {
 	resData, err := mock_trade.CreateMockServe(global.CreateMockServeOpt{
 		StrategyID:   "mo7_StrategyID_002",
-		MockName:     "测试_MockName_3",
+		MockName:     "测试_MockName_1",
 		RunMode:      "1",
 		InitialAsset: "1000",
 	})
@@ -34,11 +34,12 @@ func CreateMockServe_demo() {
 */
 func GetMockServeInfo_demo() {
 	mockServeInfo, err := mock_trade.GetMockServeInfo(global.FindMockServeOpt{
-		StrategyID: "mo7_StrategyID_001",
+		StrategyID: "mo7_StrategyID_002",
 		MockName:   "测试_MockName_1",
 	})
 	if err != nil {
 		fmt.Println("获取MockServe信息失败", err)
+		return
 	}
 	m_json.Println(mockServeInfo)
 }
@@ -48,7 +49,7 @@ func GetMockServeInfo_demo() {
 */
 func GetMockServeList_demo() {
 	mockServeList := mock_trade.GetMockServeList(global.FindMockServeListOpt{
-		StrategyID: "mo7_StrategyID_001",
+		StrategyID: "mo7_StrategyID_002",
 	})
 	m_json.Println(mockServeList)
 }

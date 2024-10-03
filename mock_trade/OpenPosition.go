@@ -43,6 +43,8 @@ func (obj *MockActionObj) OpenPosition(opt OpenPositionOpt) (resErr error) {
 		OrderTime = nowTime
 	}
 
+	fmt.Println("下单时间", OrderTime)
+
 	for k, v := range obj.NewPosition {
 		// 这里要开始下单了
 		fmt.Println(k, v.GoodsId, v.Amount)

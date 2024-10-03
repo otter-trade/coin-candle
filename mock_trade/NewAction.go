@@ -42,6 +42,7 @@ func NewMockAction(opt NewMockActionOpt) (action *MockActionObj, resErr error) {
 		return
 	}
 	obj.Path = mockPath
+
 	action = &obj
 	// 读取并加载 config 文件
 	action.ReadMockServeConfig()
